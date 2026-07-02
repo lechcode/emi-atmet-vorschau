@@ -1,0 +1,4 @@
+# Nie deployen: Arbeits-Artefakte & Kundenmaterial
+_projekt/
+material/
+.DS_Store

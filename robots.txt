@@ -1,0 +1,4 @@
+# emi.atmet · DEMO-Vorschau — noch nicht öffentlich.
+# Bei Go-Live: diese Datei durch eine echte robots.txt ersetzen und noindex überall entfernen.
+User-agent: *
+Disallow: /
