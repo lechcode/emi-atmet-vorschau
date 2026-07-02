@@ -156,7 +156,7 @@
   .hero-inner{max-width:38ch;}
   .hero h1{font-size:var(--step-5);line-height:var(--lh-tight);letter-spacing:var(--ls-display);margin:var(--sp-2) 0 0;font-weight:600;max-width:16ch;}
   .hero h1 em{color:var(--clay-deep);font-weight:500;}
-  .hero-sub{font-size:var(--step-1);line-height:var(--lh-relaxed);color:var(--ink-soft);margin-top:var(--sp-3);max-width:44ch;}
+  .hero-sub{font-size:clamp(19px,.85vw+17.2px,23px);line-height:1.62;color:var(--ink);margin-top:var(--sp-3);max-width:42ch;}
   .hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:var(--sp-4);align-items:center;}
   .hero-note{margin-top:16px;font-size:var(--step--1);color:var(--ink-faint);display:flex;align-items:center;gap:8px;}
   .hero-note svg{color:var(--sage-deep);flex:none;}
@@ -274,7 +274,11 @@
 
   /* ===== Stimmen ===== */
   .voices{background:var(--paper-2);}
+  .tp-badge{display:inline-flex;align-items:center;gap:11px;margin-top:var(--sp-3);background:var(--white);border:1px solid var(--line);border-radius:var(--pill);padding:9px 18px;font-size:14.5px;color:var(--ink-soft);box-shadow:var(--shadow-soft);}
+  .tp-badge .stars{color:#00b67a;font-size:15px;letter-spacing:1.5px;}
+  .tp-badge b{color:var(--ink);font-weight:600;}
   .voice-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
+  .voice blockquote{quotes:none;}
   .voice{background:var(--white);border:1px solid var(--line);border-radius:var(--radius-lg);padding:clamp(24px,3vw,32px);box-shadow:var(--shadow-soft);}
   .voice .stars{color:var(--clay);font-size:14px;letter-spacing:2px;}
   .voice blockquote{font-family:var(--serif);font-size:var(--step-1);line-height:1.5;color:var(--ink);margin-top:12px;font-style:normal;}
@@ -431,8 +435,8 @@
           <div class="badge">
             <div>
               <div class="stars" aria-hidden="true">★★★★★</div>
-              <b>emi.atmet</b>
-              <span>5 Sterne · Google</span>
+              <b>4,6 von 5</b>
+              <span>Trustpilot · 22 Bewertungen</span>
             </div>
           </div>
         </figure>
@@ -453,7 +457,7 @@
         </div>
         <div class="item reveal d1">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>
-          <div><b>5 Sterne</b><span>durchweg von Begleiteten bei Google bewertet</span></div>
+          <div><b>4,6 von 5</b><span>22 Bewertungen von Begleiteten auf Trustpilot</span></div>
         </div>
         <div class="item reveal d2">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -546,7 +550,7 @@
             </div>
           </article>
           <article class="offer reveal d1">
-            <div class="pic"><picture><source type="image/webp" srcset="assets/img/ausb-band-840.webp 840w, assets/img/ausb-band-1280.webp 1280w" sizes="(max-width:900px) 92vw, 44vw"><img src="assets/img/ausb-band-1280.jpg" width="1280" height="720" alt="Ausbildungsgruppe im Atemkreis" loading="lazy" decoding="async"></picture></div>
+            <div class="pic"><picture><source type="image/webp" srcset="assets/img/card-ausbildung-440.webp 440w, assets/img/card-ausbildung-720.webp 720w" sizes="(max-width:900px) 92vw, 44vw"><img src="assets/img/card-ausbildung-720.jpg" width="720" height="450" alt="Emi und Rouven, die Ausbildungsleitung" loading="lazy" decoding="async"></picture></div>
             <div class="in">
               <span class="tag">Für Facilitator:innen</span>
               <h3>Breathwork Ausbildung</h3>
@@ -600,7 +604,7 @@
         <figure class="reveal">
           <picture>
             <source type="image/webp" srcset="assets/img/ueber-emi-440.webp 440w, assets/img/ueber-emi-660.webp 660w" sizes="(max-width:900px) 92vw, 38vw">
-            <img src="assets/img/ueber-emi-660.jpg" width="660" height="825" alt="Emi in einer Atembegleitung — warmer, ruhiger Moment" loading="lazy" decoding="async">
+            <img src="assets/img/ueber-emi-660.jpg" width="660" height="825" alt="Emily Müller in einem warmen, ruhigen Moment" loading="lazy" decoding="async">
           </picture>
         </figure>
         <div class="body reveal d1">
@@ -685,30 +689,44 @@
         <div class="sec-head reveal">
           <span class="eyebrow">Stimmen</span>
           <h2 id="stimmen-h">Was Menschen nach der Begleitung sagen.</h2>
+          <div class="tp-badge">
+            <span class="stars" aria-hidden="true">★★★★★</span>
+            <span><b>4,6 von 5</b> · 22 Bewertungen auf <b>Trustpilot</b> · durchweg 5 Sterne</span>
+          </div>
         </div>
         <div class="voice-grid">
           <figure class="voice reveal">
             <div class="stars" aria-label="5 von 5 Sternen">★★★★★</div>
-            <blockquote>„Ich durfte bei der lieben Emi am Breathwork teilnehmen — und es hat viel in mir bewegt. Ich bin so froh, dass ich mir diese Zeit genommen habe."</blockquote>
-            <figcaption class="who">Adriana</figcaption>
+            <blockquote>„Emi begegnet einem mit einer unglaublich ruhigen, einfühlsamen und zugleich sehr professionellen Art, wodurch sofort ein Gefühl von Vertrauen entsteht. Ich habe mich die ganze Zeit sicher und getragen gefühlt."</blockquote>
+            <figcaption class="who">Nadine · Einzelbegleitung</figcaption>
           </figure>
           <figure class="voice reveal d1">
             <div class="stars" aria-label="5 von 5 Sternen">★★★★★</div>
-            <blockquote>„Ich bin sehr dankbar für die intensive Atemarbeit mit Emi. Ich kann die Arbeit mit ihr von Herzen weiterempfehlen."</blockquote>
-            <figcaption class="who">Yvonne</figcaption>
+            <blockquote>„Ich habe mich bei Emi so gehalten, geborgen und in meinen Themen gesehen gefühlt. Mit ihrer Präsenz schafft sie ein Rundum-Gefühl des Annehmens, das es viel leichter macht, sich selbst zu öffnen."</blockquote>
+            <figcaption class="who">Alida · Gruppe &amp; Einzel</figcaption>
           </figure>
           <figure class="voice reveal">
             <div class="stars" aria-label="5 von 5 Sternen">★★★★★</div>
-            <blockquote>„Als ich zu Emi kam, war ich ziemlich verloren, überlastet und erschöpft. Ich würde es immer wieder tun und jedem empfehlen."</blockquote>
-            <figcaption class="who">Katja</figcaption>
+            <blockquote>„Eine tiefgehende, intensive Erfahrung. Mit der Zeit breitete sich in mir eine tiefe Ruhe und Ausgeglichenheit aus — auch Tage später fühlte ich mich leichter. Emi begleitet mit großer Professionalität, Feingefühl und Präsenz."</blockquote>
+            <figcaption class="who">Jan · Breathwork Circle</figcaption>
           </figure>
           <figure class="voice reveal d1">
             <div class="stars" aria-label="5 von 5 Sternen">★★★★★</div>
-            <blockquote>„Die Langzeit-Begleitung mit Emi war eine unglaublich wertvolle und prägende Reise für mein inneres Wachstum."</blockquote>
-            <figcaption class="who">Sophie</figcaption>
+            <blockquote>„Emi hat die Gabe, einen Raum zu schaffen, in dem man offen und ehrlich über alle Themen sprechen kann. Die Sessions waren immer sehr intensiv und trotzdem traumasensibel und sicher."</blockquote>
+            <figcaption class="who">Arthur · 6 Monate Begleitung</figcaption>
+          </figure>
+          <figure class="voice reveal">
+            <div class="stars" aria-label="5 von 5 Sternen">★★★★★</div>
+            <blockquote>„Der Raum war sehr gemütlich und stimmig, sodass ich mich sofort wohl und sicher aufgehoben fühlte. Emi hat den Circle mit großer Professionalität und Einfühlsamkeit geleitet."</blockquote>
+            <figcaption class="who">Isabell · Breathwork Circle</figcaption>
+          </figure>
+          <figure class="voice reveal d1">
+            <div class="stars" aria-label="5 von 5 Sternen">★★★★★</div>
+            <blockquote>„Als mehrfach geladene Referentin gestaltete Emi ihre Sessions mit praxistauglichen Übungen und überzeugt durch ein durchweg natürliches, professionelles und diskretes Auftreten."</blockquote>
+            <figcaption class="who">Victoria · Unternehmens-Event</figcaption>
           </figure>
         </div>
-        <p class="reveal" style="text-align:center;margin-top:var(--sp-4);font-size:14px;color:var(--ink-faint);">Echte Rückmeldungen von Begleiteten · vollständige Freigabe wird vor Veröffentlichung eingeholt.</p>
+        <p class="reveal" style="text-align:center;margin-top:var(--sp-4);font-size:14.5px;color:var(--ink-soft);">Echte Rückmeldungen von Begleiteten. <a href="https://de.trustpilot.com/review/emi-atmet.de" target="_blank" rel="noopener noreferrer" style="color:var(--clay-deep);font-weight:600;text-decoration:underline;text-underline-offset:2px;">Alle 22 Bewertungen auf Trustpilot ansehen →</a></p>
       </div>
     </section>
 

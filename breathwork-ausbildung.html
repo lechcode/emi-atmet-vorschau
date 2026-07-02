@@ -181,6 +181,57 @@
   .method li{display:flex;gap:12px;align-items:flex-start;color:var(--ink-soft);font-size:var(--step-0);line-height:1.5;}
   .method li svg{flex:none;color:var(--sage-deep);margin-top:3px;}
 
+  /* ===== Premium-Aufwertung (R2) ===== */
+  .breath-div{display:block;width:min(520px,70vw);margin:0 auto;color:var(--clay);opacity:.6;}
+  .kicker-gold{display:inline-flex;align-items:center;gap:9px;font-size:12.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#875426;}
+  .kicker-gold::before{content:"";width:20px;height:1.5px;background:#C99A5B;}
+  /* Cinematic Zitat-Band */
+  .cine{position:relative;isolation:isolate;min-height:clamp(360px,58vh,560px);display:flex;align-items:center;overflow:hidden;color:#fff;}
+  .cine .bg{position:absolute;inset:0;z-index:-2;}
+  .cine .bg img{width:100%;height:100%;object-fit:cover;object-position:50% 38%;}
+  .cine::after{content:"";position:absolute;inset:0;z-index:-1;background:
+    linear-gradient(90deg,rgba(26,22,19,.9),rgba(26,22,19,.55) 55%,rgba(26,22,19,.35)),
+    linear-gradient(180deg,rgba(26,22,19,.4),rgba(26,22,19,.55));}
+  .cine .in{max-width:26ch;}
+  .cine blockquote{font-family:var(--serif);font-size:clamp(27px,4.2vw,48px);line-height:1.18;font-weight:500;color:#fff;text-shadow:0 2px 20px rgba(0,0,0,.35);}
+  .cine blockquote em{color:#EAC08E;font-style:italic;}
+  .cine .cite{margin-top:22px;font-size:14.5px;color:rgba(255,255,255,.72);letter-spacing:.04em;}
+  /* Bild-Rahmen in Sektionen */
+  .imgframe{position:relative;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);}
+  .imgframe img{width:100%;height:100%;object-fit:cover;display:block;}
+  .imgframe.tall{aspect-ratio:4/5;}
+  .begins .split{align-items:center;}
+  .begins .col-img{position:relative;}
+  .begins .col-img .tagpill{position:absolute;left:16px;bottom:16px;background:rgba(26,22,19,.72);color:#fff;font-size:13px;font-weight:500;padding:8px 14px;border-radius:var(--pill);backdrop-filter:blur(6px);}
+  /* Trustpilot-Band */
+  .proof{background:var(--paper-2);}
+  .proof .tp-head{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:var(--sp-4);flex-wrap:wrap;}
+  .proof .tp-head .stars{color:#00b67a;font-size:20px;letter-spacing:2px;}
+  .proof .tp-head b{font-family:var(--serif);font-size:var(--step-2);color:var(--ink);}
+  .proof .tp-head span{color:var(--ink-soft);font-size:15px;}
+  .proof-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
+  .proof .q{background:var(--white);border:1px solid var(--line);border-radius:var(--radius-lg);padding:clamp(24px,3vw,34px);box-shadow:var(--shadow-soft);}
+  .proof .q .st{color:#00b67a;font-size:14px;letter-spacing:2px;}
+  .proof .q blockquote{font-family:var(--serif);font-size:var(--step-1);line-height:1.5;color:var(--ink);margin-top:12px;}
+  .proof .q .who{margin-top:16px;font-size:14px;color:var(--ink-soft);font-weight:600;}
+  /* Team-Upgrade: Duo-Feature + Premium-Karten */
+  .team-feature{display:grid;grid-template-columns:.82fr 1.18fr;gap:clamp(28px,4.5vw,56px);align-items:center;margin-bottom:var(--sp-5);}
+  .team-feature .imgframe{aspect-ratio:4/5;}
+  .team-feature h2{font-size:var(--step-3);font-weight:500;}
+  .team-feature p{color:var(--ink-soft);margin-top:var(--sp-2);line-height:var(--lh-relaxed);}
+  .member{background:var(--white);border:1px solid var(--line);border-radius:var(--radius-lg);padding:0;overflow:hidden;box-shadow:var(--shadow-soft);display:flex;flex-direction:column;transition:transform .35s var(--ease),box-shadow .35s var(--ease);}
+  .member:hover{transform:translateY(-4px);box-shadow:var(--shadow);}
+  .member .ph{width:100%;aspect-ratio:4/5;flex:none;border-radius:0;}
+  .member .ph img{width:100%;height:100%;object-fit:cover;}
+  .member .mbody{padding:22px 24px;}
+  .member .role{color:#875426;font-size:13px;font-weight:600;letter-spacing:.03em;margin-top:3px;}
+  /* Invest-Card Premium */
+  .invest-card{position:relative;border-color:rgba(201,154,91,.4);box-shadow:0 30px 60px -34px rgba(0,0,0,.5);}
+  .invest-card .ribbon{display:inline-block;background:rgba(201,154,91,.16);color:#E7C9A9;border:1px solid rgba(201,154,91,.4);font-size:12.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:var(--pill);margin-bottom:18px;}
+  .invest-incl{display:flex;flex-wrap:wrap;gap:10px 22px;justify-content:center;margin-top:22px;}
+  .invest-incl span{display:inline-flex;align-items:center;gap:8px;color:rgba(245,239,231,.85);font-size:14.5px;}
+  .invest-incl svg{color:var(--sage);flex:none;}
+
   .cta-final{background:linear-gradient(160deg,var(--clay-deep),#7c3f28);color:#fff;text-align:center;}
   .cta-final h2{color:#fff;font-size:var(--step-4);font-weight:500;max-width:20ch;margin:0 auto;}
   .cta-final p{color:rgba(255,255,255,.9);font-size:var(--step-1);margin:var(--sp-3) auto 0;max-width:46ch;line-height:var(--lh-relaxed);}
@@ -204,6 +255,8 @@
     .ahero-grid{grid-template-columns:1fr;gap:var(--sp-4);}
     .ahero .txt{order:1;max-width:none;} .ahero .figure{order:2;max-width:420px;}
     .split,.method-grid,.team-grid{grid-template-columns:1fr;}
+    .team-feature,.proof-grid{grid-template-columns:1fr;gap:var(--sp-3);}
+    .cine .in{max-width:none;}
     .area-grid{grid-template-columns:1fr;} .checks{grid-template-columns:1fr;}
     .site-footer .top{grid-template-columns:1fr;gap:26px;}
     .nav-links{position:fixed;inset:0;background:var(--paper);flex-direction:column;justify-content:center;gap:6px;transform:translateX(100%);transition:transform .4s var(--ease);z-index:110;}
@@ -268,15 +321,28 @@
     </section>
 
     <!-- LEAD -->
-    <section>
-      <div class="wrap split">
-        <div class="lead-block reveal">
-          <span class="eyebrow">Warum diese Ausbildung</span>
-          <h2 style="font-size:var(--step-3);margin-top:var(--sp-2);font-weight:500;">Der Atem ist eines der kraftvollsten Werkzeuge, die wir haben.</h2>
-          <p>Er verbindet Körper, Nervensystem und Emotionen — und öffnet einen direkten Weg zu dem, was in uns nach Heilung sucht. Diese Ausbildung verbindet <strong>persönliche Transformation</strong>, fundiertes Wissen über Bewusstsein, Nervensystem und Trauma sowie die praktischen <strong>Facilitation-Skills</strong>, um Breathwork-Sessions sicher zu halten.</p>
+    <section style="padding-bottom:var(--sp-5);">
+      <div class="wrap">
+        <div class="lead-block reveal" style="max-width:66ch;">
+          <span class="kicker-gold">Warum diese Ausbildung</span>
+          <h2 style="font-size:var(--step-3);margin-top:14px;font-weight:500;">Der Atem ist eines der kraftvollsten Werkzeuge, die wir haben.</h2>
+          <p>Er verbindet Körper, Nervensystem und Emotionen — und öffnet einen direkten Weg zu dem, was sich in uns nach Veränderung sehnt. Diese Ausbildung verbindet <strong>persönliche Transformation</strong>, fundiertes Wissen über Bewusstsein, Nervensystem und Trauma sowie die praktischen <strong>Facilitation-Skills</strong>, um Breathwork-Sessions sicher zu halten.</p>
         </div>
-        <div class="reveal d1">
-          <p class="pull">„Du kannst andere nur so tief begleiten, wie du <em>selbst</em> gegangen bist."</p>
+      </div>
+    </section>
+
+    <!-- CINEMATIC ZITAT-BAND -->
+    <section class="cine" aria-label="Leitgedanke" style="padding:0;">
+      <div class="bg">
+        <picture>
+          <source type="image/webp" srcset="assets/img/ausb-session-840.webp 840w, assets/img/ausb-session-1280.webp 1280w" sizes="100vw">
+          <img src="assets/img/ausb-session-1280.jpg" width="1280" height="800" alt="Atembegleitung in der Ausbildung" loading="lazy" decoding="async">
+        </picture>
+      </div>
+      <div class="wrap">
+        <div class="in reveal">
+          <blockquote>„Du kannst andere nur so tief begleiten, wie du <em>selbst</em> gegangen bist."</blockquote>
+          <div class="cite">Das Herzstück dieser Ausbildung</div>
         </div>
       </div>
     </section>
@@ -284,13 +350,20 @@
     <!-- BEGINNT BEI DIR -->
     <section class="begins">
       <div class="wrap split">
-        <div class="reveal">
-          <span class="eyebrow">Diese Ausbildung beginnt bei dir</span>
-          <h2 style="font-size:var(--step-3);margin-top:var(--sp-2);font-weight:500;">Zuerst gehst du selbst.</h2>
-          <p style="color:var(--ink-soft);margin-top:var(--sp-3);line-height:var(--lh-relaxed);">Ein großer Teil der Ausbildung besteht darin, dass du <strong>14 intensive Atemprozesse selbst durchläufst</strong>. Denn erst wenn du deine eigene Tiefe kennst, kannst du sie bei anderen halten. Wir möchten nicht, dass du Prozesse vom Blatt anleitest — sondern dass du zu einer Person wirst, die wirklich Raum halten kann.</p>
+        <div class="col-img reveal">
+          <div class="imgframe tall">
+            <picture>
+              <source type="image/webp" srcset="assets/img/ueber-emi-440.webp 440w, assets/img/ueber-emi-660.webp 660w" sizes="(max-width:900px) 92vw, 40vw">
+              <img src="assets/img/ueber-emi-660.jpg" width="660" height="825" alt="Emi in einem ruhigen, nach innen gekehrten Moment" loading="lazy" decoding="async">
+            </picture>
+          </div>
+          <span class="tagpill">14 eigene Atemprozesse</span>
         </div>
         <div class="reveal d1">
-          <ul class="checks">
+          <span class="kicker-gold">Diese Ausbildung beginnt bei dir</span>
+          <h2 style="font-size:var(--step-3);margin-top:14px;font-weight:500;">Zuerst gehst du selbst.</h2>
+          <p style="color:var(--ink-soft);margin-top:var(--sp-3);line-height:var(--lh-relaxed);">Ein großer Teil der Ausbildung besteht darin, dass du <strong>14 intensive Atemprozesse selbst durchläufst</strong>. Denn erst wenn du deine eigene Tiefe kennst, kannst du sie bei anderen halten. Wir möchten nicht, dass du Prozesse vom Blatt anleitest — sondern dass du zu einer Person wirst, die wirklich Raum halten kann.</p>
+          <ul class="checks" style="grid-template-columns:1fr;margin-top:var(--sp-3);">
             <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>Du durchläufst selbst einen echten Transformationsprozess</li>
             <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>Du entwickelst ein tiefes Verständnis für das, was in Prozessen geschieht</li>
             <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>Du lernst, individuell auf Menschen einzugehen statt nach Schema</li>
@@ -412,10 +485,16 @@
     <section class="invest">
       <div class="wrap">
         <div class="invest-card reveal">
-          <span class="eyebrow" style="color:var(--sage);justify-content:center;">Investition</span>
-          <div class="price" style="margin-top:16px;">4.500&nbsp;€</div>
+          <span class="ribbon">Jahrgang 2027 · begrenzt auf 20 Plätze</span>
+          <div style="font-family:var(--sans);font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--sage);font-weight:600;">Investition</div>
+          <div class="price" style="margin-top:14px;">4.500&nbsp;€</div>
           <p class="sub">Einmal- oder Ratenzahlung möglich · Frühbucher-Konditionen auf Anfrage<!-- [KLÄREN: aktuelle Preisstufe/Frühbucher-Frist – Super Early Bird lief bis 01.07.2026] --></p>
-          <a href="#bewerbung" class="btn btn-lg">Platz &amp; Konditionen anfragen<span class="arr" aria-hidden="true">→</span></a>
+          <div class="invest-incl">
+            <span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>14 eigene Atemprozesse</span>
+            <span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>6 Wochenendmodule + Intensivmodul</span>
+            <span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>Zertifikat nach Art of Breath Standard</span>
+          </div>
+          <a href="#bewerbung" class="btn btn-lg" style="margin-top:var(--sp-4);">Platz &amp; Konditionen anfragen<span class="arr" aria-hidden="true">→</span></a>
         </div>
       </div>
     </section>
@@ -423,28 +502,61 @@
     <!-- TEAM -->
     <section>
       <div class="wrap">
-        <div class="sec-head reveal">
-          <span class="eyebrow">Deine Begleitung</span>
-          <h2>Zwei Facilitator, ein sicherer Raum.</h2>
+        <div class="team-feature">
+          <div class="imgframe reveal">
+            <picture>
+              <source type="image/webp" srcset="assets/img/team-duo-520.webp 520w, assets/img/team-duo-780.webp 780w" sizes="(max-width:900px) 92vw, 38vw">
+              <img src="assets/img/team-duo-780.jpg" width="780" height="975" alt="Emi und Rouven, die Ausbildungsleitung" loading="lazy" decoding="async">
+            </picture>
+          </div>
+          <div class="reveal d1">
+            <span class="kicker-gold">Deine Begleitung</span>
+            <h2 style="margin-top:14px;">Zwei Facilitator, ein sicherer Raum.</h2>
+            <p>Wir begleiten dich gemeinsam durch die Ausbildung — mit unterschiedlichen Schwerpunkten, aber derselben Haltung: dass du dich sicher fallen lassen kannst und Schritt für Schritt lernst, diesen Raum selbst für andere zu halten.</p>
+          </div>
         </div>
         <div class="team-grid">
           <article class="member reveal">
-            <div class="ph"><picture><source type="image/webp" srcset="assets/img/team-emi-360.webp 360w, assets/img/team-emi-540.webp 540w" sizes="104px"><img src="assets/img/team-emi-360.jpg" width="360" height="450" alt="Emily Müller" loading="lazy" decoding="async"></picture></div>
-            <div>
+            <div class="ph"><picture><source type="image/webp" srcset="assets/img/team-emi-360.webp 360w, assets/img/team-emi-540.webp 540w" sizes="(max-width:900px) 92vw, 340px"><img src="assets/img/team-emi-540.jpg" width="540" height="675" alt="Emily Müller" loading="lazy" decoding="async"></picture></div>
+            <div class="mbody">
               <h3>Emi</h3>
               <div class="role">Breathwork Facilitator · Leipzig</div>
               <p>Verbindet traumasensible Atemarbeit mit Nervensystem- und Körperarbeit und schafft Räume, in denen Menschen tiefer mit sich selbst in Kontakt kommen.</p>
             </div>
           </article>
           <article class="member reveal d1">
-            <div class="ph"><picture><source type="image/webp" srcset="assets/img/team-rouven-360.webp 360w, assets/img/team-rouven-540.webp 540w" sizes="104px"><img src="assets/img/team-rouven-360.jpg" width="360" height="450" alt="Rouven" loading="lazy" decoding="async"></picture></div>
-            <div>
+            <div class="ph"><picture><source type="image/webp" srcset="assets/img/team-rouven-360.webp 360w, assets/img/team-rouven-540.webp 540w" sizes="(max-width:900px) 92vw, 340px"><img src="assets/img/team-rouven-540.jpg" width="540" height="675" alt="Rouven" loading="lazy" decoding="async"></picture></div>
+            <div class="mbody">
               <h3>Rouven</h3>
               <div class="role">Breathwork Facilitator &amp; integraler Coach</div>
               <p>Begleitet seit über sechs Jahren Menschen durch Atemprozesse — integrativ, achtsamkeitsbasiert und beziehungsorientiert, mit humanistischer Psychologie und traumaintegrativen Ansätzen.</p>
             </div>
           </article>
         </div>
+      </div>
+    </section>
+
+    <!-- VERTRAUEN / TRUSTPILOT -->
+    <section class="proof">
+      <div class="wrap">
+        <div class="sec-head center reveal" style="margin-inline:auto;">
+          <span class="kicker-gold" style="justify-content:center;">Vertrauen</span>
+          <h2 style="font-size:var(--step-4);margin-top:14px;font-weight:500;">Menschen, die mit Emi in die Tiefe gegangen sind.</h2>
+        </div>
+        <div class="tp-head reveal"><span class="stars" aria-hidden="true">★★★★★</span><b>4,6 von 5</b><span>· 22 Bewertungen auf Trustpilot</span></div>
+        <div class="proof-grid">
+          <div class="q reveal">
+            <div class="st" aria-hidden="true">★★★★★</div>
+            <blockquote>„Emi hat die Gabe, einen Raum zu schaffen, in dem man offen und ehrlich über alle Themen sprechen kann. Die Sessions waren intensiv und trotzdem traumasensibel und sicher."</blockquote>
+            <div class="who">Arthur · 6 Monate Begleitung</div>
+          </div>
+          <div class="q reveal d1">
+            <div class="st" aria-hidden="true">★★★★★</div>
+            <blockquote>„Als mehrfach geladene Referentin gestaltete Emi ihre Sessions mit praxistauglichen Übungen und überzeugt durch ein natürliches, professionelles und diskretes Auftreten."</blockquote>
+            <div class="who">Victoria · Unternehmens-Event</div>
+          </div>
+        </div>
+        <p class="reveal" style="text-align:center;margin-top:var(--sp-4);font-size:14.5px;color:var(--ink-soft);"><a href="https://de.trustpilot.com/review/emi-atmet.de" target="_blank" rel="noopener noreferrer" style="color:var(--clay-deep);font-weight:600;text-decoration:underline;text-underline-offset:2px;">Alle Bewertungen auf Trustpilot ansehen →</a></p>
       </div>
     </section>
 
