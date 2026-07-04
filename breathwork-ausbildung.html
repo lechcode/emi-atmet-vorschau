@@ -111,7 +111,7 @@
   .ahero .eyebrow{color:#E7C9A9;} .ahero .eyebrow::before{background:#E7C9A9;}
   .ahero h1{font-size:var(--step-5);line-height:var(--lh-tight);letter-spacing:var(--ls-display);margin:var(--sp-2) 0 0;color:#fff;font-weight:600;max-width:16ch;}
   .ahero h1 em{color:#EAC08E;font-weight:500;}
-  .ahero p{font-size:var(--step-1);line-height:var(--lh-relaxed);color:rgba(255,255,255,.82);margin-top:var(--sp-3);max-width:46ch;}
+  .ahero p{font-size:clamp(19px,1vw+16.8px,25px);line-height:1.55;color:rgba(255,255,255,.85);margin-top:var(--sp-3);max-width:44ch;}
   .ahero .cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:var(--sp-4);}
   .ahero .facts{display:flex;gap:28px;flex-wrap:wrap;margin-top:var(--sp-4);padding-top:var(--sp-3);border-top:1px solid rgba(255,255,255,.18);}
   .ahero .facts div b{font-family:var(--serif);font-size:var(--step-2);color:#fff;display:block;line-height:1;}
@@ -186,16 +186,18 @@
   .kicker-gold{display:inline-flex;align-items:center;gap:9px;font-size:12.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#875426;}
   .kicker-gold::before{content:"";width:20px;height:1.5px;background:#C99A5B;}
   /* Cinematic Zitat-Band */
-  .cine{position:relative;isolation:isolate;min-height:clamp(360px,58vh,560px);display:flex;align-items:center;overflow:hidden;color:#fff;}
+  .cine{position:relative;isolation:isolate;min-height:clamp(420px,64vh,620px);display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;color:#fff;}
   .cine .bg{position:absolute;inset:0;z-index:-2;}
-  .cine .bg img{width:100%;height:100%;object-fit:cover;object-position:50% 38%;}
+  .cine .bg img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;}
   .cine::after{content:"";position:absolute;inset:0;z-index:-1;background:
-    linear-gradient(90deg,rgba(26,22,19,.9),rgba(26,22,19,.55) 55%,rgba(26,22,19,.35)),
-    linear-gradient(180deg,rgba(26,22,19,.4),rgba(26,22,19,.55));}
-  .cine .in{max-width:26ch;}
-  .cine blockquote{font-family:var(--serif);font-size:clamp(27px,4.2vw,48px);line-height:1.18;font-weight:500;color:#fff;text-shadow:0 2px 20px rgba(0,0,0,.35);}
+    radial-gradient(120% 105% at 50% 45%,rgba(26,22,19,.42),rgba(26,22,19,.8) 78%),
+    linear-gradient(180deg,rgba(26,22,19,.5),rgba(26,22,19,.62));}
+  .cine .in{max-width:min(90vw,560px);margin:0 auto;position:relative;}
+  .cine .mark{font-family:var(--serif);font-size:clamp(74px,9vw,120px);line-height:.55;color:#EAC08E;display:block;margin-bottom:6px;opacity:.92;}
+  .cine blockquote{font-family:var(--serif);font-size:clamp(28px,3.9vw,46px);line-height:1.24;font-weight:500;color:#fff;text-shadow:0 2px 26px rgba(0,0,0,.45);text-wrap:balance;}
   .cine blockquote em{color:#EAC08E;font-style:italic;}
-  .cine .cite{margin-top:22px;font-size:14.5px;color:rgba(255,255,255,.72);letter-spacing:.04em;}
+  .cine .cite{margin-top:26px;font-size:13px;color:rgba(255,255,255,.7);letter-spacing:.16em;text-transform:uppercase;display:inline-flex;align-items:center;gap:12px;}
+  .cine .cite::before,.cine .cite::after{content:"";width:26px;height:1px;background:rgba(234,192,142,.55);}
   /* Bild-Rahmen in Sektionen */
   .imgframe{position:relative;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);}
   .imgframe img{width:100%;height:100%;object-fit:cover;display:block;}
@@ -341,7 +343,8 @@
       </div>
       <div class="wrap">
         <div class="in reveal">
-          <blockquote>„Du kannst andere nur so tief begleiten, wie du <em>selbst</em> gegangen bist."</blockquote>
+          <span class="mark" aria-hidden="true">&ldquo;</span>
+          <blockquote>Du kannst andere nur so tief begleiten, wie du <em>selbst</em> gegangen bist.</blockquote>
           <div class="cite">Das Herzstück dieser Ausbildung</div>
         </div>
       </div>
