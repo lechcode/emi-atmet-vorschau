@@ -192,13 +192,19 @@
   .reson-list{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:18px 46px;}
   .reson-list li{display:flex;gap:14px;align-items:flex-start;font-size:var(--step-1);line-height:1.5;color:var(--ink);}
   .reson-list li::before{content:"";flex:none;width:9px;height:9px;margin-top:.6em;border-radius:50%;background:var(--clay);opacity:.7;}
-  .sig-quote{position:relative;display:grid;grid-template-columns:auto 1fr;gap:clamp(26px,4vw,54px);align-items:center;margin-top:var(--sp-5);background:var(--white);border:1px solid var(--line);border-radius:var(--radius-lg);padding:clamp(30px,4vw,56px);box-shadow:var(--shadow);overflow:hidden;}
-  .sig-quote::before{content:"\201C";position:absolute;top:-.24em;right:.1em;font-family:var(--serif);font-size:clamp(150px,20vw,250px);line-height:1;color:var(--clay);opacity:.08;pointer-events:none;}
-  .sig-quote .portrait{width:clamp(124px,15vw,172px);aspect-ratio:1;border-radius:50%;overflow:hidden;flex:none;box-shadow:var(--shadow-soft);outline:4px solid var(--sand);}
-  .sig-quote .portrait img{width:100%;height:100%;object-fit:cover;object-position:50% 20%;}
-  .sig-quote blockquote{position:relative;z-index:1;font-family:var(--serif);font-size:var(--step-3);line-height:1.34;color:var(--ink);font-weight:500;max-width:28ch;}
-  .sig-quote blockquote em{color:var(--clay-deep);font-style:italic;}
-  .sig-quote figcaption{margin-top:18px;color:var(--sage-deep);font-weight:600;letter-spacing:.03em;font-size:var(--step-0);}
+  /* Cinematic Zitat-Band (wie Ausbildungsseite) */
+  .cine{position:relative;isolation:isolate;min-height:clamp(420px,64vh,600px);display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;color:#fff;}
+  .cine .bg{position:absolute;inset:0;z-index:-2;}
+  .cine .bg img{width:100%;height:100%;object-fit:cover;object-position:50% 32%;}
+  .cine::after{content:"";position:absolute;inset:0;z-index:-1;background:
+    radial-gradient(120% 105% at 50% 45%,rgba(26,22,19,.44),rgba(26,22,19,.82) 78%),
+    linear-gradient(180deg,rgba(26,22,19,.52),rgba(26,22,19,.64));}
+  .cine .in{max-width:min(90vw,620px);margin:0 auto;position:relative;}
+  .cine .mark{font-family:var(--serif);font-size:clamp(74px,9vw,120px);line-height:.55;color:#EAC08E;display:block;margin-bottom:6px;opacity:.92;}
+  .cine blockquote{font-family:var(--serif);font-size:clamp(28px,3.9vw,46px);line-height:1.24;font-weight:500;color:#fff;text-shadow:0 2px 26px rgba(0,0,0,.45);text-wrap:balance;}
+  .cine blockquote em{color:#EAC08E;font-style:italic;}
+  .cine .cite{margin-top:26px;font-size:13px;color:rgba(255,255,255,.72);letter-spacing:.16em;text-transform:uppercase;display:inline-flex;align-items:center;gap:12px;}
+  .cine .cite::before,.cine .cite::after{content:"";width:26px;height:1px;background:rgba(234,192,142,.55);}
 
   /* ===== Bridge „Hier komme ich ins Spiel" ===== */
   .bridge-grid{display:grid;grid-template-columns:.92fr 1.08fr;gap:clamp(30px,5vw,64px);align-items:center;}
@@ -351,8 +357,7 @@
     .trust .grid{grid-template-columns:repeat(2,1fr);gap:20px 18px;}
     .bridge-grid,.about-grid,.safe-grid,.contact-grid{grid-template-columns:1fr;}
     .reson-list{grid-template-columns:1fr;gap:14px;}
-    .sig-quote{grid-template-columns:1fr;text-align:center;justify-items:center;gap:20px;}
-    .sig-quote blockquote{max-width:none;}
+    .cine .in{max-width:none;}
     .about figure{position:static;}
     .bridge figure{order:2;} .bridge .body{order:1;}
     .offer-grid,.dates-grid,.voice-grid{grid-template-columns:1fr;}
@@ -493,18 +498,23 @@
           <li class="reveal">Ein Kreislauf aus Sorgen und Zweifeln, aus dem du allein nicht herausfindest.</li>
           <li class="reveal">Und diese leise Sehnsucht: endlich anzukommen — bei dir.</li>
         </ul>
-        <figure class="sig-quote reveal">
-          <div class="portrait">
-            <picture>
-              <source type="image/webp" srcset="assets/img/team-emi-360.webp 360w, assets/img/team-emi-540.webp 540w" sizes="172px">
-              <img src="assets/img/team-emi-360.jpg" width="360" height="450" alt="Emily Müller" loading="lazy" decoding="async">
-            </picture>
-          </div>
-          <div>
-            <blockquote>„Ich weiß, wie sich innere Unruhe und ständige Anspannung anfühlen — und wie <em>tief</em> sie im Körper sitzen."</blockquote>
-            <figcaption>— Emi · deine Begleiterin</figcaption>
-          </div>
-        </figure>
+      </div>
+    </section>
+
+    <!-- ===== CINEMATIC ZITAT-BAND ===== -->
+    <section class="cine" aria-label="Ein Wort von Emi" style="padding:0;">
+      <div class="bg">
+        <picture>
+          <source type="image/webp" srcset="assets/img/quote-band-1000.webp 1000w, assets/img/quote-band-1440.webp 1440w, assets/img/quote-band-1760.webp 1760w" sizes="100vw">
+          <img src="assets/img/quote-band-1440.jpg" width="1440" height="810" alt="Emi in einer achtsamen Atembegleitung" loading="lazy" decoding="async">
+        </picture>
+      </div>
+      <div class="wrap">
+        <div class="in reveal">
+          <span class="mark" aria-hidden="true">&ldquo;</span>
+          <blockquote>Ich weiß, wie sich innere Unruhe und ständige Anspannung anfühlen — und wie <em>tief</em> sie im Körper sitzen.</blockquote>
+          <div class="cite">Emi · deine Begleiterin</div>
+        </div>
       </div>
     </section>
 
