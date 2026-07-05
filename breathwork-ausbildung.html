@@ -69,6 +69,9 @@
   body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:var(--step-0);line-height:var(--lh-body);-webkit-font-smoothing:antialiased;overflow-x:clip;}
   h1,h2,h3,h4{font-family:var(--serif);font-weight:600;line-height:var(--lh-snug);letter-spacing:var(--ls-h2);text-wrap:balance;color:var(--ink);}
   em{font-style:italic;} a{color:inherit;text-decoration:none;} img,svg,picture{display:block;max-width:100%;} picture{display:block;}
+  p{text-wrap:pretty;}
+  h2.sec-h3{font-size:var(--step-3);margin-top:var(--sp-2);font-weight:500;}
+  h2.sec-h4{font-size:var(--step-4);margin-top:var(--sp-2);font-weight:500;}
   ::selection{background:rgba(180,105,78,.20);}
   :focus-visible{outline:none;box-shadow:var(--focus);border-radius:6px;}
   .wrap{width:min(1140px,92vw);margin-inline:auto;} .wrap-n{width:min(920px,92vw);margin-inline:auto;}
@@ -86,16 +89,19 @@
   .btn-ghost{background:transparent;color:#fff;border:1.5px solid rgba(245,239,231,.4);box-shadow:none;font-weight:500;}
   .btn-ghost:hover{background:rgba(245,239,231,.1);border-color:rgba(245,239,231,.7);box-shadow:none;transform:translateY(-2px);}
   .btn-lg{padding:16px 30px;font-size:16.5px;}
-  .wm{display:inline-flex;align-items:center;gap:10px;font-family:var(--serif);font-weight:600;font-size:20px;letter-spacing:-.01em;line-height:1;color:var(--ink);}
-  .wm .lotus{width:30px;height:30px;flex:none;} .wm .dot{color:var(--clay);}
+  .wm{display:inline-flex;align-items:center;gap:11px;font-family:var(--serif);font-weight:600;font-size:21px;letter-spacing:-.01em;line-height:1;color:var(--ink);}
+  .wm .lotus{width:32px;height:32px;flex:none;transition:transform .5s var(--ease);} .wm:hover .lotus{transform:rotate(-8deg) scale(1.07);} .wm .dot{color:var(--clay);}
+  .nav-divider{width:1px;height:22px;background:var(--line-2);flex:none;margin:0 2px;}
 
   .nav{position:sticky;top:0;z-index:100;height:var(--nav-h);background:rgba(245,239,231,.82);backdrop-filter:saturate(150%) blur(14px);border-bottom:1px solid transparent;transition:border-color .3s,background .3s;}
-  .nav.scrolled{border-bottom-color:var(--line);background:rgba(245,239,231,.92);}
+  .nav.scrolled{border-bottom-color:transparent;background:rgba(245,239,231,.92);}
+  .nav-wave{position:absolute;left:0;bottom:-1px;width:100%;height:6px;color:var(--clay);opacity:0;transition:opacity .5s var(--ease);pointer-events:none;}
+  .nav.scrolled .nav-wave{opacity:.6;}
   .nav-in{display:flex;align-items:center;justify-content:space-between;height:100%;}
   .nav-links{display:flex;align-items:center;gap:28px;}
-  .nav-links a:not(.btn){font-size:15px;color:var(--ink-soft);font-weight:500;position:relative;padding:5px 0;transition:color .2s;}
-  .nav-links a:not(.btn)::after{content:"";position:absolute;left:0;bottom:-1px;width:0;height:1.5px;background:var(--clay);transition:width .25s var(--ease);}
-  .nav-links a:not(.btn):hover,.nav-links a.active{color:var(--ink);} .nav-links a:not(.btn):hover::after,.nav-links a.active::after{width:100%;}
+  .nav-links a:not(.btn){font-size:15px;letter-spacing:.01em;color:var(--ink-soft);font-weight:500;position:relative;padding:5px 0;transition:color .25s;}
+  .nav-links a:not(.btn)::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1.5px;background:var(--clay-deep);transform:scaleX(0);transform-origin:center;transition:transform .35s var(--ease);}
+  .nav-links a:not(.btn):hover,.nav-links a.active{color:var(--ink);} .nav-links a:not(.btn):hover::after,.nav-links a.active::after{transform:scaleX(1);}
   .nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:9px;z-index:120;}
   .nav-toggle span{display:block;width:24px;height:2px;background:var(--ink);border-radius:2px;transition:.32s var(--ease);}
   .nav-toggle span+span{margin-top:6px;}
@@ -105,17 +111,21 @@
     background-image:
       radial-gradient(46vmax 40vmax at 92% 8%,rgba(180,105,78,.20),transparent 60%),
       radial-gradient(50vmax 44vmax at 4% 98%,rgba(138,154,130,.14),transparent 62%);}
-  .ahero-grid{display:grid;grid-template-columns:1.06fr .94fr;gap:clamp(30px,5vw,68px);align-items:center;
+  .ahero-wave{position:absolute;z-index:0;top:clamp(80px,17vh,168px);left:-6%;width:112%;height:auto;color:var(--clay);opacity:.15;pointer-events:none;}
+  .ahero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.06fr .94fr;gap:clamp(30px,5vw,68px);align-items:center;
     padding:calc(var(--nav-h) + clamp(30px,5vw,56px)) 0 var(--sp-6);}
-  .ahero .txt{max-width:40ch;}
+  .ahero .txt{max-width:42ch;}
   .ahero .eyebrow{color:#E7C9A9;} .ahero .eyebrow::before{background:#E7C9A9;}
-  .ahero h1{font-size:var(--step-5);line-height:var(--lh-tight);letter-spacing:var(--ls-display);margin:var(--sp-2) 0 0;color:#fff;font-weight:600;max-width:16ch;}
+  .ahero h1{font-size:var(--step-5);line-height:var(--lh-tight);letter-spacing:var(--ls-display);margin:var(--sp-2) 0 0;color:#fff;font-weight:600;max-width:15ch;}
   .ahero h1 em{color:#EAC08E;font-weight:500;}
-  .ahero p{font-size:clamp(19px,1vw+16.8px,25px);line-height:1.55;color:rgba(255,255,255,.85);margin-top:var(--sp-3);max-width:44ch;}
+  .ahero .ahero-lead{font-family:var(--serif);font-style:italic;font-size:clamp(18px,.9vw+16px,23px);line-height:1.42;color:#ECD9C2;margin-top:var(--sp-3);padding-left:18px;border-left:2px solid rgba(234,192,142,.5);max-width:33ch;}
+  .ahero p:not(.ahero-lead){font-size:clamp(16.5px,.6vw+15.4px,19px);line-height:1.62;color:rgba(255,255,255,.78);margin-top:var(--sp-3);max-width:46ch;}
   .ahero .cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:var(--sp-4);}
-  .ahero .facts{display:flex;gap:28px;flex-wrap:wrap;margin-top:var(--sp-4);padding-top:var(--sp-3);border-top:1px solid rgba(255,255,255,.18);}
+  .ahero .facts{display:flex;flex-wrap:wrap;row-gap:14px;margin-top:var(--sp-4);padding-top:var(--sp-3);border-top:1px solid rgba(255,255,255,.18);}
+  .ahero .facts div{padding-right:clamp(18px,2vw,26px);margin-right:clamp(18px,2vw,26px);border-right:1px solid rgba(255,255,255,.16);}
+  .ahero .facts div:last-child{border-right:none;margin-right:0;padding-right:0;}
   .ahero .facts div b{font-family:var(--serif);font-size:var(--step-2);color:#fff;display:block;line-height:1;}
-  .ahero .facts div span{font-size:13px;color:rgba(255,255,255,.72);}
+  .ahero .facts div span{font-size:13px;color:rgba(255,255,255,.72);margin-top:5px;display:block;}
   .ahero .figure{position:relative;justify-self:center;width:100%;max-width:460px;}
   .ahero .figure .frame{position:relative;overflow:hidden;aspect-ratio:4/5;border-radius:var(--radius-lg);
     box-shadow:0 30px 60px -30px rgba(0,0,0,.6);outline:1px solid rgba(255,255,255,.08);}
@@ -134,7 +144,8 @@
   .areas{background:var(--espresso);color:var(--paper);}
   .areas .sec-head h2{color:#fff;} .areas .sec-head .lead{color:rgba(245,239,231,.72);}
   .area-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
-  .area{padding:30px 28px;border:1px solid var(--line-d);border-radius:var(--radius-lg);background:rgba(245,239,231,.03);}
+  .area{padding:30px 28px;border:1px solid rgba(245,239,231,.16);border-radius:var(--radius-lg);background:rgba(245,239,231,.05);transition:transform .35s var(--ease),background .35s var(--ease),border-color .35s var(--ease);}
+  .area:hover{transform:translateY(-4px);background:rgba(245,239,231,.08);border-color:rgba(245,239,231,.26);}
   .area .ic{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;background:rgba(138,154,130,.18);color:var(--sage);margin-bottom:18px;}
   .area h3{color:#fff;font-size:var(--step-2);font-weight:600;}
   .area ul{list-style:none;margin-top:14px;display:flex;flex-direction:column;gap:9px;}
@@ -148,7 +159,8 @@
 
   .forwho{background:var(--paper-2);}
   .forwho-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:var(--sp-2);}
-  .forwho .w{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;font-size:var(--step-0);color:var(--ink);line-height:1.5;box-shadow:var(--shadow-soft);}
+  .forwho .w{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;font-size:var(--step-0);color:var(--ink);line-height:1.5;box-shadow:var(--shadow-soft);transition:transform .35s var(--ease),box-shadow .35s var(--ease),border-color .35s var(--ease);}
+  .forwho .w:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--line-2);}
   .forwho .note{margin-top:var(--sp-4);font-family:var(--serif);font-size:var(--step-2);color:var(--ink);font-weight:500;text-align:center;}
 
   .facts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;margin-top:var(--sp-2);}
@@ -187,8 +199,8 @@
   .kicker-gold::before{content:"";width:20px;height:1.5px;background:#C99A5B;}
   /* Cinematic Zitat-Band */
   .cine{position:relative;isolation:isolate;min-height:clamp(420px,64vh,620px);display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;color:#fff;}
-  .cine .bg{position:absolute;inset:0;z-index:-2;}
-  .cine .bg img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;}
+  .cine .bg{position:absolute;left:0;right:0;top:-10%;bottom:-10%;z-index:-2;overflow:hidden;}
+  .cine .bg img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;will-change:transform;}
   .cine::after{content:"";position:absolute;inset:0;z-index:-1;background:
     radial-gradient(120% 105% at 50% 45%,rgba(26,22,19,.42),rgba(26,22,19,.8) 78%),
     linear-gradient(180deg,rgba(26,22,19,.5),rgba(26,22,19,.62));}
@@ -261,6 +273,7 @@
     .cine .in{max-width:none;}
     .area-grid{grid-template-columns:1fr;} .checks{grid-template-columns:1fr;}
     .site-footer .top{grid-template-columns:1fr;gap:26px;}
+    .nav-divider{display:none;}
     .nav-links{position:fixed;inset:0;background:var(--paper);flex-direction:column;justify-content:center;gap:6px;transform:translateX(100%);transition:transform .4s var(--ease);z-index:110;}
     .nav-links.open{transform:none;}
     .nav-links a:not(.btn){font-family:var(--serif);font-size:26px;color:var(--ink);} .nav-links a:not(.btn)::after{display:none;} .nav-links .btn{margin-top:14px;}
@@ -270,7 +283,7 @@
     .nav-toggle.open span:nth-child(3){transform:translateY(-8px) rotate(-45deg);}
     .member .ph{aspect-ratio:4/5;height:auto;}
   }
-  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important;}.js .reveal{opacity:1!important;transform:none!important;}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important;}.js .reveal{opacity:1!important;transform:none!important;}.cine .bg img{transform:none!important;}}
   @media print{.nav,.ahero .cta,form,.cta-final .btn{display:none!important;}*{box-shadow:none!important;background:#fff!important;color:#000!important;}}
   </style>
 </head>
@@ -283,6 +296,7 @@
         <svg class="lotus" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 5c3 2.4 4.7 5.4 4.7 8.8 0 2.8-2.1 4.9-4.7 4.9s-4.7-2.1-4.7-4.9C11.3 10.4 13 7.4 16 5z" fill="none" stroke="#B4694E" stroke-width="1.5"/><path d="M6 21c3-1.7 6.4-1.7 10-1.7s7 0 10 1.7" fill="none" stroke="#8A9A82" stroke-width="1.5" stroke-linecap="round"/></svg>
         <span>emi<b class="dot">.</b>atmet</span>
       </a>
+      <span class="nav-divider" aria-hidden="true"></span>
       <nav class="nav-links" id="navlinks" aria-label="Hauptmenü">
         <a href="index.html#angebot">Begleitung</a>
         <a href="breathwork-ausbildung.html" class="active" aria-current="page">Ausbildung</a>
@@ -291,16 +305,19 @@
       </nav>
       <button class="nav-toggle" id="navtoggle" aria-label="Menü öffnen" aria-expanded="false" aria-controls="navlinks"><span></span><span></span><span></span></button>
     </div>
+    <svg class="nav-wave" viewBox="0 0 1440 8" preserveAspectRatio="none" aria-hidden="true"><path d="M0 4 C120 4 120 1 240 1 C360 1 360 7 480 7 C600 7 600 1 720 1 C840 1 840 7 960 7 C1080 7 1080 1 1200 1 C1320 1 1320 4 1440 4" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>
   </header>
 
   <main id="main">
     <!-- HERO — dunkler Split-Hero -->
     <section class="ahero" aria-labelledby="ah1">
+      <svg class="ahero-wave" viewBox="0 0 1200 60" fill="none" aria-hidden="true"><path d="M0 30 C100 30 100 12 200 12 C300 12 300 48 400 48 C500 48 500 12 600 12 C700 12 700 48 800 48 C900 48 900 12 1000 12 C1100 12 1100 30 1200 30" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
       <div class="wrap ahero-grid">
         <div class="txt reveal">
           <span class="eyebrow">Breathwork Ausbildung · Leipzig</span>
-          <h1 id="ah1">Lerne, Menschen sicher durch ihre <em>Tiefe</em> zu begleiten.</h1>
-          <p>Werde Breathwork Facilitator nach Art of Breath Standard — und lerne, tiefgreifende Atemprozesse traumasensibel zu halten. Diese Ausbildung verändert nicht nur deine Arbeit, sondern zuerst dich selbst.</p>
+          <h1 id="ah1">Menschen sicher durch ihre <em>Tiefe</em> begleiten.</h1>
+          <p class="ahero-lead">Irgendwann willst du nicht mehr nur selbst atmen — sondern Raum halten für andere.</p>
+          <p>Werde Breathwork&nbsp;Facilitator nach dem Standard von Art&nbsp;of&nbsp;Breath und lerne, tiefe Atemprozesse traumasensibel und sicher zu halten. Eine Ausbildung, die nicht nur deine Arbeit verändert — sondern zuerst dich&nbsp;selbst.</p>
           <div class="cta">
             <a href="#bewerbung" class="btn btn-lg">Jetzt Erstgespräch vereinbaren<span class="arr" aria-hidden="true">→</span></a>
             <a href="#struktur" class="btn btn-ghost btn-lg">Ablauf &amp; Termine</a>
@@ -327,7 +344,7 @@
       <div class="wrap">
         <div class="lead-block reveal" style="max-width:66ch;">
           <span class="kicker-gold">Warum diese Ausbildung</span>
-          <h2 style="font-size:var(--step-3);margin-top:14px;font-weight:500;">Der Atem ist eines der kraftvollsten Werkzeuge, die wir haben.</h2>
+          <h2 class="sec-h3">Der Atem ist eines der kraftvollsten Werkzeuge, die wir haben.</h2>
           <p>Er verbindet Körper, Nervensystem und Emotionen — und öffnet einen direkten Weg zu dem, was sich in uns nach Veränderung sehnt. Diese Ausbildung verbindet <strong>persönliche Transformation</strong>, fundiertes Wissen über Bewusstsein, Nervensystem und Trauma sowie die praktischen <strong>Facilitation-Skills</strong>, um Breathwork-Sessions sicher zu halten.</p>
         </div>
       </div>
@@ -364,7 +381,7 @@
         </div>
         <div class="reveal d1">
           <span class="kicker-gold">Diese Ausbildung beginnt bei dir</span>
-          <h2 style="font-size:var(--step-3);margin-top:14px;font-weight:500;">Zuerst gehst du selbst.</h2>
+          <h2 class="sec-h3">Zuerst gehst du selbst.</h2>
           <p style="color:var(--ink-soft);margin-top:var(--sp-3);line-height:var(--lh-relaxed);">Ein großer Teil der Ausbildung besteht darin, dass du <strong>14 intensive Atemprozesse selbst durchläufst</strong>. Denn erst wenn du deine eigene Tiefe kennst, kannst du sie bei anderen halten. Wir möchten nicht, dass du Prozesse vom Blatt anleitest — sondern dass du zu einer Person wirst, die wirklich Raum halten kann.</p>
           <ul class="checks" style="grid-template-columns:1fr;margin-top:var(--sp-3);">
             <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>Du durchläufst selbst einen echten Transformationsprozess</li>
@@ -544,7 +561,7 @@
       <div class="wrap">
         <div class="sec-head center reveal" style="margin-inline:auto;">
           <span class="kicker-gold" style="justify-content:center;">Vertrauen</span>
-          <h2 style="font-size:var(--step-4);margin-top:14px;font-weight:500;">Menschen, die mit Emi in die Tiefe gegangen sind.</h2>
+          <h2 class="sec-h4">Menschen, die mit Emi in die Tiefe gegangen sind.</h2>
         </div>
         <div class="tp-head reveal"><span class="stars" aria-hidden="true">★★★★★</span><b>4,6 von 5</b><span>· 22 Bewertungen auf Trustpilot</span></div>
         <div class="proof-grid">
@@ -568,7 +585,7 @@
       <div class="wrap method-grid">
         <div class="reveal">
           <span class="eyebrow">Die Methode</span>
-          <h2 style="font-size:var(--step-3);margin-top:var(--sp-2);font-weight:500;">Nach dem Art of Breath Standard.</h2>
+          <h2 class="sec-h3">Nach dem Art of Breath Standard.</h2>
           <p style="color:var(--ink-soft);margin-top:var(--sp-3);line-height:var(--lh-relaxed);">Die Ausbildung basiert auf der Methode von Daniel Alan. Ziel ist es, Facilitators auszubilden, die sich <strong>selbst und andere sicher durch tiefe Prozesse begleiten</strong> können.</p>
         </div>
         <ul class="reveal d1">
@@ -636,6 +653,29 @@
     if(!('IntersectionObserver'in window)||window.matchMedia('(prefers-reduced-motion: reduce)').matches){els.forEach(function(el){el.classList.add('in');});return;}
     var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{rootMargin:'0px 0px -8% 0px',threshold:.08});
     els.forEach(function(el){io.observe(el);});
+  })();
+
+  /* Sanfter Parallax auf Cine-Bändern (nur wenn Bewegung erwünscht) */
+  (function(){
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    var imgs=[].slice.call(document.querySelectorAll('.cine .bg img'));
+    if(!imgs.length)return;
+    var ticking=false;
+    function update(){
+      var vh=window.innerHeight;
+      imgs.forEach(function(img){
+        var sec=img.closest('.cine');if(!sec)return;
+        var r=sec.getBoundingClientRect();
+        if(r.bottom<0||r.top>vh)return;
+        var p=(vh-r.top)/(vh+r.height);
+        img.style.transform='translate3d(0,'+((0.5-p)*44).toFixed(1)+'px,0)';
+      });
+      ticking=false;
+    }
+    function onScroll(){if(!ticking){ticking=true;requestAnimationFrame(update);}}
+    window.addEventListener('scroll',onScroll,{passive:true});
+    window.addEventListener('resize',onScroll,{passive:true});
+    update();
   })();
   </script>
 </body>

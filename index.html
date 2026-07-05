@@ -98,6 +98,7 @@
   body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:var(--step-0);line-height:var(--lh-body);-webkit-font-smoothing:antialiased;overflow-x:clip;}
   h1,h2,h3,h4{font-family:var(--serif);font-weight:600;line-height:var(--lh-snug);letter-spacing:var(--ls-h2);text-wrap:balance;color:var(--ink);}
   em{font-style:italic;}
+  p{text-wrap:pretty;}
   a{color:inherit;text-decoration:none;}
   img,svg,picture{display:block;max-width:100%;}
   picture{display:block;}
@@ -128,19 +129,23 @@
   .btn-ghost:hover{background:rgba(44,40,36,.05);border-color:var(--ink-faint);box-shadow:none;transform:translateY(-2px);}
   .btn-lg{padding:16px 30px;font-size:16.5px;}
 
-  .wm{display:inline-flex;align-items:center;gap:10px;font-family:var(--serif);font-weight:600;font-size:20px;letter-spacing:-.01em;line-height:1;color:var(--ink);}
-  .wm .lotus{width:30px;height:30px;flex:none;}
+  .wm{display:inline-flex;align-items:center;gap:11px;font-family:var(--serif);font-weight:600;font-size:21px;letter-spacing:-.01em;line-height:1;color:var(--ink);}
+  .wm .lotus{width:32px;height:32px;flex:none;transition:transform .5s var(--ease);}
+  .wm:hover .lotus{transform:rotate(-8deg) scale(1.07);}
   .wm b{font-weight:600;}
   .wm .dot{color:var(--clay);}
+  .nav-divider{width:1px;height:22px;background:var(--line-2);flex:none;margin:0 2px;}
 
   /* ===== 2 · NAV ===== */
   .nav{position:sticky;top:0;z-index:100;height:var(--nav-h);background:rgba(245,239,231,.82);backdrop-filter:saturate(150%) blur(14px);border-bottom:1px solid transparent;transition:border-color .3s,background .3s;}
-  .nav.scrolled{border-bottom-color:var(--line);background:rgba(245,239,231,.92);}
+  .nav.scrolled{border-bottom-color:transparent;background:rgba(245,239,231,.92);}
+  .nav-wave{position:absolute;left:0;bottom:-1px;width:100%;height:6px;color:var(--clay);opacity:0;transition:opacity .5s var(--ease);pointer-events:none;}
+  .nav.scrolled .nav-wave{opacity:.6;}
   .nav-in{display:flex;align-items:center;justify-content:space-between;height:100%;}
   .nav-links{display:flex;align-items:center;gap:28px;}
-  .nav-links a:not(.btn){font-size:15px;color:var(--ink-soft);font-weight:500;position:relative;padding:5px 0;transition:color .2s;}
-  .nav-links a:not(.btn)::after{content:"";position:absolute;left:0;bottom:-1px;width:0;height:1.5px;background:var(--clay);transition:width .25s var(--ease);}
-  .nav-links a:not(.btn):hover{color:var(--ink);} .nav-links a:not(.btn):hover::after{width:100%;}
+  .nav-links a:not(.btn){font-size:15px;letter-spacing:.01em;color:var(--ink-soft);font-weight:500;position:relative;padding:5px 0;transition:color .25s;}
+  .nav-links a:not(.btn)::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1.5px;background:var(--clay-deep);transform:scaleX(0);transform-origin:center;transition:transform .35s var(--ease);}
+  .nav-links a:not(.btn):hover{color:var(--ink);} .nav-links a:not(.btn):hover::after{transform:scaleX(1);}
   .nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:9px;z-index:120;}
   .nav-toggle span{display:block;width:24px;height:2px;background:var(--ink);border-radius:2px;transition:.32s var(--ease);}
   .nav-toggle span+span{margin-top:6px;}
@@ -153,10 +158,14 @@
       radial-gradient(50vmax 44vmax at 4% 98%,rgba(180,105,78,.10),transparent 62%),
       linear-gradient(180deg,var(--white),var(--paper));}
   .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(30px,5.5vw,72px);align-items:center;}
-  .hero-inner{max-width:38ch;}
-  .hero h1{font-size:var(--step-5);line-height:var(--lh-tight);letter-spacing:var(--ls-display);margin:var(--sp-2) 0 0;font-weight:600;max-width:16ch;}
+  .hero-inner{max-width:44ch;}
+  .hero h1{font-size:var(--step-5);line-height:var(--lh-tight);letter-spacing:var(--ls-display);margin:var(--sp-3) 0 0;font-weight:600;max-width:20ch;}
   .hero h1 em{color:var(--clay-deep);font-weight:500;}
-  .hero-sub{font-size:clamp(20px,1.05vw+17.6px,26px);line-height:1.58;color:var(--ink);margin-top:var(--sp-3);max-width:40ch;}
+  .hero-lead{font-family:var(--serif);font-style:italic;font-size:clamp(19px,1vw+16.5px,24px);line-height:1.4;color:var(--ink);margin-top:var(--sp-3);padding-left:18px;border-left:2px solid var(--mocha);max-width:32ch;}
+  .hero-sub{font-size:clamp(17px,.6vw+15.6px,19.5px);line-height:1.62;color:var(--ink-soft);margin-top:var(--sp-3);max-width:46ch;}
+  /* Section-Headline-Varianten (statt Inline-font-size — Token-Disziplin) */
+  h2.sec-h3{font-size:var(--step-3);margin-top:var(--sp-2);font-weight:500;}
+  h2.sec-h4{font-size:var(--step-4);margin-top:var(--sp-2);font-weight:500;}
   .hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:var(--sp-4);align-items:center;}
   .hero-note{margin-top:16px;font-size:var(--step--1);color:var(--ink-faint);display:flex;align-items:center;gap:8px;}
   .hero-note svg{color:var(--sage-deep);flex:none;}
@@ -170,11 +179,12 @@
   .hero-figure .badge .stars{color:var(--clay);font-size:13px;letter-spacing:1px;line-height:1;}
   .hero-figure .badge b{font-family:var(--serif);font-size:14.5px;display:block;line-height:1.2;}
   .hero-figure .badge span{font-size:11.5px;color:var(--ink-faint);}
-  .hero-figure .leaf{position:absolute;left:-26px;top:14px;width:64px;color:var(--sage);opacity:.5;z-index:-1;}
+  .hero-figure .leaf{position:absolute;left:-30px;top:6px;width:78px;color:var(--sage);opacity:.6;z-index:-1;}
 
   /* ===== Atem-Signatur (Trenner) ===== */
   .breath{display:block;width:min(760px,86vw);margin:0 auto;color:var(--clay);opacity:.72;}
-  .breath path{stroke-dasharray:1;}
+  .js .breath path{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.9s var(--ease);}
+  .js .breath-wrap.in .breath path{stroke-dashoffset:0;}
   .breath-wrap{padding:var(--sp-4) 0 0;}
 
   /* ===== Vertrauensleiste ===== */
@@ -194,8 +204,8 @@
   .reson-list li::before{content:"";flex:none;width:9px;height:9px;margin-top:.6em;border-radius:50%;background:var(--clay);opacity:.7;}
   /* Cinematic Zitat-Band (wie Ausbildungsseite) */
   .cine{position:relative;isolation:isolate;min-height:clamp(420px,64vh,600px);display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;color:#fff;}
-  .cine .bg{position:absolute;inset:0;z-index:-2;}
-  .cine .bg img{width:100%;height:100%;object-fit:cover;object-position:50% 32%;}
+  .cine .bg{position:absolute;left:0;right:0;top:-10%;bottom:-10%;z-index:-2;overflow:hidden;}
+  .cine .bg img{width:100%;height:100%;object-fit:cover;object-position:50% 32%;will-change:transform;}
   .cine::after{content:"";position:absolute;inset:0;z-index:-1;background:
     radial-gradient(120% 105% at 50% 45%,rgba(26,22,19,.44),rgba(26,22,19,.82) 78%),
     linear-gradient(180deg,rgba(26,22,19,.52),rgba(26,22,19,.64));}
@@ -261,7 +271,8 @@
   .steps{background:var(--espresso);color:var(--paper);}
   .steps .sec-head h2{color:#fff;} .steps .sec-head .lead{color:rgba(245,239,231,.72);}
   .step-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;counter-reset:st;}
-  .step{padding:28px 26px;border:1px solid var(--line-d);border-radius:var(--radius-lg);background:rgba(245,239,231,.03);}
+  .step{padding:28px 26px;border:1px solid rgba(245,239,231,.16);border-radius:var(--radius-lg);background:rgba(245,239,231,.05);transition:transform .35s var(--ease),background .35s var(--ease),border-color .35s var(--ease);}
+  .step:hover{transform:translateY(-4px);background:rgba(245,239,231,.08);border-color:rgba(245,239,231,.26);}
   .step .n{font-family:var(--serif);font-size:34px;color:var(--sage);line-height:1;counter-increment:st;}
   .step .n::before{content:"0" counter(st);}
   .step h3{color:#fff;font-size:var(--step-1);margin-top:14px;font-weight:600;}
@@ -290,7 +301,8 @@
   .tp-badge b{color:var(--ink);font-weight:600;}
   .voice-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
   .voice blockquote{quotes:none;}
-  .voice{background:var(--white);border:1px solid var(--line);border-radius:var(--radius-lg);padding:clamp(24px,3vw,32px);box-shadow:var(--shadow-soft);}
+  .voice{background:var(--white);border:1px solid var(--line);border-radius:var(--radius-lg);padding:clamp(24px,3vw,32px);box-shadow:var(--shadow-soft);transition:transform .35s var(--ease),box-shadow .35s var(--ease),border-color .35s var(--ease);}
+  .voice:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--line-2);}
   .voice .stars{color:var(--clay);font-size:14px;letter-spacing:2px;}
   .voice blockquote{font-family:var(--serif);font-size:var(--step-1);line-height:1.5;color:var(--ink);margin-top:12px;font-style:normal;}
   .voice .who{margin-top:16px;font-size:14px;color:var(--ink-faint);font-weight:600;letter-spacing:.03em;}
@@ -302,7 +314,7 @@
   details.faq summary::-webkit-details-marker{display:none;}
   details.faq summary::after{content:"";position:absolute;right:6px;top:50%;width:12px;height:12px;margin-top:-6px;border-right:2px solid var(--clay);border-bottom:2px solid var(--clay);transform:rotate(45deg);transition:transform .3s var(--ease);}
   details.faq[open] summary::after{transform:rotate(-135deg);}
-  details.faq .a{padding:0 44px 24px 4px;color:var(--ink-soft);font-size:var(--step-0);line-height:var(--lh-relaxed);max-width:66ch;}
+  details.faq .a{padding:0 44px 24px 4px;color:var(--ink-soft);font-size:var(--step-0);line-height:var(--lh-relaxed);max-width:62ch;}
 
   /* ===== Kontakt ===== */
   .contact-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(30px,5vw,60px);align-items:start;}
@@ -365,6 +377,7 @@
     .step-grid{grid-template-columns:1fr;}
     .safe .contra{columns:1;}
     .site-footer .top{grid-template-columns:1fr;gap:26px;}
+    .nav-divider{display:none;}
     .nav-links{position:fixed;inset:0;background:var(--paper);flex-direction:column;justify-content:center;gap:6px;transform:translateX(100%);transition:transform .4s var(--ease);z-index:110;}
     .nav-links.open{transform:none;}
     .nav-links a:not(.btn){font-family:var(--serif);font-size:26px;color:var(--ink);}
@@ -384,7 +397,8 @@
   @media (prefers-reduced-motion:reduce){
     *{animation:none!important;transition:none!important;scroll-behavior:auto!important;}
     .js .reveal{opacity:1!important;transform:none!important;}
-    .breath path{stroke-dasharray:none!important;}
+    .breath path{stroke-dasharray:none!important;stroke-dashoffset:0!important;}
+    .cine .bg img{transform:none!important;}
   }
 
   /* ===== Print ===== */
@@ -405,6 +419,7 @@
         <svg class="lotus" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 5c3 2.4 4.7 5.4 4.7 8.8 0 2.8-2.1 4.9-4.7 4.9s-4.7-2.1-4.7-4.9C11.3 10.4 13 7.4 16 5z" fill="none" stroke="#B4694E" stroke-width="1.5"/><path d="M6 21c3-1.7 6.4-1.7 10-1.7s7 0 10 1.7" fill="none" stroke="#8A9A82" stroke-width="1.5" stroke-linecap="round"/><path d="M9 16.5c-1.7 1-2.8 2.6-3 4.5M23 16.5c1.7 1 2.8 2.6 3 4.5" fill="none" stroke="#A47864" stroke-width="1.3" stroke-linecap="round" opacity=".8"/></svg>
         <span>emi<b class="dot">.</b>atmet</span>
       </a>
+      <span class="nav-divider" aria-hidden="true"></span>
       <nav class="nav-links" id="navlinks" aria-label="Hauptmenü">
         <a href="#angebot">Begleitung</a>
         <a href="breathwork-ausbildung.html">Ausbildung</a>
@@ -416,6 +431,7 @@
         <span></span><span></span><span></span>
       </button>
     </div>
+    <svg class="nav-wave" viewBox="0 0 1440 8" preserveAspectRatio="none" aria-hidden="true"><path d="M0 4 C120 4 120 1 240 1 C360 1 360 7 480 7 C600 7 600 1 720 1 C840 1 840 7 960 7 C1080 7 1080 1 1200 1 C1320 1 1320 4 1440 4" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>
   </header>
 
   <main id="main">
@@ -425,8 +441,9 @@
     <section class="hero" aria-labelledby="hero-h1">
       <div class="wrap hero-grid">
         <div class="hero-inner reveal">
-          <span class="eyebrow">Breathwork &amp; Atembegleitung · Leipzig</span>
+          <span class="eyebrow">Breathwork · Leipzig</span>
           <h1 id="hero-h1">Wieder <em>sicher</em> ankommen — in dir selbst.</h1>
+          <p class="hero-lead">Nicht dorthin, wo du funktionierst — sondern dorthin, wo du dich wieder spürst.</p>
           <p class="hero-sub">Ich begleite dich mit dem Atem aus innerer Unruhe, Angst und ständiger Überforderung — zurück zu einem Gefühl von Sicherheit, Lebendigkeit und echter Verbundenheit mit dir.</p>
           <div class="hero-cta">
             <a href="#kontakt" class="btn btn-lg">Kostenfreies Erstgespräch<span class="arr" aria-hidden="true">→</span></a>
@@ -456,7 +473,7 @@
       </div>
       <div class="wrap breath-wrap reveal">
         <svg class="breath" viewBox="0 0 760 40" fill="none" aria-hidden="true" preserveAspectRatio="none">
-          <path d="M0 20 H150 C210 20 210 6 270 6 C330 6 330 34 380 34 C430 34 430 6 490 6 C550 6 550 20 610 20 H760" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <path pathLength="1" d="M0 20 H150 C210 20 210 6 270 6 C330 6 330 34 380 34 C430 34 430 6 490 6 C550 6 550 20 610 20 H760" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
         </svg>
       </div>
     </section>
@@ -529,7 +546,7 @@
         </figure>
         <div class="body reveal d1">
           <span class="eyebrow">Hier komme ich ins Spiel</span>
-          <h2 style="font-size:var(--step-3);margin-top:var(--sp-2);font-weight:500;">Der Atem ist der kürzeste Weg zurück in deinen Körper.</h2>
+          <h2 class="sec-h3">Der Atem ist der kürzeste Weg zurück in deinen Körper.</h2>
           <p>In meiner Arbeit verbinde ich fundiertes Wissen über das <strong>Nervensystem</strong> mit achtsamer Atemarbeit und emotionaler Prozessbegleitung. Gemeinsam schaffen wir einen sicheren Raum, in dem sich Anspannung lösen darf.</p>
           <p>Ich begleite dich dabei, wieder in Kontakt mit dir selbst zu kommen, deinem Körper zu vertrauen und deinen Gefühlen Raum zu geben. <strong>Nicht, um dich zu optimieren</strong> — sondern damit du dich wieder sicher, lebendig und verbunden fühlst.</p>
           <div class="hero-cta" style="margin-top:var(--sp-4);">
@@ -679,7 +696,7 @@
       <div class="wrap safe-grid">
         <div class="reveal">
           <span class="eyebrow">Verantwortungsvoll begleitet</span>
-          <h2 id="safe-h" style="font-size:var(--step-3);margin-top:var(--sp-2);font-weight:500;">Sicherheit hat bei mir Vorrang.</h2>
+          <h2 id="safe-h" class="sec-h3">Sicherheit hat bei mir Vorrang.</h2>
           <p style="color:var(--ink-soft);margin-top:var(--sp-3);line-height:var(--lh-relaxed);max-width:48ch;">Breathwork ist kraftvoll — und nicht in jeder Situation das Richtige. Deshalb sprechen wir vorab offen über deine gesundheitliche Vorgeschichte.</p>
           <div class="note">
             <strong>Wichtig:</strong> Weder einzelne Breathwork-Sitzungen noch eine Breathwork-Begleitung ersetzen eine ärztliche oder psychotherapeutische Behandlung.
@@ -779,7 +796,7 @@
       <div class="wrap contact-grid">
         <div class="reveal">
           <span class="eyebrow">Kontakt aufnehmen</span>
-          <h2 id="kontakt-h" style="font-size:var(--step-4);margin-top:var(--sp-2);font-weight:500;">Lass uns kennenlernen.</h2>
+          <h2 id="kontakt-h" class="sec-h4">Lass uns kennenlernen.</h2>
           <p class="lead">Schreib mir bei Fragen, Interesse oder einfach so — ich freue mich auf deine Nachricht. Du musst noch nicht wissen, was „richtig" ist. Ein erster Satz genügt.</p>
           <div class="info">
             <a href="mailto:emi.atmet@gmx.de"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>emi.atmet@gmx.de</a>
@@ -884,6 +901,29 @@
       es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
     },{rootMargin:'0px 0px -8% 0px',threshold:.08});
     els.forEach(function(el){io.observe(el);});
+  })();
+
+  /* Sanfter Parallax auf Cine-Bändern (nur wenn Bewegung erwünscht) */
+  (function(){
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    var imgs=[].slice.call(document.querySelectorAll('.cine .bg img'));
+    if(!imgs.length)return;
+    var ticking=false;
+    function update(){
+      var vh=window.innerHeight;
+      imgs.forEach(function(img){
+        var sec=img.closest('.cine');if(!sec)return;
+        var r=sec.getBoundingClientRect();
+        if(r.bottom<0||r.top>vh)return;
+        var p=(vh-r.top)/(vh+r.height);        /* 0 (Eintritt unten) … 1 (Austritt oben) */
+        img.style.transform='translate3d(0,'+((0.5-p)*44).toFixed(1)+'px,0)';
+      });
+      ticking=false;
+    }
+    function onScroll(){if(!ticking){ticking=true;requestAnimationFrame(update);}}
+    window.addEventListener('scroll',onScroll,{passive:true});
+    window.addEventListener('resize',onScroll,{passive:true});
+    update();
   })();
 
   /* Demo-Formular: kein echter Versand, freundliche Inline-Bestätigung */

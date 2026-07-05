@@ -43,11 +43,24 @@ Archetyp **„Weiter Atem"**: Editorial-Ruhe × Warm-Organisch. Ruhig, atmend, k
 - Porträts oft im **Bogenrahmen** (organische Kontur statt hartem Rechteck) — Signatur-Element der Marke.
 - Atem-Signatur: dekorative SVG-Welle als wiederkehrendes Grafikmotiv.
 - Hero-Regel: **Vollbild-Cinematic nur mit ruhiger Negativfläche + gemessenem Kontrast.** Bei belebten Gruppenfotos → Split-Hero (Text auf eigenem Panel, nie über Gesichtern). Fehler aus Runde 2 (Volltext über Gruppenfoto) korrigiert — nicht wiederholen.
+- **Atem-Welle im Hero (`.ahero-wave`):** dünne Sinuslinie (`--clay`, opacity ~.15) als leise Marken-Signatur im dunklen Ausbildungs-Hero — hinter dem Text (`z-index:0`, Grid `z-index:1`). Gleiches Motiv wie `.breath` und die Header-Welle (`.nav-wave`). Atem = Getragensein, nicht Deko.
+
+## Ansprache & Copy-Haltung im Hero
+- **Gefühl zuerst, dann Funktion.** Vor dem Texten fragen: *Was soll die Person in den ersten Sekunden fühlen?* Ausbildungs-Hero-Zielgefühl: „Das ruft mich — und ich werde dabei gehalten" (Berufung · Tiefe/Ernst · Sicherheit/Getragensein · Ruhe).
+- **Erkennung statt Anweisung.** Nicht „Lerne, X zu tun", sondern die Sehnsucht der Person benennen. Muster: kursive Serif-Erkennungszeile trägt das Gefühl, der Sans-Fließtext trägt die Fakten. Beleg-Claims (Art of Breath Standard, traumasensibel, Termine) bleiben unangetastet — nichts erfinden.
+- **Lead-Zeile als Signatur-Element** — beide Heros: `.ahero-lead` (Ausbildung, dunkel, Gold-Akzentbalken `rgba(234,192,142,.5)`) und `.hero-lead` (Startseite, hell, **Mocha**-Akzentbalken `--mocha` — `--clay` bleibt CTA-only!). Serif kursiv, `border-left:2px`, `padding-left:18px`. Startseite ist damit auf Augenhöhe mit dem Ausbildungs-Hero.
+
+## Motion-System (zurückhaltend, `prefers-reduced-motion`-sicher)
+- **Atem-Linie zeichnet sich** (`.breath`, Startseite): Pfad hat `pathLength="1"`; `.js .breath path{stroke-dasharray:1;stroke-dashoffset:1}`, beim Reveal (`.breath-wrap.in`) → `stroke-dashoffset:0` (1,9 s). Fallback ohne JS = volle Linie. Reduced-motion = volle Linie statisch.
+- **Sanfter Parallax auf Cine-Bändern** (beide Seiten): `.cine .bg` mit `top/bottom:-10%` Overscan (von `.cine{overflow:hidden}` geclippt), JS verschiebt `.cine .bg img` per `translate3d` (rAF-throttled, ±22px). Reduced-motion → `transform:none`.
+- **Reveals** über IntersectionObserver (`.reveal` → `.in`), Stagger `.d1–.d3`. Grundregel: nie Layout-verschiebende Animationen (nur `transform`/`opacity`/`stroke-dashoffset`).
 
 ## Komponenten-Konventionen
 - CTA-Buttons: `--clay` Hintergrund, `--radius-sm`, Hover dunkler (`--clay-deep`).
-- Karten (`.member`, Session-Karten etc.): Bild + `aspect-ratio` gesetzt — **immer mit `height:auto` ergänzen**, sonst kann eine ältere `height`-Regel (z. B. `.member .ph{height:130px}`) reinsickern und `aspect-ratio` aushebeln (flache Bildstreifen — bereits einmal passiert, s. Memory).
-- Trustpilot-Stimmen (4,6/5, 22 Bewertungen) — Zitate bleiben HWG-sicher: nur Atmosphäre/Sicherheit/Präsenz, keine Heilversprechen.
+- **Karten-Hover einheitlich (ruhig):** helle Karten (`.offer`, `.voice`, `.member`, `.forwho .w`) → `translateY(-3…-4px)` + Elevation `--shadow` + Border `--line-2`. Dunkle Karten auf Espresso (`.step`, `.area`) → `translateY(-4px)` + `background rgba(245,239,231,.08)` + `border rgba(245,239,231,.26)`. Basis-Tint der Dunkel-Karten `.05`, Border `.16` (nicht `.03/--line-d` — war zu unsichtbar). Alle mit `transition … .35s var(--ease)`.
+- **Section-Headline-Größen nie inline** — Klassen `h2.sec-h3` / `h2.sec-h4` (Token-Disziplin; kein `style="font-size:var(--step-*)"`).
+- Karten mit Bild + `aspect-ratio`: **immer `height:auto`** ergänzen (sonst sickert alte `height`-Regel rein).
+- Trustpilot-Stimmen (4,6/5, 22 Bewertungen) — HWG-sicher: nur Atmosphäre/Sicherheit/Präsenz. **Kein `AggregateRating` im JSON-LD** (self-serving — bewusst weggelassen, nicht nachrüsten).
 - Cookiefrei by Design: keine Tracker, keine externen Requests außer Web3Forms (falls Formular).
 
 ## Technik-Constraints
