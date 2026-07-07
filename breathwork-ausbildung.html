@@ -177,6 +177,15 @@
   .invest .price{font-family:var(--serif);font-size:clamp(40px,7vw,58px);color:#fff;line-height:1;}
   .invest .price small{font-size:var(--step-0);color:var(--sage);font-family:var(--sans);}
   .invest .sub{color:rgba(245,239,231,.75);margin-top:14px;font-size:var(--step-0);}
+  .invest .sub b{color:#EAC08E;font-weight:700;}
+  .tiers{list-style:none;margin:var(--sp-3) auto 0;max-width:380px;display:flex;flex-direction:column;gap:3px;text-align:left;}
+  .tiers li{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:11px 16px;border-radius:var(--radius-sm);font-size:15px;color:rgba(245,239,231,.82);border:1px solid transparent;transition:opacity .3s;}
+  .tiers .t-price{font-family:var(--serif);font-weight:600;color:#fff;white-space:nowrap;}
+  .tiers li.past{color:rgba(245,239,231,.4);}
+  .tiers li.past .t-price{color:rgba(245,239,231,.4);text-decoration:line-through;}
+  .tiers li.active{background:rgba(180,105,78,.18);border-color:rgba(234,192,142,.5);color:#fff;}
+  .tiers li.active .t-when::before{content:"Jetzt · ";color:#EAC08E;font-weight:600;}
+  .tiers li.active .t-price{color:#EAC08E;}
   .invest .btn{margin-top:var(--sp-4);}
 
   .team-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;}
@@ -507,8 +516,15 @@
         <div class="invest-card reveal">
           <span class="ribbon">Jahrgang 2027 · begrenzt auf 20 Plätze</span>
           <div style="font-family:var(--sans);font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--sage);font-weight:600;">Investition</div>
-          <div class="price" style="margin-top:14px;">4.500&nbsp;€</div>
-          <p class="sub">Einmal- oder Ratenzahlung möglich · Frühbucher-Konditionen auf Anfrage<!-- [KLÄREN: aktuelle Preisstufe/Frühbucher-Frist – Super Early Bird lief bis 01.07.2026] --></p>
+          <div class="price" id="ab-price" style="margin-top:14px;">3.700&nbsp;€</div>
+          <p class="sub" id="ab-note">Super&nbsp;Early&nbsp;Bird — noch bis 15.&nbsp;Juli · du sparst <b>800&nbsp;€</b> gegenüber dem Normalpreis</p>
+          <ul class="tiers" id="ab-tiers" aria-label="Preis-Staffel nach Anmeldezeitpunkt">
+            <li data-until="2026-07-15" data-price="3700" data-label="Super Early Bird"><span class="t-when">bis 15. Juli</span><span class="t-price">3.700&nbsp;€</span></li>
+            <li data-until="2026-09-15" data-price="3900" data-label="Early Bird"><span class="t-when">bis 15. September</span><span class="t-price">3.900&nbsp;€</span></li>
+            <li data-until="2026-11-15" data-price="4100" data-label="Frühbucher"><span class="t-when">bis 15. November</span><span class="t-price">4.100&nbsp;€</span></li>
+            <li data-until="" data-price="4500" data-label="Regulär"><span class="t-when">danach regulär</span><span class="t-price">4.500&nbsp;€</span></li>
+          </ul>
+          <p class="sub" style="margin-top:16px;font-size:14px;color:rgba(245,239,231,.6);">Einmal- oder Ratenzahlung möglich.</p>
           <div class="invest-incl">
             <span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>14 eigene Atemprozesse</span>
             <span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>6 Wochenendmodule + Intensivmodul</span>
@@ -653,6 +669,30 @@
     if(!('IntersectionObserver'in window)||window.matchMedia('(prefers-reduced-motion: reduce)').matches){els.forEach(function(el){el.classList.add('in');});return;}
     var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{rootMargin:'0px 0px -8% 0px',threshold:.08});
     els.forEach(function(el){io.observe(el);});
+  })();
+
+  /* Investition: aktuell gültige Frühbucher-Stufe automatisch hervorheben + Ersparnis rechnen */
+  (function(){
+    var ul=document.getElementById('ab-tiers'); if(!ul)return;
+    var tiers=[].slice.call(ul.querySelectorAll('li'));
+    var today=new Date(); today.setHours(0,0,0,0);
+    var REG=4500, activeIdx=tiers.length-1;
+    for(var i=0;i<tiers.length;i++){
+      var u=tiers[i].getAttribute('data-until');
+      if(!u){activeIdx=i;break;}
+      if(today<=new Date(u+'T23:59:59')){activeIdx=i;break;}
+    }
+    tiers.forEach(function(li,i){li.classList.add(i<activeIdx?'past':(i===activeIdx?'active':'future'));});
+    var a=tiers[activeIdx], price=parseInt(a.getAttribute('data-price'),10), save=REG-price;
+    var priceEl=document.getElementById('ab-price');
+    if(priceEl)priceEl.innerHTML=price.toLocaleString('de-DE')+' €';
+    var note=document.getElementById('ab-note');
+    if(note){
+      if(save>0){
+        var when=a.querySelector('.t-when').textContent.replace(/^bis/,'noch bis');
+        note.innerHTML=a.getAttribute('data-label')+' — '+when+' · du sparst <b>'+save.toLocaleString('de-DE')+' €</b> gegenüber dem Normalpreis';
+      } else { note.textContent='Regulärer Preis · Einmal- oder Ratenzahlung möglich'; }
+    }
   })();
 
   /* Sanfter Parallax auf Cine-Bändern (nur wenn Bewegung erwünscht) */
