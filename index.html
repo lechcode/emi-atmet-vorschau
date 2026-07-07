@@ -7,9 +7,9 @@
   ║  (TEXT-DELTA.md). Single-File, kein Build. Stil „Weiter Atem":     ║
   ║  Newsreader + Instrument Sans, Terrakotta/Salbei/Mocha auf Papier. ║
   ╠══════════════════════════════════════════════════════════════════╣
-  ║  ⚠ DEMO — noindex aktiv. Rechtsseiten = Platzhalter. Fotos =       ║
+  ║  ⚠ DEMO, noindex aktiv. Rechtsseiten = Platzhalter. Fotos =       ║
   ║    aktuelle Altseiten-Bilder (Platzhalter, neue kommen). Preise/   ║
-  ║    Termine mit [KLÄREN] flexibel. Nichts erfunden — s. INVENTAR.md ║
+  ║    Termine mit [KLÄREN] flexibel. Nichts erfunden, s. INVENTAR.md ║
   ╚══════════════════════════════════════════════════════════════════╝
 -->
 <html lang="de">
@@ -19,9 +19,9 @@
   <script>document.documentElement.classList.add('js');if(location.search.indexOf('foto')>-1)document.documentElement.classList.add('foto');</script>
   <!-- ENTFERNEN sobald Impressum+Datenschutz live & von Emi freigegeben (auf ALLEN Seiten gleichzeitig) -->
   <meta name="robots" content="noindex, nofollow" />
-  <title>Breathwork in Leipzig | emi.atmet – Emily Müller</title>
+  <title>Breathwork in Leipzig | emi.atmet · Emily Müller</title>
   <meta name="description" content="Breathwork & traumasensible Atembegleitung in Leipzig. Emily Müller begleitet dich aus innerer Unruhe und Angst zurück zu Sicherheit und Leichtigkeit. Jetzt kostenfreies Erstgespräch." />
-  <meta property="og:title" content="Breathwork in Leipzig · emi.atmet – Emily Müller" />
+  <meta property="og:title" content="Breathwork in Leipzig · emi.atmet · Emily Müller" />
   <meta property="og:description" content="Wieder sicher in dir ankommen: traumasensible Atembegleitung in Leipzig. Erstgespräch kostenfrei." />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="de_DE" />
@@ -41,9 +41,9 @@
   {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
-    "name": "emi.atmet – Breathwork & Atembegleitung",
+    "name": "emi.atmet · Breathwork & Atembegleitung",
     "founder": { "@type": "Person", "name": "Emily Müller" },
-    "description": "Breathwork und traumasensible Atembegleitung in Leipzig — Einzelbegleitung, Breathwork-Circles, Workshops und eine Breathwork-Ausbildung.",
+    "description": "Breathwork und traumasensible Atembegleitung in Leipzig, Einzelbegleitung, Breathwork-Circles, Workshops und eine Breathwork-Ausbildung.",
     "url": "https://emi-atmet.de/",
     "image": "https://lechcode.github.io/emi-atmet-vorschau/assets/og.jpg",
     "email": "emi.atmet@gmx.de",
@@ -60,7 +60,7 @@
   </script>
 
   <style>
-  /* ===== 1 · TOKENS — „Weiter Atem": Terrakotta/Salbei/Mocha auf Papier ===== */
+  /* ===== 1 · TOKENS, „Weiter Atem": Terrakotta/Salbei/Mocha auf Papier ===== */
   :root{
     --paper:#F5EFE7; --paper-2:#EFE7DB; --sand:#E8DCCB; --white:#FBF8F3;
     --espresso:#2A2521; --espresso-2:#211d19;
@@ -163,7 +163,7 @@
   .hero h1 em{color:var(--clay-deep);font-weight:500;}
   .hero-lead{font-family:var(--serif);font-style:italic;font-size:clamp(19px,1vw+16.5px,24px);line-height:1.4;color:var(--ink);margin-top:var(--sp-3);padding-left:18px;border-left:2px solid var(--mocha);max-width:32ch;}
   .hero-sub{font-size:clamp(17px,.6vw+15.6px,19.5px);line-height:1.62;color:var(--ink-soft);margin-top:var(--sp-3);max-width:46ch;}
-  /* Section-Headline-Varianten (statt Inline-font-size — Token-Disziplin) */
+  /* Section-Headline-Varianten (statt Inline-font-size, Token-Disziplin) */
   h2.sec-h3{font-size:var(--step-3);margin-top:var(--sp-2);font-weight:500;}
   h2.sec-h4{font-size:var(--step-4);margin-top:var(--sp-2);font-weight:500;}
   .hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:var(--sp-4);align-items:center;}
@@ -236,7 +236,7 @@
   .offer .tag{align-self:flex-start;font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--sage-deep);background:var(--sage-soft);padding:4px 11px;border-radius:var(--pill);margin-bottom:12px;}
   .offer h3{font-size:var(--step-2);font-weight:600;}
   .offer p{color:var(--ink-soft);margin-top:9px;font-size:var(--step-0);line-height:1.55;flex:1;}
-  .offer .go{margin-top:18px;display:inline-flex;align-items:center;gap:8px;color:var(--clay-deep);font-weight:600;font-size:15px;}
+  .offer .go{margin-top:14px;min-height:44px;display:inline-flex;align-items:center;gap:8px;color:var(--clay-deep);font-weight:600;font-size:15px;}
   .offer .go .arr{transition:transform .25s var(--ease);}
   .offer:hover .go .arr{transform:translateX(4px);}
   .offer.wide{grid-column:1/-1;flex-direction:row;}
@@ -363,9 +363,12 @@
 
   /* ===== Responsive ===== */
   @media (max-width:900px){
-    .hero-grid{grid-template-columns:1fr;gap:var(--sp-4);}
-    .hero-inner{max-width:none;order:1;} .hero-figure{order:2;max-width:340px;margin-top:6px;}
+    .hero{padding-top:calc(var(--nav-h) + 16px);}
+    .hero-grid{grid-template-columns:1fr;gap:var(--sp-3);}
+    .hero-inner{max-width:none;order:1;} .hero-figure{order:2;max-width:320px;margin-top:2px;}
     .hero h1{max-width:20ch;}
+    .hero .hero-lead,.hero .hero-sub{margin-top:var(--sp-2);}
+    .hero .hero-cta{margin-top:var(--sp-3);}
     .trust .grid{grid-template-columns:repeat(2,1fr);gap:20px 18px;}
     .bridge-grid,.about-grid,.safe-grid,.contact-grid{grid-template-columns:1fr;}
     .reson-list{grid-template-columns:1fr;gap:14px;}
@@ -415,7 +418,7 @@
   <!-- ===== NAV ===== -->
   <header class="nav" id="nav">
     <div class="wrap nav-in">
-      <a href="#top" class="wm" aria-label="emi.atmet – Startseite">
+      <a href="#top" class="wm" aria-label="emi.atmet · Startseite">
         <svg class="lotus" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 5c3 2.4 4.7 5.4 4.7 8.8 0 2.8-2.1 4.9-4.7 4.9s-4.7-2.1-4.7-4.9C11.3 10.4 13 7.4 16 5z" fill="none" stroke="#B4694E" stroke-width="1.5"/><path d="M6 21c3-1.7 6.4-1.7 10-1.7s7 0 10 1.7" fill="none" stroke="#8A9A82" stroke-width="1.5" stroke-linecap="round"/><path d="M9 16.5c-1.7 1-2.8 2.6-3 4.5M23 16.5c1.7 1 2.8 2.6 3 4.5" fill="none" stroke="#A47864" stroke-width="1.3" stroke-linecap="round" opacity=".8"/></svg>
         <span>emi<b class="dot">.</b>atmet</span>
       </a>
@@ -442,9 +445,9 @@
       <div class="wrap hero-grid">
         <div class="hero-inner reveal">
           <span class="eyebrow">Breathwork · Leipzig</span>
-          <h1 id="hero-h1">Wieder <em>sicher</em> ankommen — in dir selbst.</h1>
-          <p class="hero-lead">Nicht dorthin, wo du funktionierst — sondern dorthin, wo du dich wieder spürst.</p>
-          <p class="hero-sub">Ich begleite dich mit dem Atem aus innerer Unruhe, Angst und ständiger Überforderung — zurück zu einem Gefühl von Sicherheit, Lebendigkeit und echter Verbundenheit mit dir.</p>
+          <h1 id="hero-h1">Wieder <em>sicher</em> ankommen, in dir selbst.</h1>
+          <p class="hero-lead">Nicht dorthin, wo du funktionierst, sondern dorthin, wo du dich wieder spürst.</p>
+          <p class="hero-sub">Ich begleite dich mit dem Atem aus innerer Unruhe, Angst und ständiger Überforderung, zurück zu einem Gefühl von Sicherheit, Lebendigkeit und echter Verbundenheit mit dir.</p>
           <div class="hero-cta">
             <a href="#kontakt" class="btn btn-lg">Kostenfreies Erstgespräch<span class="arr" aria-hidden="true">→</span></a>
             <a href="#angebot" class="btn btn-ghost btn-lg">Meine Begleitung</a>
@@ -505,15 +508,15 @@
       <div class="wrap">
         <div class="reson-head reveal">
           <span class="eyebrow">Kennst du das?</span>
-          <h2 id="reson-h">Manchmal funktioniert alles — und trotzdem fehlt etwas.</h2>
+          <h2 id="reson-h">Manchmal funktioniert alles, und trotzdem fehlt etwas.</h2>
         </div>
         <ul class="reson-list">
           <li class="reveal">Eine innere Unruhe, die sich nicht abschütteln lässt, egal was du versuchst.</li>
           <li class="reveal">Das Gefühl, dass tief sitzende Ängste dich zurückhalten und dir im Weg stehen.</li>
-          <li class="reveal">Die Erschöpfung, immer allen Ansprüchen gerecht werden zu müssen — zu Hause, auf der Arbeit, im Umfeld.</li>
+          <li class="reveal">Die Erschöpfung, immer allen Ansprüchen gerecht werden zu müssen, zu Hause, auf der Arbeit, im Umfeld.</li>
           <li class="reveal">Du fühlst dich von dir selbst abgeschnitten und hast die Leichtigkeit im Alltag verloren.</li>
           <li class="reveal">Ein Kreislauf aus Sorgen und Zweifeln, aus dem du allein nicht herausfindest.</li>
-          <li class="reveal">Und diese leise Sehnsucht: endlich anzukommen — bei dir.</li>
+          <li class="reveal">Und diese leise Sehnsucht: endlich anzukommen, bei dir.</li>
         </ul>
       </div>
     </section>
@@ -529,7 +532,7 @@
       <div class="wrap">
         <div class="in reveal">
           <span class="mark" aria-hidden="true">&ldquo;</span>
-          <blockquote>Ich weiß, wie sich innere Unruhe und ständige Anspannung anfühlen — und wie <em>tief</em> sie im Körper sitzen.</blockquote>
+          <blockquote>Ich weiß, wie sich innere Unruhe und ständige Anspannung anfühlen, und wie <em>tief</em> sie im Körper sitzen.</blockquote>
           <div class="cite">Emi · deine Begleiterin</div>
         </div>
       </div>
@@ -541,14 +544,14 @@
         <figure class="reveal">
           <picture>
             <source type="image/webp" srcset="assets/img/band-session-840.webp 840w, assets/img/band-session-1280.webp 1280w" sizes="(max-width:900px) 92vw, 44vw">
-            <img src="assets/img/band-session-1280.jpg" width="1280" height="720" alt="Emi begleitet eine Atemsession mit den Händen — ruhiger, warmer Raum" loading="lazy" decoding="async">
+            <img src="assets/img/band-session-1280.jpg" width="1280" height="720" alt="Emi begleitet eine Atemsession mit den Händen, ruhiger, warmer Raum" loading="lazy" decoding="async">
           </picture>
         </figure>
         <div class="body reveal d1">
           <span class="eyebrow">Hier komme ich ins Spiel</span>
           <h2 class="sec-h3">Der Atem ist der kürzeste Weg zurück in deinen Körper.</h2>
           <p>In meiner Arbeit verbinde ich fundiertes Wissen über das <strong>Nervensystem</strong> mit achtsamer Atemarbeit und emotionaler Prozessbegleitung. Gemeinsam schaffen wir einen sicheren Raum, in dem sich Anspannung lösen darf.</p>
-          <p>Ich begleite dich dabei, wieder in Kontakt mit dir selbst zu kommen, deinem Körper zu vertrauen und deinen Gefühlen Raum zu geben. <strong>Nicht, um dich zu optimieren</strong> — sondern damit du dich wieder sicher, lebendig und verbunden fühlst.</p>
+          <p>Ich begleite dich dabei, wieder in Kontakt mit dir selbst zu kommen, deinem Körper zu vertrauen und deinen Gefühlen Raum zu geben. <strong>Nicht, um dich zu optimieren</strong>, sondern damit du dich wieder sicher, lebendig und verbunden fühlst.</p>
           <div class="hero-cta" style="margin-top:var(--sp-4);">
             <a href="#kontakt" class="btn">Kostenfreies Erstgespräch<span class="arr" aria-hidden="true">→</span></a>
           </div>
@@ -561,7 +564,7 @@
       <div class="wrap">
         <div class="sec-head reveal">
           <span class="eyebrow">Wie wir zusammen arbeiten können</span>
-          <h2 id="angebot-h">Vier Wege — such dir den, der sich für dich stimmig anfühlt.</h2>
+          <h2 id="angebot-h">Vier Wege, such dir den, der sich für dich stimmig anfühlt.</h2>
           <p class="lead">Kein Weg verlangt Vorerfahrung. Der einfachste Anfang ist immer ein Gespräch.</p>
         </div>
         <div class="offer-grid">
@@ -570,7 +573,7 @@
             <div class="in">
               <span class="tag">Kostenfrei · Anfang</span>
               <h3>Kostenfreies Erstgespräch</h3>
-              <p>Lerne mich und meine Arbeit kennen. Wir schauen in Ruhe, was dich bewegt und ob Breathwork gerade das Richtige für dich ist — unverbindlich.</p>
+              <p>Lerne mich und meine Arbeit kennen. Wir schauen in Ruhe, was dich bewegt und ob Breathwork gerade das Richtige für dich ist, unverbindlich.</p>
               <a href="#kontakt" class="go">Hier anfragen <span class="arr" aria-hidden="true">→</span></a>
             </div>
           </article>
@@ -588,7 +591,7 @@
             <div class="in">
               <span class="tag">Einzeln · in die Tiefe</span>
               <h3>1:1 Langzeitbegleitung</h3>
-              <p>Tiefe, traumasensible Begleitung im geschützten Einzelkontakt — über einen längeren Zeitraum, in deinem eigenen Tempo.</p>
+              <p>Tiefe, traumasensible Begleitung im geschützten Einzelkontakt, über einen längeren Zeitraum, in deinem eigenen Tempo.</p>
               <a href="#kontakt" class="go">Kostenfreies Erstgespräch <span class="arr" aria-hidden="true">→</span></a>
             </div>
           </article>
@@ -597,7 +600,7 @@
             <div class="in">
               <span class="tag">Für Facilitator:innen</span>
               <h3>Breathwork Ausbildung</h3>
-              <p>Lerne, tiefe Atemprozesse sicher und traumasensibel zu begleiten. Werde Breathwork Facilitator nach Art of Breath Standard — Start Januar 2027 in Leipzig.</p>
+              <p>Lerne, tiefe Atemprozesse sicher und traumasensibel zu begleiten. Werde Breathwork Facilitator nach Art of Breath Standard, Start Januar 2027 in Leipzig.</p>
               <a href="breathwork-ausbildung.html" class="go">Zur Ausbildung <span class="arr" aria-hidden="true">→</span></a>
             </div>
           </article>
@@ -610,7 +613,7 @@
       <div class="wrap">
         <div class="sec-head reveal">
           <span class="eyebrow">Aktuelle Termine</span>
-          <h2 id="termine-h">Komm dazu — als Circle oder Workshop.</h2>
+          <h2 id="termine-h">Komm dazu, als Circle oder Workshop.</h2>
         </div>
         <div class="dates-grid">
           <div class="date-card reveal">
@@ -618,7 +621,7 @@
             <h3>Getragene Atemerfahrung in der Gruppe</h3>
             <div class="meta">
               <div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><!-- HIER: nächster Circle-Termin -->Nächster Termin auf Anfrage</div>
-              <div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>11:00 – 14:00 Uhr</div>
+              <div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>11:00 bis 14:00 Uhr</div>
               <div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Ashtanga Yoga Loft, Leipzig</div>
             </div>
             <p>In einer kleinen Gruppe kannst du den Alltag hinter dir lassen und dich mit Hilfe deines Atems deiner Innenwelt zuwenden.</p>
@@ -627,13 +630,13 @@
           </div>
           <div class="date-card reveal d1">
             <span class="kicker">Workshop</span>
-            <h3>Mutterlinien — Bindung &amp; Prägung</h3>
+            <h3>Mutterlinien: Bindung &amp; Prägung</h3>
             <div class="meta">
               <div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><!-- HIER: Workshop-Termin -->Termin auf Anfrage · Leipzig</div>
-              <div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>12:00 – 16:00 Uhr</div>
+              <div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>12:00 bis 16:00 Uhr</div>
               <div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>Für Töchter, Mütter &amp; Frauen</div>
             </div>
-            <p>Ein Selbsterfahrungsprozess zu Bindung und Prägung — mit Reflexion, moderner Bindungsforschung, Neurobiologie und einer angeleiteten Breathwork-Session.</p>
+            <p>Ein Selbsterfahrungsprozess zu Bindung und Prägung, mit Reflexion, moderner Bindungsforschung, Neurobiologie und einer angeleiteten Breathwork-Session.</p>
             <div class="price">130&nbsp;€ <small>pro Person</small></div>
             <a href="#kontakt" class="btn">Platz sichern<span class="arr" aria-hidden="true">→</span></a>
           </div>
@@ -652,10 +655,10 @@
         </figure>
         <div class="body reveal d1">
           <span class="eyebrow">Hi, ich bin Emi</span>
-          <blockquote class="quote">„Ich möchte völlig frei — und gleichzeitig tief <em>verbunden</em> sein und alle Facetten des Lebens spüren."</blockquote>
-          <p>Über mehrere Jahre kämpfte ich mit verschiedenen Essstörungen. Meine Gedanken kreisten ständig um Kontrolle, Essen und die Perfektionierung meines Körpers — bis ich das Lachen und die Lebensfreude verlor, die mich als Kind begleitet hatten.</p>
-          <p>Als mir in einer Klinik die Lebensgefahr meiner Situation vor Augen geführt wurde, begann meine innere Reise. Ich erkannte: Das Thema rund ums Essen war nur das Symptom unverarbeiteter emotionaler Verletzungen. Auf einem Retreat kam ich zum ersten Mal mit <strong>Breathwork</strong> in Form von Conscious Connected Breathing in Kontakt — und diese Erfahrung hat mein Leben verändert.</p>
-          <p>Durch die tiefe Auseinandersetzung mit mir selbst konnte ich mich vollständig davon lösen und mir ein freies, selbstbestimmtes Leben aufbauen. Heute habe ich mein Strahlen zurück — stärker als je zuvor.</p>
+          <blockquote class="quote">„Ich möchte völlig frei, und gleichzeitig tief <em>verbunden</em> sein und alle Facetten des Lebens spüren."</blockquote>
+          <p>Über mehrere Jahre kämpfte ich mit verschiedenen Essstörungen. Meine Gedanken kreisten ständig um Kontrolle, Essen und die Perfektionierung meines Körpers, bis ich das Lachen und die Lebensfreude verlor, die mich als Kind begleitet hatten.</p>
+          <p>Als mir in einer Klinik die Lebensgefahr meiner Situation vor Augen geführt wurde, begann meine innere Reise. Ich erkannte: Das Thema rund ums Essen war nur das Symptom unverarbeiteter emotionaler Verletzungen. Auf einem Retreat kam ich zum ersten Mal mit <strong>Breathwork</strong> in Form von Conscious Connected Breathing in Kontakt, und diese Erfahrung hat mein Leben verändert.</p>
+          <p>Durch die tiefe Auseinandersetzung mit mir selbst konnte ich mich vollständig davon lösen und mir ein freies, selbstbestimmtes Leben aufbauen. Heute habe ich mein Strahlen zurück, stärker als je zuvor.</p>
           <p>Aus dieser Überzeugung und meiner eigenen Geschichte heraus ist es mein Herzensprojekt, <strong>auch andere Menschen auf ihrem ganz eigenen Weg zu begleiten</strong>.</p>
           <h3>Meine Ausbildung</h3>
           <p style="margin-top:var(--sp-2);">Ausgebildet in traumasensibler Atemarbeit nach dem Qualitätsstandard von <strong>Art of Breath</strong> (bei Daniel Alan), mit Weiterbildungen in fortgeschrittener Prozessbegleitung und intrapsychischer Anteilearbeit. Schwerpunkte: die therapeutische Arbeit mit dem verbundenen Atem, die Beeinflussung des Nervensystems und das Verständnis von Trauma und frühkindlichen Prägungen.</p>
@@ -675,12 +678,12 @@
           <div class="step reveal">
             <div class="n" aria-hidden="true"></div>
             <h3>Du meldest dich</h3>
-            <p>Über das Kontaktformular oder per E-Mail. Ein, zwei Sätze genügen — du musst noch nichts erklären.</p>
+            <p>Über das Kontaktformular oder per E-Mail. Ein, zwei Sätze genügen, du musst noch nichts erklären.</p>
           </div>
           <div class="step reveal d1">
             <div class="n" aria-hidden="true"></div>
             <h3>Wir lernen uns kennen</h3>
-            <p>Im kostenfreien Erstgespräch schauen wir gemeinsam, was dich bewegt und was dir gerade guttun würde — unverbindlich.</p>
+            <p>Im kostenfreien Erstgespräch schauen wir gemeinsam, was dich bewegt und was dir gerade guttun würde, unverbindlich.</p>
           </div>
           <div class="step reveal d2">
             <div class="n" aria-hidden="true"></div>
@@ -697,7 +700,7 @@
         <div class="reveal">
           <span class="eyebrow">Verantwortungsvoll begleitet</span>
           <h2 id="safe-h" class="sec-h3">Sicherheit hat bei mir Vorrang.</h2>
-          <p style="color:var(--ink-soft);margin-top:var(--sp-3);line-height:var(--lh-relaxed);max-width:48ch;">Breathwork ist kraftvoll — und nicht in jeder Situation das Richtige. Deshalb sprechen wir vorab offen über deine gesundheitliche Vorgeschichte.</p>
+          <p style="color:var(--ink-soft);margin-top:var(--sp-3);line-height:var(--lh-relaxed);max-width:48ch;">Breathwork ist kraftvoll, und nicht in jeder Situation das Richtige. Deshalb sprechen wir vorab offen über deine gesundheitliche Vorgeschichte.</p>
           <div class="note">
             <strong>Wichtig:</strong> Weder einzelne Breathwork-Sitzungen noch eine Breathwork-Begleitung ersetzen eine ärztliche oder psychotherapeutische Behandlung.
           </div>
@@ -750,7 +753,7 @@
           </figure>
           <figure class="voice reveal">
             <div class="stars" aria-label="5 von 5 Sternen">★★★★★</div>
-            <blockquote>„Eine tiefgehende, intensive Erfahrung. Mit der Zeit breitete sich in mir eine tiefe Ruhe und Ausgeglichenheit aus — auch Tage später fühlte ich mich leichter. Emi begleitet mit großer Professionalität, Feingefühl und Präsenz."</blockquote>
+            <blockquote>„Eine tiefgehende, intensive Erfahrung. Mit der Zeit breitete sich in mir eine tiefe Ruhe und Ausgeglichenheit aus, auch Tage später fühlte ich mich leichter. Emi begleitet mit großer Professionalität, Feingefühl und Präsenz."</blockquote>
             <figcaption class="who">Jan · Breathwork Circle</figcaption>
           </figure>
           <figure class="voice reveal d1">
@@ -778,14 +781,14 @@
       <div class="wrap-n">
         <div class="sec-head center reveal" style="margin-inline:auto;">
           <span class="eyebrow" style="justify-content:center;">Bevor du dich meldest</span>
-          <h2 id="faq-h">Häufige Fragen — ehrlich beantwortet.</h2>
+          <h2 id="faq-h">Häufige Fragen, ehrlich beantwortet.</h2>
         </div>
         <div class="faq-list reveal">
-          <details class="faq"><summary>Was passiert eigentlich beim Erstgespräch?</summary><div class="a">Wir sprechen in Ruhe darüber, was dich gerade bewegt und was du dir wünschst. Du musst nichts vorbereiten und dich zu nichts verpflichten. Am Ende hast du ein Gefühl dafür, ob Breathwork für dich stimmig ist — mehr nicht.</div></details>
-          <details class="faq"><summary>Ich habe noch nie Breathwork gemacht — ist das ein Problem?</summary><div class="a">Überhaupt nicht. Du brauchst keinerlei Vorerfahrung. Wichtig sind nur Offenheit und die Bereitschaft, dich auf deinen eigenen Prozess einzulassen. Ich führe dich Schritt für Schritt.</div></details>
+          <details class="faq"><summary>Was passiert eigentlich beim Erstgespräch?</summary><div class="a">Wir sprechen in Ruhe darüber, was dich gerade bewegt und was du dir wünschst. Du musst nichts vorbereiten und dich zu nichts verpflichten. Am Ende hast du ein Gefühl dafür, ob Breathwork für dich stimmig ist, mehr nicht.</div></details>
+          <details class="faq"><summary>Ich habe noch nie Breathwork gemacht. Ist das ein Problem?</summary><div class="a">Überhaupt nicht. Du brauchst keinerlei Vorerfahrung. Wichtig sind nur Offenheit und die Bereitschaft, dich auf deinen eigenen Prozess einzulassen. Ich führe dich Schritt für Schritt.</div></details>
           <details class="faq"><summary>Ist Breathwork eine Therapie?</summary><div class="a">Nein. Breathwork ist eine begleitende, körperorientierte Erfahrung und ersetzt keine ärztliche oder psychotherapeutische Behandlung. Wenn du dich gerade in Behandlung befindest, sprechen wir vorher offen darüber, ob und wie Atemarbeit dich ergänzend unterstützen kann.</div></details>
-          <details class="faq"><summary>Was, wenn während einer Session starke Gefühle hochkommen?</summary><div class="a">Genau dafür ist der Raum da. Ich bin traumasensibel ausgebildet und begleite dich sicher durch das, was sich zeigt — in deinem Tempo. Nichts muss, alles darf. Du bestimmst, wie weit du gehst.</div></details>
-          <details class="faq"><summary>Einzeln oder in der Gruppe — was passt für mich?</summary><div class="a">Die Circles sind ein sanfter, getragener Einstieg in der Gemeinschaft. Die 1:1-Begleitung geht individuell in die Tiefe und eignet sich, wenn du länger und persönlich an deinen Themen arbeiten möchtest. Im Erstgespräch finden wir gemeinsam heraus, was gerade passt.</div></details>
+          <details class="faq"><summary>Was, wenn während einer Session starke Gefühle hochkommen?</summary><div class="a">Genau dafür ist der Raum da. Ich bin traumasensibel ausgebildet und begleite dich sicher durch das, was sich zeigt, in deinem Tempo. Nichts muss, alles darf. Du bestimmst, wie weit du gehst.</div></details>
+          <details class="faq"><summary>Einzeln oder in der Gruppe, was passt für mich?</summary><div class="a">Die Circles sind ein sanfter, getragener Einstieg in der Gemeinschaft. Die 1:1-Begleitung geht individuell in die Tiefe und eignet sich, wenn du länger und persönlich an deinen Themen arbeiten möchtest. Im Erstgespräch finden wir gemeinsam heraus, was gerade passt.</div></details>
           <details class="faq"><summary>Finden die Termine in Leipzig statt?</summary><div class="a">Ja. Circles und Workshops finden in Leipzig statt (u.&nbsp;a. im Ashtanga Yoga Loft). Einzelbegleitungen sind in Leipzig und nach Absprache auch online möglich.</div></details>
         </div>
       </div>
@@ -797,12 +800,12 @@
         <div class="reveal">
           <span class="eyebrow">Kontakt aufnehmen</span>
           <h2 id="kontakt-h" class="sec-h4">Lass uns kennenlernen.</h2>
-          <p class="lead">Schreib mir bei Fragen, Interesse oder einfach so — ich freue mich auf deine Nachricht. Du musst noch nicht wissen, was „richtig" ist. Ein erster Satz genügt.</p>
+          <p class="lead">Schreib mir bei Fragen, Interesse oder einfach so, ich freue mich auf deine Nachricht. Du musst noch nicht wissen, was „richtig" ist. Ein erster Satz genügt.</p>
           <div class="info">
             <a href="mailto:emi.atmet@gmx.de"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>emi.atmet@gmx.de</a>
             <div><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Leipzig &amp; online</div>
           </div>
-          <div class="promise"><strong>Mein Versprechen:</strong> Ich melde mich so schnell wie möglich persönlich bei dir zurück — ohne Verkaufsdruck.</div>
+          <div class="promise"><strong>Mein Versprechen:</strong> Ich melde mich so schnell wie möglich persönlich bei dir zurück, ohne Verkaufsdruck.</div>
         </div>
         <form class="cf reveal d1" id="cf" novalidate>
           <div class="demo-flag">
@@ -831,7 +834,7 @@
           </div>
           <div class="field">
             <label for="msg">Deine Nachricht <span class="opt">(optional)</span></label>
-            <textarea id="msg" name="message" placeholder="Was dich gerade bewegt — ganz in deinem Tempo."></textarea>
+            <textarea id="msg" name="message" placeholder="Was dich gerade bewegt, ganz in deinem Tempo."></textarea>
           </div>
           <label class="hp" aria-hidden="true">Bitte leer lassen<input type="text" name="botcheck" tabindex="-1" autocomplete="off"></label>
           <button type="submit" class="btn btn-lg">Nachricht senden<span class="arr" aria-hidden="true">→</span></button>
@@ -851,7 +854,7 @@
             <svg class="lotus" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 5c3 2.4 4.7 5.4 4.7 8.8 0 2.8-2.1 4.9-4.7 4.9s-4.7-2.1-4.7-4.9C11.3 10.4 13 7.4 16 5z" fill="none" stroke="#C98A6E" stroke-width="1.5"/><path d="M6 21c3-1.7 6.4-1.7 10-1.7s7 0 10 1.7" fill="none" stroke="#8A9A82" stroke-width="1.5" stroke-linecap="round"/></svg>
             <span style="color:#fff;">emi<b style="color:var(--clay);">.</b>atmet</span>
           </a>
-          <p class="tag">Breathwork &amp; traumasensible Atembegleitung in Leipzig. Wieder sicher in dir ankommen — mit dem Atem.</p>
+          <p class="tag">Breathwork &amp; traumasensible Atembegleitung in Leipzig. Wieder sicher in dir ankommen, mit dem Atem.</p>
         </div>
         <div>
           <h3>Begleitung</h3>
@@ -934,7 +937,7 @@
       e.preventDefault();
       if(f.botcheck&&f.botcheck.value){return;}
       m.className='form-msg ok';
-      m.textContent='Danke dir! Das ist eine Design-Vorschau — sobald die Seite live ist, erreicht dich diese Nachricht direkt bei Emi. Bis dahin: einmal tief durchatmen. 🌿';
+      m.textContent='Danke dir! Das ist eine Design-Vorschau, sobald die Seite live ist, erreicht dich diese Nachricht direkt bei Emi. Bis dahin: einmal tief durchatmen. 🌿';
       f.querySelector('button').disabled=true;
       m.scrollIntoView({behavior:'smooth',block:'center'});
     });
