@@ -219,6 +219,12 @@
   .cine blockquote em{color:#EAC08E;font-style:italic;}
   .cine .cite{margin-top:26px;font-size:13px;color:rgba(255,255,255,.7);letter-spacing:.16em;text-transform:uppercase;display:inline-flex;align-items:center;gap:12px;}
   .cine .cite::before,.cine .cite::after{content:"";width:26px;height:1px;background:rgba(234,192,142,.55);}
+  @media (max-width:600px){
+    .cine{min-height:auto!important;padding:clamp(64px,17vw,104px) 0!important;}
+    .cine .mark{font-size:58px;margin-bottom:2px;}
+    .cine blockquote{font-size:clamp(25px,6.4vw,32px);line-height:1.28;}
+    .cine .cite{margin-top:20px;}
+  }
   /* Bild-Rahmen in Sektionen */
   .imgframe{position:relative;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);}
   .imgframe img{width:100%;height:100%;object-fit:cover;display:block;}
