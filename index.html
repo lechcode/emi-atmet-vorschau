@@ -7,9 +7,8 @@
   ║  (TEXT-DELTA.md). Single-File, kein Build. Stil „Weiter Atem":     ║
   ║  Newsreader + Instrument Sans, Terrakotta/Salbei/Mocha auf Papier. ║
   ╠══════════════════════════════════════════════════════════════════╣
-  ║  ⚠ DEMO, noindex aktiv. Rechtsseiten = Platzhalter. Fotos =       ║
-  ║    aktuelle Altseiten-Bilder (Platzhalter, neue kommen). Preise/   ║
-  ║    Termine mit [KLÄREN] flexibel. Nichts erfunden, s. INVENTAR.md ║
+  ║  LIVE · emi-atmet.de. Formular → Web3Forms an emi.atmet@gmx.de.    ║
+  ║  Termine/Preise ggf. aktualisieren (s. _projekt/OFFENE-FRAGEN.md). ║
   ╚══════════════════════════════════════════════════════════════════╝
 -->
 <html lang="de">
@@ -17,17 +16,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script>document.documentElement.classList.add('js');if(location.search.indexOf('foto')>-1)document.documentElement.classList.add('foto');</script>
-  <!-- ENTFERNEN sobald Impressum+Datenschutz live & von Emi freigegeben (auf ALLEN Seiten gleichzeitig) -->
-  <meta name="robots" content="noindex, nofollow" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://emi-atmet.de/" />
   <title>Breathwork in Leipzig | emi.atmet · Emily Müller</title>
   <meta name="description" content="Breathwork & traumasensible Atembegleitung in Leipzig. Emily Müller begleitet dich aus innerer Unruhe und Angst zurück zu Sicherheit und Leichtigkeit. Jetzt kostenfreies Erstgespräch." />
   <meta property="og:title" content="Breathwork in Leipzig · emi.atmet · Emily Müller" />
   <meta property="og:description" content="Wieder sicher in dir ankommen: traumasensible Atembegleitung in Leipzig. Erstgespräch kostenfrei." />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="de_DE" />
-  <!-- DEMO: OG zeigt auf die Vorschau-URL (WhatsApp/Social laden nur so). Bei Go-Live auf echte Domain. -->
-  <meta property="og:url" content="https://lechcode.github.io/emi-atmet-vorschau/" />
-  <meta property="og:image" content="https://lechcode.github.io/emi-atmet-vorschau/assets/og.jpg" />
+  <meta property="og:url" content="https://emi-atmet.de/" />
+  <meta property="og:image" content="https://emi-atmet.de/assets/og.jpg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="theme-color" content="#2A2521" />
@@ -45,10 +43,10 @@
     "founder": { "@type": "Person", "name": "Emily Müller" },
     "description": "Breathwork und traumasensible Atembegleitung in Leipzig, Einzelbegleitung, Breathwork-Circles, Workshops und eine Breathwork-Ausbildung.",
     "url": "https://emi-atmet.de/",
-    "image": "https://lechcode.github.io/emi-atmet-vorschau/assets/og.jpg",
+    "image": "https://emi-atmet.de/assets/og.jpg",
     "email": "emi.atmet@gmx.de",
     "areaServed": { "@type": "City", "name": "Leipzig" },
-    "address": { "@type": "PostalAddress", "addressLocality": "Leipzig", "addressCountry": "DE" },
+    "address": { "@type": "PostalAddress", "streetAddress": "Eisenbahnstraße 13", "postalCode": "04315", "addressLocality": "Leipzig", "addressCountry": "DE" },
     "knowsAbout": ["Breathwork","Conscious Connected Breathing","Atemarbeit","Nervensystem-Regulation","traumasensible Begleitung","Embodiment"],
     "makesOffer": [
       { "@type": "Offer", "name": "Kostenfreies Erstgespräch" },
@@ -336,8 +334,6 @@
   .promise{margin-top:var(--sp-4);padding:18px 20px;background:var(--sage-soft);border-radius:var(--radius);font-size:15px;color:var(--sage-deep);line-height:1.55;}
   .promise strong{color:var(--ink);font-weight:600;}
   form.cf{background:var(--white);border:1px solid var(--line);border-radius:var(--radius-lg);padding:clamp(24px,3.4vw,36px);box-shadow:var(--shadow-soft);}
-  .demo-flag{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:#7A3A22;background:var(--clay-soft);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:22px;line-height:1.45;}
-  .demo-flag svg{flex:none;margin-top:1px;}
   .field{margin-bottom:18px;}
   .field label{display:block;font-size:14px;font-weight:600;color:var(--ink);margin-bottom:7px;}
   .field label .opt{color:var(--ink-faint);font-weight:500;}
@@ -350,6 +346,7 @@
   .form-fine a{color:var(--clay-deep);text-decoration:underline;text-underline-offset:2px;}
   .form-msg{margin-top:16px;padding:14px 16px;border-radius:var(--radius-sm);font-size:14.5px;display:none;line-height:1.5;}
   .form-msg.ok{display:block;background:var(--sage-soft);color:var(--sage-deep);}
+  .form-msg.err{display:block;background:var(--clay-soft);color:#7A3A22;}
 
   /* ===== Footer ===== */
   .site-footer{background:var(--espresso-2);color:rgba(245,239,231,.72);padding:var(--sp-6) 0 var(--sp-4);}
@@ -830,10 +827,10 @@
           <div class="promise"><strong>Mein Versprechen:</strong> Ich melde mich so schnell wie möglich persönlich bei dir zurück, ohne Verkaufsdruck.</div>
         </div>
         <form class="cf reveal d1" id="cf" novalidate>
-          <div class="demo-flag">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-            <span>Design-Vorschau: Dieses Formular versendet noch nichts. Im Live-Betrieb landet deine Anfrage direkt in Emis Postfach.</span>
-          </div>
+          <!-- Web3Forms (cookiefrei, kein Tracker). ⚠ access_key = für emi.atmet@gmx.de verifizierter Schlüssel eintragen. -->
+          <input type="hidden" name="access_key" value="REPLACE_WITH_EMI_WEB3FORMS_KEY">
+          <input type="hidden" name="subject" value="Neue Anfrage über emi-atmet.de">
+          <input type="hidden" name="from_name" value="emi.atmet Website">
           <div class="field">
             <label for="name">Dein Name</label>
             <input type="text" id="name" name="name" autocomplete="name" placeholder="Wie darf ich dich nennen?">
@@ -952,17 +949,43 @@
     update();
   })();
 
-  /* Demo-Formular: kein echter Versand, freundliche Inline-Bestätigung */
+  /* Kontaktformular → Web3Forms (cookiefrei, kein Tracker; Verbindung erst beim Absenden) */
   (function(){
     var f=document.getElementById('cf'),m=document.getElementById('cfmsg');
     if(!f)return;
+    var btn=f.querySelector('button[type=submit]');
+    var ERR='Da ist leider etwas schiefgelaufen. Schreib mir gern direkt an emi.atmet@gmx.de, dann erreichst du mich sicher.';
     f.addEventListener('submit',function(e){
       e.preventDefault();
-      if(f.botcheck&&f.botcheck.value){return;}
-      m.className='form-msg ok';
-      m.textContent='Danke dir! Das ist eine Design-Vorschau, sobald die Seite live ist, erreicht dich diese Nachricht direkt bei Emi. Bis dahin: einmal tief durchatmen. 🌿';
-      f.querySelector('button').disabled=true;
-      m.scrollIntoView({behavior:'smooth',block:'center'});
+      if(f.botcheck&&f.botcheck.value){return;}            /* Honeypot */
+      var name=document.getElementById('name').value.trim();
+      var email=document.getElementById('email').value.trim();
+      if(!name||!email){
+        m.className='form-msg err';
+        m.textContent='Magst du mir noch deinen Namen und deine E-Mail dalassen? Dann kann ich dir antworten.';
+        m.scrollIntoView({behavior:'smooth',block:'center'});
+        return;
+      }
+      var label=btn.innerHTML; btn.disabled=true; btn.textContent='Wird gesendet …';
+      fetch('https://api.web3forms.com/submit',{
+        method:'POST',
+        headers:{'Content-Type':'application/json',Accept:'application/json'},
+        body:JSON.stringify(Object.fromEntries(new FormData(f)))
+      }).then(function(r){return r.json();}).then(function(d){
+        if(d&&d.success){
+          m.className='form-msg ok';
+          m.textContent='Danke dir! Deine Nachricht ist bei mir angekommen. Ich melde mich so schnell wie möglich persönlich bei dir zurück. Bis dahin: einmal tief durchatmen. 🌿';
+          f.reset(); btn.textContent='Gesendet ✓';
+        }else{
+          m.className='form-msg err'; m.textContent=ERR;
+          btn.disabled=false; btn.innerHTML=label;
+        }
+        m.scrollIntoView({behavior:'smooth',block:'center'});
+      }).catch(function(){
+        m.className='form-msg err'; m.textContent=ERR;
+        btn.disabled=false; btn.innerHTML=label;
+        m.scrollIntoView({behavior:'smooth',block:'center'});
+      });
     });
   })();
   </script>
