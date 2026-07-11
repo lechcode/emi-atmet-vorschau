@@ -828,9 +828,8 @@
         </div>
         <form class="cf reveal d1" id="cf" novalidate>
           <!-- Web3Forms (cookiefrei, kein Tracker). ⚠ access_key = für emi.atmet@gmx.de verifizierter Schlüssel eintragen. -->
-          <input type="hidden" name="access_key" value="f5b28c02-f03e-461d-b422-c421ec8cb54d">
-          <input type="hidden" name="subject" value="Neue Anfrage über emi-atmet.de">
-          <input type="hidden" name="from_name" value="emi.atmet Website">
+          <!-- Versand über den Lechcode-Worker → Resend → direkt in Emis Postfach (Empfänger serverseitig, nicht im HTML). -->
+          <input type="hidden" name="site" value="emi-atmet">
           <div class="field">
             <label for="name">Dein Name</label>
             <input type="text" id="name" name="name" autocomplete="name" placeholder="Wie darf ich dich nennen?">
@@ -856,7 +855,7 @@
             <label for="msg">Deine Nachricht <span class="opt">(optional)</span></label>
             <textarea id="msg" name="message" placeholder="Was dich gerade bewegt, ganz in deinem Tempo."></textarea>
           </div>
-          <label class="hp" aria-hidden="true">Bitte leer lassen<input type="text" name="botcheck" tabindex="-1" autocomplete="off"></label>
+          <label class="hp" aria-hidden="true">Bitte leer lassen<input type="text" name="_honey" tabindex="-1" autocomplete="off"></label>
           <button type="submit" class="btn btn-lg">Nachricht senden<span class="arr" aria-hidden="true">→</span></button>
           <p class="form-fine">Bitte sende keine sensiblen Gesundheitsdaten übers Formular. Mit dem Absenden stimmst du der Verarbeitung gemäß <a href="datenschutz.html">Datenschutzerklärung</a> zu.</p>
           <div class="form-msg" id="cfmsg" role="status"></div>
@@ -949,15 +948,16 @@
     update();
   })();
 
-  /* Kontaktformular → Web3Forms (cookiefrei, kein Tracker; Verbindung erst beim Absenden) */
+  /* Kontaktformular → Lechcode-Worker → Resend → Emis Postfach (cookiefrei, kein Tracker; Verbindung erst beim Absenden) */
   (function(){
+    var ENDPOINT='https://lechcode-api.nameless-waterfall-55e5.workers.dev/contact';
     var f=document.getElementById('cf'),m=document.getElementById('cfmsg');
     if(!f)return;
     var btn=f.querySelector('button[type=submit]');
     var ERR='Da ist leider etwas schiefgelaufen. Schreib mir gern direkt an emi.atmet@gmx.de, dann erreichst du mich sicher.';
     f.addEventListener('submit',function(e){
       e.preventDefault();
-      if(f.botcheck&&f.botcheck.value){return;}            /* Honeypot */
+      var hp=f.querySelector('[name="_honey"]'); if(hp&&hp.value){return;}   /* Honeypot */
       var name=document.getElementById('name').value.trim();
       var email=document.getElementById('email').value.trim();
       if(!name||!email){
@@ -967,17 +967,17 @@
         return;
       }
       var label=btn.innerHTML; btn.disabled=true; btn.textContent='Wird gesendet …';
-      fetch('https://api.web3forms.com/submit',{
+      fetch(ENDPOINT,{
         method:'POST',
         headers:{'Content-Type':'application/json',Accept:'application/json'},
         body:JSON.stringify(Object.fromEntries(new FormData(f)))
       }).then(function(r){return r.json();}).then(function(d){
-        if(d&&d.success){
+        if(d&&d.ok){
           m.className='form-msg ok';
           m.textContent='Danke dir! Deine Nachricht ist bei mir angekommen. Ich melde mich so schnell wie möglich persönlich bei dir zurück. Bis dahin: einmal tief durchatmen. 🌿';
           f.reset(); btn.textContent='Gesendet ✓';
         }else{
-          m.className='form-msg err'; m.textContent=ERR;
+          m.className='form-msg err'; m.textContent=(d&&d.meldung)?d.meldung:ERR;
           btn.disabled=false; btn.innerHTML=label;
         }
         m.scrollIntoView({behavior:'smooth',block:'center'});
