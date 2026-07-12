@@ -46,6 +46,9 @@
   .karte{background:var(--night-2);border:1px solid var(--line);border-radius:var(--radius-lg);padding:clamp(18px,3vw,26px);}
   .karte h2{font-size:clamp(19px,2.4vw,22px);margin-bottom:6px;}
   .karte .unter{color:var(--muted);font-size:14px;margin-bottom:16px;}
+  .karte .ki-hinweis{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.5;color:var(--bone-dim);background:rgba(232,146,63,.10);border:1px solid rgba(232,146,63,.24);border-radius:10px;padding:9px 12px;margin:2px 0 16px;}
+  .karte .ki-hinweis strong{color:var(--ember);font-weight:700;}
+  .karte .ki-hinweis a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(231,185,100,.45);}
   .gruss h1{font-size:clamp(24px,4vw,32px);}
   .gruss p{color:var(--bone-dim);margin-top:6px;}
 
@@ -306,36 +309,6 @@
       <p class="upload-status" id="upload-status"></p>
     </section>
 
-    <section class="karte" id="schenken-karte" style="display:none;">
-      <style>
-        #schenken-karte .schenk-form{display:grid;gap:12px;margin-top:6px;}
-        #schenken-karte .schenk-in{width:100%;border:1px solid var(--line);background:var(--panel);color:var(--bone);font-family:var(--sans);font-size:15px;border-radius:11px;padding:10px 12px;}
-        #schenken-karte textarea.schenk-in{resize:vertical;min-height:56px;line-height:1.45;}
-        #schenken-karte .schenk-feld{display:grid;gap:5px;}
-        #schenken-karte .schenk-status{font-size:14px;color:var(--gruen,#8FB98A);display:none;margin-top:2px;}
-        #schenken-karte .schenk-status.an{display:block;}
-        #schenken-karte .schenk-status.fehler{color:#f0b090;}
-      </style>
-      <h2>Weiterschenken 🎁</h2>
-      <p class="unter">Kennst du jemanden, dessen Website nicht zeigt, wie gut seine Arbeit ist? Nenn uns den Namen — wir bauen vorab eine fertige Vorschau, und <strong>du verschenkst sie.</strong> Kostet dich nichts. Wird ein Auftrag daraus, gibt’s als Dankeschön <strong>100 € Gutschrift</strong> oder eine <strong>100-€-Spende</strong> an dein Herzensprojekt — du wählst.</p>
-      <div class="schenk-form">
-        <div class="schenk-feld">
-          <label class="feld-label" for="schenk-name">Name</label>
-          <input class="schenk-in" id="schenk-name" type="text" autocomplete="off" placeholder="z. B. Maria Muster">
-        </div>
-        <div class="schenk-feld">
-          <label class="feld-label" for="schenk-was">Was macht sie/er? (oder alte Website)</label>
-          <input class="schenk-in" id="schenk-was" type="text" autocomplete="off" placeholder="z. B. Heilpraktikerin in Landsberg · alte-seite.de">
-        </div>
-        <div class="schenk-feld">
-          <label class="feld-label" for="schenk-warum">Warum passt sie/er zu euch? (optional)</label>
-          <textarea class="schenk-in" id="schenk-warum" rows="2" placeholder="Ein Satz reicht 🙂"></textarea>
-        </div>
-        <button class="btn" id="schenk-senden" type="button">An Lechcode weitergeben →</button>
-        <p class="schenk-status" id="schenk-status"></p>
-      </div>
-    </section>
-
     <section class="karte">
       <h2>Häufige Fragen</h2>
       <details><summary>Was kostet eine Änderung?</summary><p>Nichts extra — kleine Änderungen sind in deiner Pflege (19 €/Monat) einfach drin. Schreib so oft du magst.</p></details>
@@ -375,14 +348,6 @@
   var seiteIframe = document.getElementById("seite-iframe");
   function seiteLaden(){ if (seiteIframe) seiteIframe.src = "./?v=" + Date.now(); }
   seiteLaden();
-  // — „Weiterschenken“ ist ein verdienter Moment: erst zeigen, wenn schon einmal
-  //   etwas erfolgreich live gegangen ist (nicht als Bitte vorab). —
-  function schenkenSteuern(jobs){
-    var hatFertig = (jobs || []).some(function(job){ return job && job.status === "done"; });
-    var k = document.getElementById("schenken-karte");
-    if (k && hatFertig) k.style.display = "";
-  }
-
   var doneGesehen = null;
   function seiteAktualisieren(jobs){
     var jetzt = {};
@@ -427,7 +392,6 @@
       }
       jobsZeigen(j.jobs || []);
       seiteAktualisieren(j.jobs || []);
-      schenkenSteuern(j.jobs || []);
     } catch(e){
       if (erster){ app.style.display = ""; } // Netzproblem: Bereich trotzdem zeigen
     }
@@ -832,42 +796,6 @@
       knopf.disabled = false;
     }
   });
-
-  // — Weiterschenken: Empfehlung als change-request (kategorie:empfehlung → nie gebaut, nur Team-Push) —
-  (function(){
-    var btn = document.getElementById("schenk-senden");
-    if (!btn) return;
-    var status = document.getElementById("schenk-status");
-    btn.addEventListener("click", async function(){
-      var elName = document.getElementById("schenk-name");
-      var elWas = document.getElementById("schenk-was");
-      var elWarum = document.getElementById("schenk-warum");
-      var name = (elName.value || "").trim();
-      var was = (elWas.value || "").trim();
-      var warum = (elWarum.value || "").trim();
-      if (!name){ status.textContent = "Magst du mir wenigstens den Namen nennen? 🙂"; status.className = "schenk-status an fehler"; return; }
-      btn.disabled = true; var alt = btn.textContent; btn.textContent = "Einen Moment …";
-      var oton = "Empfehlung (Weiterschenken): " + name + (was ? " — " + was : "") + (warum ? " · Warum: " + warum : "");
-      try {
-        var r = await api("/job", {method:"POST", headers:{"content-type":"application/json"},
-          body: JSON.stringify({type:"change-request", payload:{
-            wunsch_oton: oton,
-            aenderungen: [{bereich:"Empfehlung", wunsch: name + (was ? " (" + was + ")" : "")}],
-            kategorie: "empfehlung", bilder: []
-          }})});
-        var j = await r.json();
-        if (!j.ok) throw new Error();
-        status.textContent = "Angekommen — danke dir! 🎁 Wir bauen die Vorschau und melden uns bei dir, damit du sie verschenken kannst.";
-        status.className = "schenk-status an";
-        btn.textContent = "Weitergegeben ✓";
-        elName.value = ""; elWas.value = ""; elWarum.value = "";
-      } catch(e){
-        status.textContent = "Das hat gerade nicht geklappt — schreib uns gern direkt: info@lechcode.de";
-        status.className = "schenk-status an fehler";
-        btn.disabled = false; btn.textContent = alt;
-      }
-    });
-  })();
 
   // — Datei-Upload (Bilder, PDFs, Dokumente) —
   var dateiInput = document.getElementById("datei");
