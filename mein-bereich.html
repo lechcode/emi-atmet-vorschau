@@ -306,7 +306,7 @@
       <p class="upload-status" id="upload-status"></p>
     </section>
 
-    <section class="karte" id="schenken-karte">
+    <section class="karte" id="schenken-karte" style="display:none;">
       <style>
         #schenken-karte .schenk-form{display:grid;gap:12px;margin-top:6px;}
         #schenken-karte .schenk-in{width:100%;border:1px solid var(--line);background:var(--panel);color:var(--bone);font-family:var(--sans);font-size:15px;border-radius:11px;padding:10px 12px;}
@@ -375,6 +375,14 @@
   var seiteIframe = document.getElementById("seite-iframe");
   function seiteLaden(){ if (seiteIframe) seiteIframe.src = "./?v=" + Date.now(); }
   seiteLaden();
+  // — „Weiterschenken“ ist ein verdienter Moment: erst zeigen, wenn schon einmal
+  //   etwas erfolgreich live gegangen ist (nicht als Bitte vorab). —
+  function schenkenSteuern(jobs){
+    var hatFertig = (jobs || []).some(function(job){ return job && job.status === "done"; });
+    var k = document.getElementById("schenken-karte");
+    if (k && hatFertig) k.style.display = "";
+  }
+
   var doneGesehen = null;
   function seiteAktualisieren(jobs){
     var jetzt = {};
@@ -419,6 +427,7 @@
       }
       jobsZeigen(j.jobs || []);
       seiteAktualisieren(j.jobs || []);
+      schenkenSteuern(j.jobs || []);
     } catch(e){
       if (erster){ app.style.display = ""; } // Netzproblem: Bereich trotzdem zeigen
     }
@@ -652,10 +661,34 @@
     verlauf.scrollTop = verlauf.scrollHeight;
     return el;
   }
-  bubble("assistant", "Hallo! 🌿 Ich bin dein persönlicher Berater rund um deine Website. Frag mich alles — zu Texten, Aufbau oder wie du besser gefunden wirst. Und wenn du etwas ändern lassen möchtest, sag's mir einfach, dann nehme ich es für dich auf.");
+  // — Begrüßung: beim ERSTEN Besuch seiten-bewusst (der Berater liest die Startseite),
+  //   danach ruhig & sofort. Bei Fehler still auf eine schlichte Begrüßung zurückfallen. —
+  var OPENER_INSTR = "[Hinweis, den du NICHT erwähnst: Der Kunde hat gerade seinen Kundenbereich geöffnet. Begrüße ihn herzlich in 2–4 Sätzen, beziehe dich dabei konkret und positiv auf EINEN Punkt seiner aktuellen Startseite (zeig, dass du sie kennst — ohne Fakten zu erfinden), und frage mit genau EINER Frage, womit er anfangen möchte.]";
+  async function openerZeigen(){
+    var schonDa = false; try { schonDa = !!localStorage.getItem("lc-opener-done"); } catch(e){}
+    if (schonDa){
+      bubble("assistant", "Schön, dass du wieder da bist! 🌿 Frag mich alles rund um deine Seite — oder sag einfach, was ich für dich ändern soll.");
+      return;
+    }
+    messages.push({role:"user", content: OPENER_INSTR});
+    beschaeftigt = true; sendBtn.disabled = true;
+    var txt = await streamAntwort({stillBeiFehler:true});
+    beschaeftigt = false; sendBtn.disabled = false;
+    if (txt){ try { localStorage.setItem("lc-opener-done", "1"); } catch(e){} }
+    else { messages = []; bubble("assistant", "Hallo! 🌿 Ich bin dein persönlicher Berater rund um deine Website. Frag mich alles — oder sag einfach, was ich für dich ändern soll."); }
+  }
+  openerZeigen();
 
-  // Streamt die Assistenten-Antwort (setzt voraus: letzte messages-Zeile = user). Gibt den Text zurück.
-  async function streamAntwort(){
+  // Blendet den technischen Bereitschafts-Marker aus der Anzeige aus (auch als Teil-Marker
+  // während des Streamens). Der Rohtext bleibt für die Marker-Erkennung erhalten.
+  var AEND_MARKER = "[[AENDERUNG_BEREIT]]";
+  function markerWeg(s){
+    return String(s).replace(/\s*\[\[AENDERUNG_BEREIT\]\]\s*/g, " ").replace(/\[\[[A-Z_]*\]?$/, "").replace(/[ \t]+$/, "");
+  }
+
+  // Streamt die Assistenten-Antwort (setzt voraus: letzte messages-Zeile = user). Gibt den ROH-Text zurück.
+  // opts.stillBeiFehler: bei Fehlern keine Fehler-Blase zeigen (für die Auto-Begrüßung).
+  async function streamAntwort(opts){
     tipp.classList.add("an");
     var antwortEl = null, antwortText = "";
     try {
@@ -664,7 +697,7 @@
       if (ct.indexOf("text/event-stream") === -1){
         var j = await r.json().catch(function(){ return {}; });
         tipp.classList.remove("an");
-        bubble("assistant", j.meldung || "Hoppla — magst du es gleich noch einmal versuchen?");
+        if (!(opts && opts.stillBeiFehler)) bubble("assistant", j.meldung || "Hoppla — magst du es gleich noch einmal versuchen?");
       } else {
         var reader = r.body.getReader(); var dec = new TextDecoder(); var rest = "";
         while (true){
@@ -677,7 +710,7 @@
               var ev = JSON.parse(zeilen[i].slice(5).trim());
               if (ev.delta){
                 if (!antwortEl){ tipp.classList.remove("an"); antwortEl = bubble("assistant", ""); }
-                antwortText += ev.delta; antwortEl.innerHTML = kiMd(antwortText);
+                antwortText += ev.delta; antwortEl.innerHTML = kiMd(markerWeg(antwortText));
                 verlauf.scrollTop = verlauf.scrollHeight;
               }
             } catch(e){}
@@ -686,10 +719,10 @@
       }
     } catch(e){
       tipp.classList.remove("an");
-      bubble("assistant", "Verbindungsproblem — bitte gleich noch einmal. Zur Not erreichst du uns immer unter info@lechcode.de.");
+      if (!(opts && opts.stillBeiFehler)) bubble("assistant", "Verbindungsproblem — bitte gleich noch einmal. Zur Not erreichst du uns immer unter info@lechcode.de.");
     }
     tipp.classList.remove("an");
-    if (antwortText) messages.push({role:"assistant", content:antwortText});
+    if (antwortText) messages.push({role:"assistant", content: markerWeg(antwortText)});
     return antwortText;
   }
 
@@ -700,8 +733,9 @@
     eingabe.value = ""; eingabe.style.height = "auto";
     messages.push({role:"user", content:text});
     bubble("user", text);
-    await streamAntwort();
+    var raw = await streamAntwort();
     beschaeftigt = false; sendBtn.disabled = false;
+    if (raw && raw.indexOf(AEND_MARKER) !== -1 && !beauftragenBox.classList.contains("an")) zusammenfassen();
   }
 
   // — Sprachnachricht —
@@ -723,7 +757,8 @@
             var text = await transkribieren(daten.blob);
             vb.setText(text);
             messages.push({role:"user", content:text});
-            await streamAntwort();
+            var raw = await streamAntwort();
+            if (raw && raw.indexOf(AEND_MARKER) !== -1 && !beauftragenBox.classList.contains("an")) zusammenfassen();
           } catch(e){
             vb.setFehler(e.message || "Konnte die Sprachnachricht nicht verstehen — magst du es tippen?");
           }
@@ -744,16 +779,22 @@
     try {
       var r = await api("/dashboard-chat", {method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({messages: messages, finalize:true})});
       var j = await r.json();
-      var aend = (j.ok && j.request && Array.isArray(j.request.aenderungen)) ? j.request.aenderungen : [];
-      if (aend.length){
-        letzterRequest = j.request;
-        var liste = aend.map(function(a){ return "• " + a.bereich + ": " + a.wunsch; });
-        document.getElementById("beauftragen-text").innerHTML = "<b>Das würde ich für dich ändern:</b><br>" +
-          liste.map(function(z){ return z.replace(/</g,"&lt;"); }).join("<br>");
-        beauftragenBox.classList.add("an");
-        verlauf.scrollTop = verlauf.scrollHeight;
+      if (!j.ok){
+        // Finalize-Fehler (z. B. Zusammenfassung nicht lesbar) — NICHT als „keine Änderung“ ausgeben,
+        // sonst geht ein klarer Wunsch stumm verloren.
+        bubble("assistant", "Das Zusammenfassen hat gerade nicht geklappt — magst du gleich noch einmal auf „Änderung beauftragen“ tippen? Zur Not sind wir unter info@lechcode.de für dich da.");
       } else {
-        bubble("assistant", "Ich hab gerade keine konkrete Änderung erkannt — beschreib mir kurz, was genau ich ändern soll (z. B. „Öffnungszeiten im Footer auf Mo–Fr 9–18 Uhr“), dann nehme ich es für dich auf.");
+        var aend = (j.request && Array.isArray(j.request.aenderungen)) ? j.request.aenderungen : [];
+        if (aend.length){
+          letzterRequest = j.request;
+          var liste = aend.map(function(a){ return "• " + a.bereich + ": " + a.wunsch; });
+          document.getElementById("beauftragen-text").innerHTML = "<b>Das würde ich für dich ändern:</b><br>" +
+            liste.map(function(z){ return z.replace(/</g,"&lt;"); }).join("<br>");
+          beauftragenBox.classList.add("an");
+          verlauf.scrollTop = verlauf.scrollHeight;
+        } else {
+          bubble("assistant", "Ich hab gerade keine konkrete Änderung erkannt — beschreib mir kurz, was genau ich ändern soll (z. B. „Öffnungszeiten im Footer auf Mo–Fr 9–18 Uhr“), dann nehme ich es für dich auf.");
+        }
       }
     } catch(e){
       bubble("assistant", "Das hat gerade nicht geklappt — magst du es gleich noch einmal versuchen?");
