@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<!--
+  ╔══════════════════════════════════════════════════════════════════╗
+  ║  LECHCODE — Mein Bereich (Kunden-Dashboard)                       ║
+  ║  Generisches Template — wird per lc-dashboard-install.sh <slug>   ║
+  ║  UNVERÄNDERT in jedes Kundenrepo kopiert. Personalisierung läuft  ║
+  ║  zur Laufzeit über den Worker (Magic-Link-Token → Name/Slug).     ║
+  ║  Zugang:  mein-bereich.html#k=<token>   (Link kommt von uns)      ║
+  ║  Selbst-tragend: Systemschriften, keine Requests außer LC_API.    ║
+  ╚══════════════════════════════════════════════════════════════════╝
+-->
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Mein Bereich · Lechcode</title>
+  <meta name="theme-color" content="#16130c" />
+  <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA2NCA2NCc+PHJlY3Qgd2lkdGg9JzY0JyBoZWlnaHQ9JzY0JyByeD0nMTUnIGZpbGw9JyMxZjFiMTInLz48Y2lyY2xlIGN4PSczMicgY3k9JzMyJyByPScyMi41JyBmaWxsPSdub25lJyBzdHJva2U9JyNlN2I5NjQnIHN0cm9rZS13aWR0aD0nMy40Jy8+PHBhdGggZD0nTTE1IDM2IEMgMjIgMjgsIDI5IDI4LCAzMyAzNCBDIDM3IDQwLCA0NCA0MCwgNTAgMzEnIGZpbGw9J25vbmUnIHN0cm9rZT0nI2U3Yjk2NCcgc3Ryb2tlLXdpZHRoPSc0LjInIHN0cm9rZS1saW5lY2FwPSdyb3VuZCcgc3Ryb2tlLWxpbmVqb2luPSdyb3VuZCcvPjxjaXJjbGUgY3g9JzQ0JyBjeT0nMTguNScgcj0nMy40JyBmaWxsPScjZTg5MjNmJy8+PC9zdmc+" />
+  <style>
+  :root{
+    /* Helles Theme in Homepage-Beige (lechcode.de --cream #f7efe0) */
+    --night:#f7efe0; --night-2:#fffaf0; --panel:#fbf3e3; --panel-2:#f0e4cf;
+    --bone:#2a2218; --bone-dim:#544a38; --muted:#786c52;
+    --amber:#e8923f; --ember:#d97a2b; --gold:#b77e28;
+    --gruen:#7aa259; --line:rgba(74,58,34,.18);
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,monospace;
+    --radius:16px; --radius-lg:22px; --pill:999px;
+    --focus:0 0 0 3px rgba(232,146,63,.45);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--night);color:var(--bone);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100dvh;}
+  h1,h2,h3{line-height:1.2;letter-spacing:-.02em;color:#241d12;text-wrap:balance;}
+  a{color:var(--ember);text-decoration:underline;text-underline-offset:3px;}
+  img,svg{display:block;max-width:100%;}
+  .wrap{width:min(760px,94vw);margin-inline:auto;}
+  .kopfzeile{position:sticky;top:0;z-index:40;background:rgba(247,239,224,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+  .kopfzeile .wrap{height:60px;display:flex;align-items:center;justify-content:space-between;}
+  .wm{font-weight:800;letter-spacing:-.04em;font-size:19px;}
+  .wm .code{color:var(--gold);font-family:var(--mono);}
+  .kopfzeile .hilfe{font-size:13px;color:var(--bone-dim);text-decoration:none;}
+  .kopfzeile .hilfe:hover{color:var(--bone);}
+
+  main{padding:clamp(22px,4vw,40px) 0 60px;display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(18px,3vw,28px);}
+  .karte{background:var(--night-2);border:1px solid var(--line);border-radius:var(--radius-lg);padding:clamp(18px,3vw,26px);}
+  .karte h2{font-size:clamp(19px,2.4vw,22px);margin-bottom:6px;}
+  .karte .unter{color:var(--muted);font-size:14px;margin-bottom:16px;}
+  .gruss h1{font-size:clamp(24px,4vw,32px);}
+  .gruss p{color:var(--bone-dim);margin-top:6px;}
+
+  .btn{display:inline-flex;align-items:center;gap:8px;cursor:pointer;border:none;
+    background:linear-gradient(180deg,var(--ember),var(--amber));color:#2a1808;
+    font-weight:700;font-size:15px;padding:12px 20px;border-radius:var(--pill);font-family:var(--sans);
+    box-shadow:0 12px 22px -10px rgba(232,146,63,.55);transition:transform .2s,opacity .2s;}
+  .btn:hover{transform:translateY(-1px);}
+  .btn:focus-visible{outline:none;box-shadow:var(--focus);}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
+  .btn-ghost{background:transparent;color:var(--bone-dim);box-shadow:inset 0 0 0 1.5px var(--line);}
+
+  /* Zeitleiste */
+  .job{border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;display:grid;gap:4px;margin-bottom:10px;background:var(--panel);}
+  .job .zeile1{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap;}
+  .job .was{font-weight:600;}
+  .job .wann{color:var(--muted);font-size:12.5px;font-family:var(--mono);}
+  .schritte{display:flex;align-items:center;gap:0;margin-top:8px;}
+  .schritt{display:flex;align-items:center;gap:0;flex:1;}
+  .punkt{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:11px;flex:none;background:var(--night-2);color:var(--muted);}
+  .strich{height:2px;background:var(--line);flex:1;}
+  .schritt.aktiv .punkt{border-color:var(--amber);color:var(--amber);}
+  .schritt.fertig .punkt{background:var(--gruen);border-color:var(--gruen);color:#1c2413;}
+  .schritt.fertig .strich,.schritt.aktiv .strich{background:var(--amber);}
+  .schritt-namen{display:flex;justify-content:space-between;margin-top:6px;color:var(--muted);font-size:11.5px;}
+  .job .live-link{margin-top:8px;font-size:14px;}
+  .job.problem{border-color:rgba(189,123,84,.5);}
+  .leer{color:var(--muted);font-size:14.5px;}
+
+  /* Chat — eigene Unterhaltungs-Fläche */
+  .chat-verlauf{background:var(--night);border:1px solid var(--line);border-radius:16px;
+    min-height:150px;max-height:380px;overflow-y:auto;display:flex;flex-direction:column;gap:13px;
+    padding:16px;margin-bottom:12px;scroll-behavior:smooth;}
+  .msg-row{display:flex;gap:9px;align-items:flex-end;max-width:min(94%,620px);align-self:flex-start;}
+  .msg-avatar{flex:none;width:28px;height:28px;border-radius:50%;background:var(--panel-2);
+    border:1px solid rgba(231,185,100,.3);display:grid;place-items:center;margin-bottom:2px;}
+  .msg-avatar svg{width:17px;height:17px;color:var(--gold);}
+  .msg{padding:11px 15px;border-radius:16px;font-size:15px;line-height:1.55;white-space:pre-wrap;overflow-wrap:break-word;}
+  .msg-row .msg{min-width:0;}
+  .msg.ki{align-self:flex-start;background:var(--panel-2);color:var(--bone);border-bottom-left-radius:5px;}
+  .msg.du{align-self:flex-end;max-width:min(78%,480px);
+    background:linear-gradient(180deg,rgba(232,146,63,.22),rgba(232,146,63,.12));
+    border:1px solid rgba(232,146,63,.38);color:#3a2c17;border-bottom-right-radius:5px;}
+  .tipp{display:none;align-self:flex-start;padding:2px 6px;color:var(--muted);font-size:13px;}
+  .tipp.an{display:block;}
+
+  /* Composer — ein zusammenhängendes Eingabefeld (wie die Aufnahme-Leiste) */
+  .chat-eingabe{display:flex;}
+  .composer{flex:1;min-width:0;display:flex;align-items:flex-end;gap:4px;background:var(--night-2);
+    border:1px solid rgba(231,185,100,.22);border-radius:18px;padding:6px 6px 6px 6px;
+    transition:border-color .2s,box-shadow .2s;}
+  .composer:focus-within{border-color:rgba(231,185,100,.5);box-shadow:0 0 0 3px rgba(232,146,63,.13);}
+  .composer textarea{flex:1;min-width:0;resize:none;border:none;background:transparent;color:var(--bone);
+    font-family:var(--sans);font-size:16px;line-height:1.45;padding:10px 4px;min-height:24px;max-height:120px;}
+  .composer textarea::placeholder{color:var(--muted);white-space:nowrap;text-overflow:ellipsis;}
+  .composer textarea:focus{outline:none;}
+  .composer-send{flex:none;width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;
+    background:linear-gradient(180deg,var(--ember),var(--amber));color:#2a1808;display:grid;place-items:center;
+    box-shadow:inset 0 1px 0 rgba(255,220,170,.5),0 8px 16px -8px rgba(232,146,63,.6);transition:transform .2s,opacity .2s;}
+  .composer-send:hover{transform:translateY(-1px);}
+  .composer-send:focus-visible{outline:none;box-shadow:var(--focus);}
+  .composer-send[disabled]{opacity:.4;cursor:default;transform:none;}
+  .composer-send svg{width:19px;height:19px;}
+  .chat-tools{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:14px;color:var(--muted);font-size:13px;}
+  .chat-tools .btn-ghost{font-size:14px;padding:9px 18px;white-space:nowrap;}
+  .chat-verlauf::-webkit-scrollbar{width:8px;}
+  .chat-verlauf::-webkit-scrollbar-thumb{background:rgba(231,185,100,.18);border-radius:8px;}
+  .chat-verlauf::-webkit-scrollbar-track{background:transparent;}
+  .beauftragen{margin-top:12px;display:none;}
+  .beauftragen.an{display:block;}
+  .beauftragen .kasten{background:var(--panel);border:1px solid rgba(232,146,63,.35);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px;font-size:14.5px;}
+  .beauftragen .kasten b{color:var(--gold);}
+
+  /* Upload */
+  .drop{border:2px dashed var(--line);border-radius:var(--radius);padding:22px;text-align:center;cursor:pointer;transition:border-color .2s;}
+  .drop:hover,.drop.zieht{border-color:var(--amber);}
+  .drop input{display:none;}
+  .drop .gross{font-size:15px;font-weight:600;}
+  .drop .klein{color:var(--muted);font-size:13px;margin-top:4px;}
+  .vorschau{display:none;margin-top:14px;gap:14px;align-items:flex-start;}
+  .vorschau.an{display:flex;flex-wrap:wrap;}
+  .vorschau img{width:110px;height:110px;object-fit:cover;border-radius:12px;border:1px solid var(--line);}
+  .datei-chip{display:none;align-items:center;gap:11px;width:110px;padding:14px 10px;border-radius:12px;border:1px solid var(--line);background:var(--panel);flex-direction:column;text-align:center;}
+  .datei-chip.an{display:flex;}
+  .datei-icon{font-size:30px;line-height:1;}
+  .datei-meta{display:flex;flex-direction:column;gap:2px;min-width:0;width:100%;}
+  .datei-meta #datei-name{font-size:12.5px;font-weight:600;word-break:break-word;line-height:1.3;}
+  .datei-meta small{color:var(--muted);font-size:11.5px;font-family:var(--mono);}
+  .vorschau .rechts{flex:1;min-width:220px;display:grid;gap:8px;align-content:start;}
+  .feld-label{font-size:14px;color:var(--bone-dim);}
+  .vorschau textarea{border:1px solid var(--line);background:var(--panel);color:var(--bone);font-family:var(--sans);font-size:15px;line-height:1.45;border-radius:11px;padding:10px 12px;width:100%;resize:vertical;min-height:78px;}
+  .vorschau textarea:focus-visible{outline:none;box-shadow:var(--focus);}
+  .upload-status{margin-top:10px;font-size:14px;color:var(--gruen);display:none;}
+  .upload-status.an{display:block;}
+  .upload-status.fehler{color:#f0b090;}
+
+  /* FAQ */
+  details{border-bottom:1px solid var(--line);padding:12px 2px;}
+  details:last-of-type{border-bottom:none;}
+  summary{cursor:pointer;font-weight:600;font-size:15px;list-style:none;display:flex;justify-content:space-between;gap:10px;}
+  summary::after{content:"+";color:var(--gold);font-family:var(--mono);}
+  details[open] summary::after{content:"–";}
+  details p{color:var(--bone-dim);font-size:14.5px;margin-top:8px;}
+
+  /* Zugang fehlt / Fehler */
+  .vollbild{display:none;place-items:center;min-height:70dvh;text-align:center;padding:24px;}
+  .vollbild.an{display:grid;}
+  .vollbild .inhalt{max-width:420px;display:grid;gap:12px;justify-items:center;}
+  .vollbild .zeichen{width:56px;height:56px;border-radius:50%;background:var(--panel);border:1px solid var(--line);display:grid;place-items:center;font-size:26px;}
+
+  footer{border-top:1px solid var(--line);padding:20px 0 32px;color:var(--muted);font-size:13px;}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+  /* ===== Sprachnachricht ===== */
+  .lc-mic{flex:none;width:40px;height:40px;border-radius:50%;border:none;background:transparent;color:var(--gold);display:grid;place-items:center;cursor:pointer;transition:color .2s,background .2s;}
+  .lc-mic:hover{color:var(--ember);background:rgba(231,185,100,.09);}
+  .lc-mic:focus-visible{outline:none;box-shadow:var(--focus);}
+  .lc-mic svg{width:21px;height:21px;}
+  .lc-rec{flex:1;min-width:0;display:flex;align-items:center;gap:10px;background:var(--night-2);border:1px solid rgba(231,185,100,.32);border-radius:18px;padding:7px 8px 7px 14px;min-height:52px;}
+  .lc-rec-dot{width:11px;height:11px;border-radius:50%;background:var(--amber);flex:none;animation:lc-pulse 1.4s infinite;}
+  @keyframes lc-pulse{0%{box-shadow:0 0 0 0 rgba(232,146,63,.55)}70%{box-shadow:0 0 0 9px rgba(232,146,63,0)}100%{box-shadow:0 0 0 0 rgba(232,146,63,0)}}
+  .lc-rec-time{font-family:var(--mono);font-size:13px;color:var(--bone-dim);flex:none;min-width:36px;font-variant-numeric:tabular-nums;}
+  .lc-rec-wave{flex:1;display:flex;align-items:center;gap:3px;height:26px;overflow:hidden;}
+  .lc-rec-wave i{flex:1;min-width:2px;max-width:6px;height:10%;background:linear-gradient(180deg,var(--ember),var(--amber));border-radius:2px;transition:height .07s linear;}
+  .lc-rec-btn{flex:none;width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;display:grid;place-items:center;font-size:16px;line-height:1;}
+  .lc-rec-cancel{background:transparent;color:var(--bone-dim);border:1px solid rgba(231,185,100,.22);}
+  .lc-rec-cancel:hover{color:#f0b090;}
+  .lc-rec-send{background:linear-gradient(180deg,var(--ember),var(--amber));color:#2a1808;box-shadow:0 8px 18px -8px rgba(232,146,63,.6);}
+  .lc-rec-btn:focus-visible,.lc-mic:focus-visible{outline:none;box-shadow:var(--focus);}
+  .msg.voice{display:flex;flex-direction:column;gap:8px;min-width:min(210px,82%);}
+  .lc-vrow{display:flex;align-items:center;gap:10px;}
+  .lc-vplay{flex:none;width:32px;height:32px;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(180deg,var(--ember),var(--amber));color:#2a1808;display:grid;place-items:center;font-size:12px;}
+  .lc-vplay:focus-visible{outline:none;box-shadow:var(--focus);}
+  .lc-vwave{flex:1;display:flex;align-items:center;gap:2px;height:24px;}
+  .lc-vwave i{flex:1;min-width:2px;background:rgba(231,185,100,.42);border-radius:2px;transition:background .12s;}
+  .lc-vwave i.on{background:linear-gradient(180deg,var(--ember),var(--amber));}
+  .lc-vdur{font-family:var(--mono);font-size:12px;color:var(--bone-dim);flex:none;font-variant-numeric:tabular-nums;}
+  .lc-vtext{line-height:1.5;}
+  .lc-vtext.warten{color:var(--bone-dim);font-style:italic;}
+  .lc-vtext .lc-mini{opacity:.6;margin-right:5px;}
+  @media (prefers-reduced-motion:reduce){.lc-rec-dot{animation:none;}.lc-rec-wave i,.lc-vwave i{transition:none;}}
+  @media (max-width:640px){ .vorschau img,.datei-chip{width:100%;} }
+  </style>
+</head>
+<body>
+
+  <header class="kopfzeile">
+    <div class="wrap">
+      <span class="wm">lech<span class="code">code</span> · Mein Bereich</span>
+      <a class="hilfe" href="mailto:info@lechcode.de">Hilfe: info@lechcode.de</a>
+    </div>
+  </header>
+
+  <!-- Zugang fehlt -->
+  <div class="vollbild" id="kein-zugang">
+    <div class="inhalt">
+      <div class="zeichen">🔑</div>
+      <h1 style="font-size:22px;">Dein persönlicher Link fehlt</h1>
+      <p style="color:var(--bone-dim);font-size:15px;">Diesen Bereich öffnest du über deinen persönlichen Zugangslink — den haben wir dir per E-Mail geschickt. Nicht zur Hand? Schreib uns kurz, wir schicken sofort einen neuen.</p>
+      <a class="btn" href="mailto:info@lechcode.de?subject=Neuer%20Zugangslink">Neuen Link anfordern</a>
+    </div>
+  </div>
+
+  <main class="wrap" id="app" style="display:none;">
+
+    <section class="gruss">
+      <h1 id="gruss-titel">Schön, dass du da bist!</h1>
+      <p>Hier ist dein persönlicher KI-Berater: Frag ihn alles rund um deine Website, lad Bilder hoch oder sag einfach, was geändert werden soll — den Rest macht unsere Automatik, meist in wenigen Minuten bis Stunden.</p>
+    </section>
+
+    <section class="karte" id="status-karte">
+      <h2>Deine Aufträge</h2>
+      <p class="unter">Hier siehst du live, was gerade passiert. Die Anzeige aktualisiert sich von selbst.</p>
+      <div id="jobs"><p class="leer">Noch keine Aufträge — schreib unten einfach deinen ersten Wunsch in den Chat. 🌿</p></div>
+    </section>
+
+    <section class="karte">
+      <h2>Dein KI-Berater 💬</h2>
+      <p class="unter">Frag mich alles rund um deine Website, deine Texte und wie du besser gefunden wirst — oder sag mir einfach, was ich für dich ändern soll.</p>
+      <div class="chat-verlauf" id="chat-verlauf"></div>
+      <p class="tipp" id="tipp">… schreibt</p>
+      <div class="chat-eingabe" id="chat-eingabe-zeile">
+        <div class="composer" id="composer">
+          <button class="lc-mic" id="chat-mic" type="button" aria-label="Sprachnachricht aufnehmen" title="Sprachnachricht aufnehmen">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 19v3"/></svg>
+          </button>
+          <textarea id="chat-eingabe" rows="1" placeholder="Schreib oder sprich …" aria-label="Nachricht an deinen Berater"></textarea>
+          <button class="composer-send" id="chat-senden" type="button" aria-label="Senden">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 12h13M13 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="chat-tools">
+        <span>Möchtest du etwas ändern lassen?</span>
+        <button class="btn btn-ghost" id="beauftragen-trigger" type="button">Änderung beauftragen ✓</button>
+      </div>
+      <div class="beauftragen" id="beauftragen">
+        <div class="kasten" id="beauftragen-text"></div>
+        <button class="btn" id="beauftragen-btn">Ja, so beauftragen ✓</button>
+        <button class="btn btn-ghost" id="beauftragen-abbruch" style="margin-left:8px;">Weiter besprechen</button>
+      </div>
+    </section>
+
+    <section class="karte">
+      <h2>Dateien hochladen 📎</h2>
+      <p class="unter">Bilder, PDFs oder andere Dateien für deine Seite — leg sie hier ab und sag kurz, was damit passieren soll.</p>
+      <label class="drop" id="drop">
+        <input type="file" id="datei" accept="image/*,.pdf,.doc,.docx,.txt,.rtf,.csv,.ppt,.pptx,.xls,.xlsx,.svg,.heic">
+        <div class="gross">Datei auswählen oder hierher ziehen</div>
+        <div class="klein">Bilder, PDF &amp; Dokumente · bis 12 MB · bitte nur Dateien, die auf die Website dürfen</div>
+      </label>
+      <div class="vorschau" id="vorschau">
+        <img id="vorschau-bild" alt="Vorschau deiner Datei">
+        <div class="datei-chip" id="datei-chip">
+          <span class="datei-icon" id="datei-icon">📄</span>
+          <span class="datei-meta"><span id="datei-name"></span><small id="datei-groesse"></small></span>
+        </div>
+        <div class="rechts">
+          <label class="feld-label" for="anweisung">Was sollen wir mit dieser Datei machen?</label>
+          <textarea id="anweisung" rows="2" placeholder="z. B. „als großes Bild ganz oben auf die Startseite“, „als PDF-Download unter Angebote verlinken“ oder „ersetzt das aktuelle Team-Foto“"></textarea>
+          <button class="btn" id="hochladen">Hochladen →</button>
+        </div>
+      </div>
+      <p class="upload-status" id="upload-status"></p>
+    </section>
+
+    <section class="karte" id="schenken-karte">
+      <style>
+        #schenken-karte .schenk-form{display:grid;gap:12px;margin-top:6px;}
+        #schenken-karte .schenk-in{width:100%;border:1px solid var(--line);background:var(--panel);color:var(--bone);font-family:var(--sans);font-size:15px;border-radius:11px;padding:10px 12px;}
+        #schenken-karte textarea.schenk-in{resize:vertical;min-height:56px;line-height:1.45;}
+        #schenken-karte .schenk-feld{display:grid;gap:5px;}
+        #schenken-karte .schenk-status{font-size:14px;color:var(--gruen,#8FB98A);display:none;margin-top:2px;}
+        #schenken-karte .schenk-status.an{display:block;}
+        #schenken-karte .schenk-status.fehler{color:#f0b090;}
+      </style>
+      <h2>Weiterschenken 🎁</h2>
+      <p class="unter">Kennst du jemanden, dessen Website nicht zeigt, wie gut seine Arbeit ist? Nenn uns den Namen — wir bauen vorab eine fertige Vorschau, und <strong>du verschenkst sie.</strong> Kostet dich nichts. Wird ein Auftrag daraus, gibt’s als Dankeschön <strong>100 € Gutschrift</strong> oder eine <strong>100-€-Spende</strong> an dein Herzensprojekt — du wählst.</p>
+      <div class="schenk-form">
+        <div class="schenk-feld">
+          <label class="feld-label" for="schenk-name">Name</label>
+          <input class="schenk-in" id="schenk-name" type="text" autocomplete="off" placeholder="z. B. Maria Muster">
+        </div>
+        <div class="schenk-feld">
+          <label class="feld-label" for="schenk-was">Was macht sie/er? (oder alte Website)</label>
+          <input class="schenk-in" id="schenk-was" type="text" autocomplete="off" placeholder="z. B. Heilpraktikerin in Landsberg · alte-seite.de">
+        </div>
+        <div class="schenk-feld">
+          <label class="feld-label" for="schenk-warum">Warum passt sie/er zu euch? (optional)</label>
+          <textarea class="schenk-in" id="schenk-warum" rows="2" placeholder="Ein Satz reicht 🙂"></textarea>
+        </div>
+        <button class="btn" id="schenk-senden" type="button">An Lechcode weitergeben →</button>
+        <p class="schenk-status" id="schenk-status"></p>
+      </div>
+    </section>
+
+    <section class="karte">
+      <h2>Häufige Fragen</h2>
+      <details><summary>Was kostet eine Änderung?</summary><p>Nichts extra — kleine Änderungen sind in deiner Pflege (19 €/Monat) einfach drin. Schreib so oft du magst.</p></details>
+      <details><summary>Wie schnell ist meine Änderung online?</summary><p>Meist innerhalb weniger Minuten bis Stunden. Du siehst den Fortschritt oben unter „Deine Aufträge“ — und bekommst dort auch den Link, sobald es live ist.</p></details>
+      <details><summary>Kann ich etwas kaputt machen?</summary><p>Nein. Jede Änderung durchläuft automatisch unsere Qualitätsprüfung, und wir können jederzeit alles wiederherstellen. Trau dich!</p></details>
+      <details><summary>Was, wenn ich etwas Größeres will?</summary><p>Schreib es einfach in den Chat — bei größeren Wünschen (neue Seiten, Umbau, Shop) melden wir uns persönlich und besprechen alles mit dir.</p></details>
+      <details><summary>Mein Link ist weg — was jetzt?</summary><p>Kurze Mail an <a href="mailto:info@lechcode.de">info@lechcode.de</a>, und du bekommst sofort einen neuen. Der alte wird dann ungültig.</p></details>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>lech<span style="color:var(--gold);font-family:var(--mono);">code</span> · Code mit Seele · Landsberg am Lech</span>
+      <span><a href="mailto:info@lechcode.de">info@lechcode.de</a></span>
+    </div>
+  </footer>
+
+<script>
+(function(){
+  "use strict";
+  var LC_API = "https://lechcode-api.nameless-waterfall-55e5.workers.dev"; /* LC-API-URL — wird von lechcode-plattform/bin/set-api-url.sh gesetzt */
+
+  var STATUS_TEXT = { pending:"empfangen", claimed:"wird gebaut", running:"wird gebaut", qa:"Qualitätsprüfung", approved:"wird gebaut", done:"live ✓", failed:"wir schauen persönlich drauf", rejected:"wir schauen persönlich drauf" };
+  var SCHRITTE = ["empfangen","wird gebaut","Qualitätsprüfung","live ✓"];
+
+  // — Token: aus #k=… übernehmen, in localStorage sichern, URL säubern —
+  var token = "";
+  var m = (location.hash || "").match(/[#&]k=([A-Za-z0-9]+)/);
+  if (m){ token = m[1]; try{ localStorage.setItem("lc-zugang", token); }catch(e){}
+    history.replaceState(null, "", location.pathname + location.search); }
+  else { try{ token = localStorage.getItem("lc-zugang") || ""; }catch(e){} }
+
+  var app = document.getElementById("app");
+  var keinZugang = document.getElementById("kein-zugang");
+  function zeigeKeinZugang(){ keinZugang.classList.add("an"); app.style.display = "none"; }
+  if (!token){ zeigeKeinZugang(); return; }
+
+  function api(pfad, opts){
+    opts = opts || {};
+    opts.headers = Object.assign({"authorization":"Bearer " + token}, opts.headers || {});
+    return fetch(LC_API + pfad, opts);
+  }
+
+  // — Status laden + Polling —
+  var kundenName = "", anrede = "";
+  async function statusLaden(erster){
+    try {
+      var r = await api("/status");
+      if (r.status === 401){ zeigeKeinZugang(); return; }
+      var j = await r.json();
+      if (!j.ok) throw new Error();
+      if (erster){
+        anrede = j.anrede || (j.name || "").split(" ")[0] || "";
+        document.getElementById("gruss-titel").textContent = anrede ? ("Hallo " + anrede + ", schön dass du da bist!") : "Schön, dass du da bist!";
+        app.style.display = "";
+      }
+      jobsZeigen(j.jobs || []);
+    } catch(e){
+      if (erster){ app.style.display = ""; } // Netzproblem: Bereich trotzdem zeigen
+    }
+  }
+
+  function schrittIndex(status){
+    if (status === "pending") return 0;
+    if (status === "claimed" || status === "running" || status === "approved") return 1;
+    if (status === "qa") return 2;
+    if (status === "done") return 3;
+    return -1; // failed/rejected
+  }
+
+  function jobsZeigen(jobs){
+    var box = document.getElementById("jobs");
+    if (!jobs.length) return;
+    box.innerHTML = "";
+    jobs.forEach(function(job){
+      var el = document.createElement("div");
+      var idx = schrittIndex(job.status);
+      el.className = "job" + (idx < 0 ? " problem" : "");
+      var kopf = document.createElement("div"); kopf.className = "zeile1";
+      var was = document.createElement("span"); was.className = "was"; was.textContent = job.kurz || "Auftrag";
+      var wann = document.createElement("span"); wann.className = "wann"; wann.textContent = (job.created || "").slice(0, 16).replace("T", " · ");
+      kopf.appendChild(was); kopf.appendChild(wann); el.appendChild(kopf);
+
+      if (idx >= 0){
+        var leiste = document.createElement("div"); leiste.className = "schritte";
+        for (var s = 0; s < 4; s++){
+          var sch = document.createElement("div");
+          sch.className = "schritt" + (s < idx ? " fertig" : s === idx ? (idx === 3 ? " fertig" : " aktiv") : "");
+          var p = document.createElement("span"); p.className = "punkt"; p.textContent = (s < idx || idx === 3 && s === 3) ? "✓" : (s + 1);
+          sch.appendChild(p);
+          if (s < 3){ var st = document.createElement("span"); st.className = "strich"; sch.appendChild(st); }
+          leiste.appendChild(sch);
+        }
+        el.appendChild(leiste);
+        var namen = document.createElement("div"); namen.className = "schritt-namen";
+        SCHRITTE.forEach(function(n){ var sp = document.createElement("span"); sp.textContent = n; namen.appendChild(sp); });
+        el.appendChild(namen);
+      } else {
+        var info = document.createElement("div"); info.style.cssText = "color:var(--muted);font-size:14px;margin-top:4px;";
+        info.textContent = "Das übernehmen wir persönlich — wir melden uns bei dir. 🤝";
+        el.appendChild(info);
+      }
+      if (job.status === "done" && job.url){
+        var link = document.createElement("div"); link.className = "live-link";
+        var a = document.createElement("a"); a.href = job.url; a.target = "_blank"; a.rel = "noopener";
+        a.textContent = "Ansehen: deine Seite ist aktualisiert →";
+        link.appendChild(a); el.appendChild(link);
+      }
+      box.appendChild(el);
+    });
+  }
+  statusLaden(true);
+  setInterval(function(){ statusLaden(false); }, 30000);
+
+  // — Chat —
+  var messages = [];
+  var beschaeftigt = false;
+  var verlauf = document.getElementById("chat-verlauf");
+  var tipp = document.getElementById("tipp");
+  var eingabe = document.getElementById("chat-eingabe");
+  var sendBtn = document.getElementById("chat-senden");
+  var micBtn = document.getElementById("chat-mic");
+  var zeileEl = document.getElementById("chat-eingabe-zeile");
+  var beauftragenBox = document.getElementById("beauftragen");
+  var letzterRequest = null;
+
+  // ===== Sprachnachricht-Bausteine (identisch in berater.html & mein-bereich.html) =====
+  function lcVoiceUnterstuetzt(){ return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder); }
+  function lcFmtZeit(sec){ sec = Math.max(0, Math.round(sec)); var m = Math.floor(sec/60), s = sec%60; return m + ":" + (s<10?"0":"") + s; }
+  function lcBlobB64(blob){ return new Promise(function(res,rej){ var fr = new FileReader(); fr.onload = function(){ res(String(fr.result).split(",")[1]); }; fr.onerror = rej; fr.readAsDataURL(blob); }); }
+
+  function lcAufnahmeStarten(zeile, verstecken, onFertig, onAbbruch, onFehler){
+    navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+      var typen = ["audio/webm;codecs=opus","audio/webm","audio/mp4"];
+      var mime = ""; for (var t=0;t<typen.length;t++){ if (window.MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(typen[t])){ mime = typen[t]; break; } }
+      var rec = mime ? new MediaRecorder(stream, {mimeType:mime}) : new MediaRecorder(stream);
+      var chunks = []; rec.ondataavailable = function(e){ if (e.data && e.data.size) chunks.push(e.data); };
+      var actx = new (window.AudioContext||window.webkitAudioContext)();
+      var ana = actx.createAnalyser(); ana.fftSize = 64;
+      actx.createMediaStreamSource(stream).connect(ana);
+      var freq = new Uint8Array(ana.frequencyBinCount), peaks = [];
+
+      var bar = document.createElement("div"); bar.className = "lc-rec";
+      var cancel = document.createElement("button"); cancel.className = "lc-rec-btn lc-rec-cancel"; cancel.type = "button"; cancel.setAttribute("aria-label","Abbrechen"); cancel.textContent = "✕";
+      var dot = document.createElement("span"); dot.className = "lc-rec-dot";
+      var time = document.createElement("span"); time.className = "lc-rec-time"; time.textContent = "0:00";
+      var wave = document.createElement("div"); wave.className = "lc-rec-wave";
+      var BARS = 22, ibars = []; for (var i=0;i<BARS;i++){ var bi = document.createElement("i"); wave.appendChild(bi); ibars.push(bi); }
+      var send = document.createElement("button"); send.className = "lc-rec-btn lc-rec-send"; send.type = "button"; send.setAttribute("aria-label","Sprachnachricht senden"); send.innerHTML = "→";
+      bar.appendChild(cancel); bar.appendChild(dot); bar.appendChild(time); bar.appendChild(wave); bar.appendChild(send);
+      verstecken.forEach(function(el){ el.style.display = "none"; });
+      zeile.appendChild(bar);
+
+      var start = Date.now(), raf, abgebrochen = false;
+      function tick(){
+        ana.getByteFrequencyData(freq);
+        var sum = 0;
+        for (var i=0;i<BARS;i++){ var v = freq[i]/255; ibars[i].style.height = Math.max(8, v*100) + "%"; sum += v; }
+        peaks.push(sum/BARS);
+        var dauer = (Date.now()-start)/1000; time.textContent = lcFmtZeit(dauer);
+        if (dauer > 90){ beenden(); return; }
+        raf = requestAnimationFrame(tick);
+      }
+      raf = requestAnimationFrame(tick);
+
+      function aufraeumen(){
+        cancelAnimationFrame(raf);
+        try { stream.getTracks().forEach(function(t){ t.stop(); }); } catch(e){}
+        try { actx.close(); } catch(e){}
+        bar.remove(); verstecken.forEach(function(el){ el.style.display = ""; });
+      }
+      function beenden(){
+        var dauer = (Date.now()-start)/1000;
+        rec.onstop = function(){
+          aufraeumen();
+          if (abgebrochen) return;
+          var blob = new Blob(chunks, {type: mime || "audio/webm"});
+          var ziel = 40, out = [], grp = Math.max(1, Math.floor(peaks.length/ziel));
+          for (var k=0;k<ziel;k++){ var a=0,c=0; for (var j=k*grp;j<(k+1)*grp && j<peaks.length;j++){ a+=peaks[j]; c++; } out.push(c?a/c:0); }
+          var max = Math.max.apply(null, out.concat([0.001])); out = out.map(function(v){ return Math.min(1, v/max); });
+          onFertig({blob:blob, url:URL.createObjectURL(blob), dauer:dauer, peaks:out});
+        };
+        try { rec.stop(); } catch(e){ aufraeumen(); }
+      }
+      cancel.addEventListener("click", function(){ abgebrochen = true; beenden(); if (onAbbruch) onAbbruch(); });
+      send.addEventListener("click", function(){ beenden(); });
+      rec.start();
+    }).catch(function(err){
+      var m = (err && err.name === "NotAllowedError")
+        ? "Ich brauche kurz die Erlaubnis fürs Mikrofon — dann klappt die Sprachnachricht. Du kannst natürlich auch einfach tippen."
+        : "Das Mikrofon lässt sich gerade nicht öffnen — magst du stattdessen tippen?";
+      if (onFehler) onFehler(m);
+    });
+  }
+
+  function lcVoiceBubble(verlaufEl, rolleKlasse, daten){
+    var el = document.createElement("div"); el.className = "msg " + rolleKlasse + " voice";
+    var row = document.createElement("div"); row.className = "lc-vrow";
+    var play = document.createElement("button"); play.className = "lc-vplay"; play.type = "button"; play.setAttribute("aria-label","Abspielen"); play.innerHTML = "▶";
+    var wave = document.createElement("div"); wave.className = "lc-vwave";
+    (daten.peaks||[]).forEach(function(p){ var b = document.createElement("i"); b.style.height = Math.max(12, p*100) + "%"; wave.appendChild(b); });
+    var dur = document.createElement("span"); dur.className = "lc-vdur"; dur.textContent = lcFmtZeit(daten.dauer);
+    row.appendChild(play); row.appendChild(wave); row.appendChild(dur);
+    var txt = document.createElement("div"); txt.className = "lc-vtext warten"; txt.textContent = "… wird verstanden";
+    el.appendChild(row); el.appendChild(txt);
+    verlaufEl.appendChild(el); verlaufEl.scrollTop = verlaufEl.scrollHeight;
+
+    var audio = new Audio(daten.url), spielt = false;
+    var bars = [].slice.call(wave.querySelectorAll("i"));
+    audio.addEventListener("timeupdate", function(){
+      var f = audio.currentTime / (audio.duration || daten.dauer || 1);
+      var n = Math.floor(f*bars.length);
+      bars.forEach(function(b,i){ b.classList.toggle("on", i <= n); });
+    });
+    audio.addEventListener("ended", function(){ spielt = false; play.innerHTML = "▶"; bars.forEach(function(b){ b.classList.remove("on"); }); });
+    play.addEventListener("click", function(){ if (spielt){ audio.pause(); spielt = false; play.innerHTML = "▶"; } else { audio.play(); spielt = true; play.innerHTML = "❚❚"; } });
+
+    return {
+      setText: function(t){ txt.classList.remove("warten"); txt.innerHTML = "<span class='lc-mini'>🎤</span>" + String(t).replace(/</g,"&lt;"); verlaufEl.scrollTop = verlaufEl.scrollHeight; },
+      setFehler: function(t){ txt.classList.remove("warten"); txt.style.color = "#f0b090"; txt.textContent = t; }
+    };
+  }
+
+  // Leichte, sichere Formatierung für Berater-Nachrichten: erst HTML escapen,
+  // dann **fett**, Aufzählungszeichen und Zeilenumbrüche rendern (kein rohes HTML).
+  function escHtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  function kiMd(s){
+    var t = escHtml(s);
+    t = t.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    t = t.replace(/^\s*[-•]\s+/gm, "• ");
+    t = t.replace(/\n/g, "<br>");
+    return t;
+  }
+  function bubble(rolle, text){
+    var el = document.createElement("div");
+    el.className = "msg " + (rolle === "user" ? "du" : "ki");
+    if (rolle === "user"){
+      el.textContent = text;
+      verlauf.appendChild(el);
+    } else {
+      el.innerHTML = kiMd(text);
+      // KI-Nachricht mit kleinem Berater-Avatar (Lechcode-Welle)
+      var row = document.createElement("div"); row.className = "msg-row";
+      var av = document.createElement("div"); av.className = "msg-avatar";
+      av.innerHTML = "<svg viewBox='0 0 48 48' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M8 27 C 14 19, 20 19, 24 25 C 28 31, 34 31, 40 22'/></svg>";
+      row.appendChild(av); row.appendChild(el);
+      verlauf.appendChild(row);
+    }
+    verlauf.scrollTop = verlauf.scrollHeight;
+    return el;
+  }
+  bubble("assistant", "Hallo! 🌿 Ich bin dein persönlicher Berater rund um deine Website. Frag mich alles — zu Texten, Aufbau oder wie du besser gefunden wirst. Und wenn du etwas ändern lassen möchtest, sag's mir einfach, dann nehme ich es für dich auf.");
+
+  // Streamt die Assistenten-Antwort (setzt voraus: letzte messages-Zeile = user). Gibt den Text zurück.
+  async function streamAntwort(){
+    tipp.classList.add("an");
+    var antwortEl = null, antwortText = "";
+    try {
+      var r = await api("/dashboard-chat", {method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({messages: messages})});
+      var ct = r.headers.get("content-type") || "";
+      if (ct.indexOf("text/event-stream") === -1){
+        var j = await r.json().catch(function(){ return {}; });
+        tipp.classList.remove("an");
+        bubble("assistant", j.meldung || "Hoppla — magst du es gleich noch einmal versuchen?");
+      } else {
+        var reader = r.body.getReader(); var dec = new TextDecoder(); var rest = "";
+        while (true){
+          var c = await reader.read(); if (c.done) break;
+          rest += dec.decode(c.value, {stream:true});
+          var zeilen = rest.split("\n"); rest = zeilen.pop();
+          for (var i = 0; i < zeilen.length; i++){
+            if (zeilen[i].indexOf("data:") !== 0) continue;
+            try {
+              var ev = JSON.parse(zeilen[i].slice(5).trim());
+              if (ev.delta){
+                if (!antwortEl){ tipp.classList.remove("an"); antwortEl = bubble("assistant", ""); }
+                antwortText += ev.delta; antwortEl.innerHTML = kiMd(antwortText);
+                verlauf.scrollTop = verlauf.scrollHeight;
+              }
+            } catch(e){}
+          }
+        }
+      }
+    } catch(e){
+      tipp.classList.remove("an");
+      bubble("assistant", "Verbindungsproblem — bitte gleich noch einmal. Zur Not erreichst du uns immer unter info@lechcode.de.");
+    }
+    tipp.classList.remove("an");
+    if (antwortText) messages.push({role:"assistant", content:antwortText});
+    return antwortText;
+  }
+
+  async function senden(){
+    var text = eingabe.value.trim();
+    if (!text || beschaeftigt) return;
+    beschaeftigt = true; sendBtn.disabled = true;
+    eingabe.value = ""; eingabe.style.height = "auto";
+    messages.push({role:"user", content:text});
+    bubble("user", text);
+    await streamAntwort();
+    beschaeftigt = false; sendBtn.disabled = false;
+  }
+
+  // — Sprachnachricht —
+  async function transkribieren(blob){
+    var b64 = await lcBlobB64(blob);
+    var r = await api("/transcribe", {method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({audio_b64:b64, mime:blob.type})});
+    var j = await r.json();
+    if (!j.ok) throw new Error(j.meldung || "");
+    return j.text;
+  }
+  if (lcVoiceUnterstuetzt()){
+    micBtn.addEventListener("click", function(){
+      if (beschaeftigt) return;
+      lcAufnahmeStarten(zeileEl, [document.getElementById("composer")],
+        async function(daten){
+          beschaeftigt = true; sendBtn.disabled = true;
+          var vb = lcVoiceBubble(verlauf, "du", daten);
+          try {
+            var text = await transkribieren(daten.blob);
+            vb.setText(text);
+            messages.push({role:"user", content:text});
+            await streamAntwort();
+          } catch(e){
+            vb.setFehler(e.message || "Konnte die Sprachnachricht nicht verstehen — magst du es tippen?");
+          }
+          beschaeftigt = false; sendBtn.disabled = false;
+        },
+        null,
+        function(msg){ bubble("assistant", msg); });
+    });
+  } else {
+    micBtn.style.display = "none";
+  }
+
+  // Prüft, ob im Gespräch eine konkrete Änderung steckt → zeigt die Beauftragen-Box, sonst freundlicher Hinweis.
+  var trigBtn = document.getElementById("beauftragen-trigger");
+  async function zusammenfassen(){
+    if (beschaeftigt) return;
+    beschaeftigt = true; trigBtn.disabled = true; trigBtn.textContent = "Einen Moment …";
+    try {
+      var r = await api("/dashboard-chat", {method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({messages: messages, finalize:true})});
+      var j = await r.json();
+      var aend = (j.ok && j.request && Array.isArray(j.request.aenderungen)) ? j.request.aenderungen : [];
+      if (aend.length){
+        letzterRequest = j.request;
+        var liste = aend.map(function(a){ return "• " + a.bereich + ": " + a.wunsch; });
+        document.getElementById("beauftragen-text").innerHTML = "<b>Das würde ich für dich ändern:</b><br>" +
+          liste.map(function(z){ return z.replace(/</g,"&lt;"); }).join("<br>");
+        beauftragenBox.classList.add("an");
+        verlauf.scrollTop = verlauf.scrollHeight;
+      } else {
+        bubble("assistant", "Ich hab gerade keine konkrete Änderung erkannt — beschreib mir kurz, was genau ich ändern soll (z. B. „Öffnungszeiten im Footer auf Mo–Fr 9–18 Uhr“), dann nehme ich es für dich auf.");
+      }
+    } catch(e){
+      bubble("assistant", "Das hat gerade nicht geklappt — magst du es gleich noch einmal versuchen?");
+    }
+    beschaeftigt = false; trigBtn.disabled = false; trigBtn.textContent = "Änderung beauftragen ✓";
+  }
+  trigBtn.addEventListener("click", zusammenfassen);
+
+  document.getElementById("chat-senden").addEventListener("click", senden);
+  eingabe.addEventListener("keydown", function(e){ if (e.key === "Enter" && !e.shiftKey){ e.preventDefault(); senden(); } });
+  eingabe.addEventListener("input", function(){ this.style.height = "auto"; this.style.height = Math.min(this.scrollHeight, 130) + "px"; });
+  document.getElementById("beauftragen-abbruch").addEventListener("click", function(){ beauftragenBox.classList.remove("an"); eingabe.focus(); });
+
+  document.getElementById("beauftragen-btn").addEventListener("click", async function(){
+    if (!letzterRequest) return;
+    var knopf = this; knopf.disabled = true;
+    try {
+      var r = await api("/job", {method:"POST", headers:{"content-type":"application/json"},
+        body: JSON.stringify({type:"change-request", payload:{
+          wunsch_oton: letzterRequest.wunsch_oton || "",
+          aenderungen: letzterRequest.aenderungen || [],
+          kategorie: letzterRequest.kategorie || "inhalt",
+          bilder: [],
+          transcript: messages.slice(-30)
+        }})});
+      var j = await r.json();
+      if (!j.ok) throw new Error(j.meldung || "");
+      beauftragenBox.classList.remove("an");
+      bubble("assistant", "Beauftragt! ✓ Du siehst den Fortschritt oben unter „Deine Aufträge“. Sobald es live ist, steht dort der Link.");
+      messages = []; letzterRequest = null;
+      statusLaden(false);
+      window.scrollTo({top:0, behavior:"smooth"});
+    } catch(e){
+      bubble("assistant", (e && e.message) ? e.message : "Das Beauftragen hat nicht geklappt — bitte noch einmal versuchen.");
+      knopf.disabled = false;
+    }
+  });
+
+  // — Weiterschenken: Empfehlung als change-request (kategorie:empfehlung → nie gebaut, nur Team-Push) —
+  (function(){
+    var btn = document.getElementById("schenk-senden");
+    if (!btn) return;
+    var status = document.getElementById("schenk-status");
+    btn.addEventListener("click", async function(){
+      var elName = document.getElementById("schenk-name");
+      var elWas = document.getElementById("schenk-was");
+      var elWarum = document.getElementById("schenk-warum");
+      var name = (elName.value || "").trim();
+      var was = (elWas.value || "").trim();
+      var warum = (elWarum.value || "").trim();
+      if (!name){ status.textContent = "Magst du mir wenigstens den Namen nennen? 🙂"; status.className = "schenk-status an fehler"; return; }
+      btn.disabled = true; var alt = btn.textContent; btn.textContent = "Einen Moment …";
+      var oton = "Empfehlung (Weiterschenken): " + name + (was ? " — " + was : "") + (warum ? " · Warum: " + warum : "");
+      try {
+        var r = await api("/job", {method:"POST", headers:{"content-type":"application/json"},
+          body: JSON.stringify({type:"change-request", payload:{
+            wunsch_oton: oton,
+            aenderungen: [{bereich:"Empfehlung", wunsch: name + (was ? " (" + was + ")" : "")}],
+            kategorie: "empfehlung", bilder: []
+          }})});
+        var j = await r.json();
+        if (!j.ok) throw new Error();
+        status.textContent = "Angekommen — danke dir! 🎁 Wir bauen die Vorschau und melden uns bei dir, damit du sie verschenken kannst.";
+        status.className = "schenk-status an";
+        btn.textContent = "Weitergegeben ✓";
+        elName.value = ""; elWas.value = ""; elWarum.value = "";
+      } catch(e){
+        status.textContent = "Das hat gerade nicht geklappt — schreib uns gern direkt: info@lechcode.de";
+        status.className = "schenk-status an fehler";
+        btn.disabled = false; btn.textContent = alt;
+      }
+    });
+  })();
+
+  // — Datei-Upload (Bilder, PDFs, Dokumente) —
+  var dateiInput = document.getElementById("datei");
+  var drop = document.getElementById("drop");
+  var vorschau = document.getElementById("vorschau");
+  var vorschauBild = document.getElementById("vorschau-bild");
+  var dateiChip = document.getElementById("datei-chip");
+  var uploadStatus = document.getElementById("upload-status");
+  var gewaehlteDatei = null;
+
+  function icZuTyp(name){
+    var e = (name.split(".").pop() || "").toLowerCase();
+    if (["pdf"].indexOf(e) > -1) return "📕";
+    if (["doc","docx","rtf","txt","pages"].indexOf(e) > -1) return "📝";
+    if (["xls","xlsx","csv","numbers"].indexOf(e) > -1) return "📊";
+    if (["ppt","pptx","key"].indexOf(e) > -1) return "📈";
+    return "📄";
+  }
+  function groesse(bytes){
+    if (bytes < 1024*1024) return Math.max(1, Math.round(bytes/1024)) + " KB";
+    return (bytes/1024/1024).toFixed(1) + " MB";
+  }
+  function dateiWaehlen(f){
+    if (!f) return;
+    if (f.size > 12 * 1024 * 1024){
+      uploadStatus.textContent = "Die Datei ist größer als 12 MB — bitte eine kleinere Version wählen.";
+      uploadStatus.className = "upload-status an fehler"; return;
+    }
+    gewaehlteDatei = f;
+    uploadStatus.className = "upload-status";
+    if (f.type && f.type.indexOf("image/") === 0){
+      vorschauBild.src = URL.createObjectURL(f);
+      vorschauBild.style.display = "";
+      dateiChip.classList.remove("an");
+    } else {
+      vorschauBild.style.display = "none";
+      document.getElementById("datei-icon").textContent = icZuTyp(f.name);
+      document.getElementById("datei-name").textContent = f.name;
+      document.getElementById("datei-groesse").textContent = groesse(f.size);
+      dateiChip.classList.add("an");
+    }
+    vorschau.classList.add("an");
+  }
+  dateiInput.addEventListener("change", function(){ dateiWaehlen(this.files[0]); });
+  ["dragover","dragenter"].forEach(function(ev){ drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.add("zieht"); }); });
+  ["dragleave","drop"].forEach(function(ev){ drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.remove("zieht"); }); });
+  drop.addEventListener("drop", function(e){ dateiWaehlen(e.dataTransfer.files[0]); });
+
+  document.getElementById("hochladen").addEventListener("click", async function(){
+    if (!gewaehlteDatei) return;
+    var knopf = this; knopf.disabled = true; knopf.textContent = "Lädt hoch …";
+    try {
+      var b64 = await new Promise(function(res, rej){
+        var fr = new FileReader();
+        fr.onload = function(){ res(String(fr.result).split(",")[1]); };
+        fr.onerror = rej;
+        fr.readAsDataURL(gewaehlteDatei);
+      });
+      var r = await api("/upload", {method:"POST", headers:{"content-type":"application/json"},
+        body: JSON.stringify({
+          filename: gewaehlteDatei.name,
+          content_b64: b64,
+          anweisung: document.getElementById("anweisung").value.trim()
+        })});
+      var j = await r.json();
+      if (!j.ok) throw new Error(j.meldung || "");
+      uploadStatus.textContent = "Angekommen ✓ — wir kümmern uns darum. Fortschritt siehst du oben.";
+      uploadStatus.className = "upload-status an";
+      vorschau.classList.remove("an");
+      dateiChip.classList.remove("an"); vorschauBild.style.display = "";
+      gewaehlteDatei = null; dateiInput.value = "";
+      document.getElementById("anweisung").value = "";
+      statusLaden(false);
+    } catch(e){
+      uploadStatus.textContent = (e && e.message) ? e.message : "Der Upload hat nicht geklappt — bitte noch einmal versuchen.";
+      uploadStatus.className = "upload-status an fehler";
+    }
+    knopf.disabled = false; knopf.textContent = "Hochladen →";
+  });
+})();
+</script>
+</body>
+</html>
