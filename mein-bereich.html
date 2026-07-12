@@ -158,6 +158,23 @@
 
   footer{border-top:1px solid var(--line);padding:20px 0 32px;color:var(--muted);font-size:13px;}
   footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+
+  /* ===== Deine Website — Live-Vorschau ===== */
+  .seite-kopf{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px;}
+  .seite-kopf h2{margin-bottom:2px;}
+  .seite-fenster{position:relative;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--panel-2);aspect-ratio:16/10;box-shadow:0 18px 34px -22px rgba(74,58,34,.5);}
+  .seite-fenster .leiste{position:absolute;top:0;left:0;right:0;height:31px;background:var(--panel-2);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:6px;padding:0 13px;z-index:2;}
+  .seite-fenster .leiste i{width:9px;height:9px;border-radius:50%;background:rgba(74,58,34,.22);display:block;}
+  .seite-rahmen{position:absolute;top:31px;left:0;right:0;bottom:0;overflow:hidden;background:#fff;}
+  .seite-rahmen iframe{width:200%;height:200%;border:0;transform:scale(.5);transform-origin:0 0;background:#fff;pointer-events:none;}
+  .seite-fenster .klick{position:absolute;inset:0;z-index:3;display:block;}
+  .seite-fenster .lupe{position:absolute;right:12px;bottom:12px;z-index:4;background:rgba(247,239,224,.92);border:1px solid var(--line);border-radius:var(--pill);font-size:12.5px;padding:5px 12px;color:var(--bone-dim);backdrop-filter:blur(4px);pointer-events:none;}
+  #seite-ansehen{white-space:nowrap;text-decoration:none;}
+  .job .laenger{margin-top:9px;font-size:13.5px;color:var(--bone-dim);background:var(--panel-2);border:1px solid var(--line);border-radius:11px;padding:9px 12px;line-height:1.5;}
+  .job-fb{margin-top:12px;padding-top:12px;border-top:1px solid var(--line);display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+  .job-fb .fb-frage{font-size:13.5px;color:var(--bone-dim);}
+  .job-fb .fb-btn{font-size:13px;padding:6px 14px;}
+  .job-fb .fb-dank{font-size:13.5px;color:var(--gruen);}
   /* ===== Sprachnachricht ===== */
   .lc-mic{flex:none;width:40px;height:40px;border-radius:50%;border:none;background:transparent;color:var(--gold);display:grid;place-items:center;cursor:pointer;transition:color .2s,background .2s;}
   .lc-mic:hover{color:var(--ember);background:rgba(231,185,100,.09);}
@@ -213,6 +230,24 @@
     <section class="gruss">
       <h1 id="gruss-titel">Schön, dass du da bist!</h1>
       <p>Hier ist dein persönlicher KI-Berater: Frag ihn alles rund um deine Website, lad Bilder hoch oder sag einfach, was geändert werden soll — den Rest macht unsere Automatik, meist in wenigen Minuten bis Stunden.</p>
+    </section>
+
+    <section class="karte seite-karte" id="seite-karte">
+      <div class="seite-kopf">
+        <div>
+          <h2>Deine Website</h2>
+          <p class="unter" style="margin-bottom:0;">So sieht deine Seite gerade live aus.</p>
+        </div>
+        <a class="btn" id="seite-ansehen" href="./" target="_blank" rel="noopener">Deine Seite ansehen ↗</a>
+      </div>
+      <div class="seite-fenster">
+        <div class="leiste"><i></i><i></i><i></i></div>
+        <div class="seite-rahmen">
+          <iframe id="seite-iframe" title="Live-Vorschau deiner Website" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        </div>
+        <a class="klick" href="./" target="_blank" rel="noopener" aria-label="Website in neuem Tab öffnen"></a>
+        <span class="lupe">Zum Öffnen tippen ↗</span>
+      </div>
     </section>
 
     <section class="karte" id="status-karte">
@@ -327,6 +362,30 @@
   var STATUS_TEXT = { pending:"empfangen", claimed:"wird gebaut", running:"wird gebaut", qa:"Qualitätsprüfung", approved:"wird gebaut", done:"live ✓", failed:"wir schauen persönlich drauf", rejected:"wir schauen persönlich drauf" };
   var SCHRITTE = ["empfangen","wird gebaut","Qualitätsprüfung","live ✓"];
 
+  // — Selbstheilender Status: Aufträge, die ungewöhnlich lange „in Arbeit“ sind,
+  //   bekommen einen ehrlichen Hinweis statt endlos zu „laufen“. —
+  var LAENGER_MIN = 30;
+  function jobAlterMin(job){
+    var t = Date.parse(job && job.created);
+    if (isNaN(t)) return null;
+    return (Date.now() - t) / 60000;
+  }
+
+  // — Live-Vorschau der eigenen Website (die Seite liegt neben dieser Datei: „./“) —
+  var seiteIframe = document.getElementById("seite-iframe");
+  function seiteLaden(){ if (seiteIframe) seiteIframe.src = "./?v=" + Date.now(); }
+  seiteLaden();
+  var doneGesehen = null;
+  function seiteAktualisieren(jobs){
+    var jetzt = {};
+    (jobs || []).forEach(function(job){ if (job && job.status === "done") jetzt[job.id] = true; });
+    if (doneGesehen){
+      var neu = Object.keys(jetzt).some(function(id){ return !doneGesehen[id]; });
+      if (neu) seiteLaden(); // eine Änderung ist gerade live gegangen → Vorschau frisch laden
+    }
+    doneGesehen = jetzt;
+  }
+
   // — Token: aus #k=… übernehmen, in localStorage sichern, URL säubern —
   var token = "";
   var m = (location.hash || "").match(/[#&]k=([A-Za-z0-9]+)/);
@@ -359,6 +418,7 @@
         app.style.display = "";
       }
       jobsZeigen(j.jobs || []);
+      seiteAktualisieren(j.jobs || []);
     } catch(e){
       if (erster){ app.style.display = ""; } // Netzproblem: Bereich trotzdem zeigen
     }
@@ -399,6 +459,14 @@
         var namen = document.createElement("div"); namen.className = "schritt-namen";
         SCHRITTE.forEach(function(n){ var sp = document.createElement("span"); sp.textContent = n; namen.appendChild(sp); });
         el.appendChild(namen);
+        if (idx < 3){
+          var alter = jobAlterMin(job);
+          if (alter !== null && alter > LAENGER_MIN){
+            var lg = document.createElement("div"); lg.className = "laenger";
+            lg.textContent = "⏳ Das dauert gerade länger als sonst — wir schauen persönlich drauf und melden uns bei dir. 🤝";
+            el.appendChild(lg);
+          }
+        }
       } else {
         var info = document.createElement("div"); info.style.cssText = "color:var(--muted);font-size:14px;margin-top:4px;";
         info.textContent = "Das übernehmen wir persönlich — wir melden uns bei dir. 🤝";
@@ -409,6 +477,37 @@
         var a = document.createElement("a"); a.href = job.url; a.target = "_blank"; a.rel = "noopener";
         a.textContent = "Ansehen: deine Seite ist aktualisiert →";
         link.appendChild(a); el.appendChild(link);
+      }
+      if (job.status === "done"){
+        var fbState = null; try { fbState = localStorage.getItem("lc-fb:" + job.id); } catch(e){}
+        var fb = document.createElement("div"); fb.className = "job-fb";
+        if (fbState === "ok"){
+          fb.innerHTML = "<span class='fb-dank'>Freut mich, dass es passt! 🌿</span>";
+        } else if (fbState === "redo"){
+          fb.innerHTML = "<span class='fb-dank'>Alles klar — schreib unten kurz, was noch anders soll. 🙌</span>";
+        } else {
+          var frage = document.createElement("span"); frage.className = "fb-frage"; frage.textContent = "War die Änderung wie gewünscht?";
+          var ja = document.createElement("button"); ja.type = "button"; ja.className = "btn btn-ghost fb-btn"; ja.textContent = "Ja, perfekt 👍";
+          var nein = document.createElement("button"); nein.type = "button"; nein.className = "btn btn-ghost fb-btn"; nein.textContent = "Nicht ganz 🙅";
+          ja.addEventListener("click", function(){
+            try { localStorage.setItem("lc-fb:" + job.id, "ok"); } catch(e){}
+            fb.innerHTML = "<span class='fb-dank'>Freut mich, dass es passt! 🌿</span>";
+          });
+          nein.addEventListener("click", function(){
+            try { localStorage.setItem("lc-fb:" + job.id, "redo"); } catch(e){}
+            var feld = document.getElementById("chat-eingabe");
+            if (feld){
+              feld.value = "Die letzte Änderung (" + (job.kurz || "") + ") passt noch nicht ganz — ";
+              try { feld.dispatchEvent(new Event("input")); } catch(e){}
+              feld.focus();
+            }
+            var cv = document.getElementById("chat-verlauf");
+            if (cv) cv.scrollIntoView({behavior:"smooth", block:"center"});
+            fb.innerHTML = "<span class='fb-dank'>Alles klar — schreib unten kurz, was noch anders soll. 🙌</span>";
+          });
+          fb.appendChild(frage); fb.appendChild(ja); fb.appendChild(nein);
+        }
+        el.appendChild(fb);
       }
       box.appendChild(el);
     });
