@@ -757,9 +757,39 @@
     var txt = await streamAntwort({stillBeiFehler:true});
     beschaeftigt = false; sendBtn.disabled = false;
     if (txt){ try { localStorage.setItem(nsKey("lc-opener-done"), "1"); } catch(e){} }
-    else { messages = []; bubble("assistant", "Hallo! 🌿 Ich bin dein persönlicher Berater rund um deine Website. Frag mich alles — oder sag einfach, was ich für dich ändern soll."); }
+    else { messages = []; chatSpeichern(); bubble("assistant", "Hallo! 🌿 Ich bin dein persönlicher Berater rund um deine Website. Frag mich alles — oder sag einfach, was ich für dich ändern soll."); }
   }
-  openerZeigen();
+
+  // — Chat-Verlauf pro Kunde behalten (localStorage, namespaced wie alle Schlüssel) —
+  //   So macht der Kunde beim Neuladen dort weiter, wo er aufgehört hat, statt bei null
+  //   zu starten. Gespeichert wird NUR aus streamAntwort() nach einer fertigen Antwort:
+  //   dadurch beginnt der wiederhergestellte Verlauf immer mit „user" und alterniert
+  //   sauber (zwei User-Turns am Stück würde der Chat-Endpoint mit 400 quittieren).
+  function chatSpeichern(){
+    try {
+      var arr = messages.slice(-60);                       // Speicher deckeln
+      while (arr.length && arr[0].role !== "user") arr.shift(); // immer mit „user" beginnen
+      if (!arr.length){ localStorage.removeItem(nsKey("lc-chat")); return; }
+      localStorage.setItem(nsKey("lc-chat"), JSON.stringify(arr));
+    } catch(e){}
+  }
+  function chatLaden(){
+    try { var a = JSON.parse(localStorage.getItem(nsKey("lc-chat")) || "null"); return Array.isArray(a) ? a : null; }
+    catch(e){ return null; }
+  }
+
+  var fruehererVerlauf = chatLaden();
+  if (fruehererVerlauf && fruehererVerlauf.length){
+    // Verlauf wiederherstellen — kein neuer Opener, damit es sich wie Weitermachen anfühlt.
+    messages = fruehererVerlauf;
+    fruehererVerlauf.forEach(function(m){
+      if (!m || !m.content) return;
+      if (m.role === "user" && m.content === OPENER_INSTR) return; // versteckte Begrüßungs-Anweisung nie anzeigen
+      bubble(m.role === "user" ? "user" : "assistant", m.content);
+    });
+  } else {
+    openerZeigen();
+  }
 
   // Blendet den technischen Bereitschafts-Marker aus der Anzeige aus (auch als Teil-Marker
   // während des Streamens). Der Rohtext bleibt für die Marker-Erkennung erhalten.
@@ -804,7 +834,7 @@
       if (!(opts && opts.stillBeiFehler)) bubble("assistant", "Verbindungsproblem — bitte gleich noch einmal. Zur Not erreichst du uns immer unter info@lechcode.de.");
     }
     tipp.classList.remove("an");
-    if (antwortText) messages.push({role:"assistant", content: markerWeg(antwortText)});
+    if (antwortText){ messages.push({role:"assistant", content: markerWeg(antwortText)}); chatSpeichern(); }
     return antwortText;
   }
 
@@ -906,7 +936,7 @@
       if (!j.ok) throw new Error(j.meldung || "");
       beauftragenBox.classList.remove("an");
       bubble("assistant", "Beauftragt! ✓ Du siehst den Fortschritt oben unter „Deine Aufträge“. Sobald es live ist, steht dort der Link.");
-      messages = []; letzterRequest = null;
+      messages = []; letzterRequest = null; chatSpeichern();
       statusLaden(false);
       window.scrollTo({top:0, behavior:"smooth"});
     } catch(e){
