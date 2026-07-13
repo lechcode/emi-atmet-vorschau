@@ -370,6 +370,16 @@
   var seiteIframe = document.getElementById("seite-iframe");
   function seiteLaden(){ if (seiteIframe) seiteIframe.src = "./?v=" + Date.now(); }
   seiteLaden();
+
+  // Hängt einen Cache-Bust an einen Seiten-Link, damit der Kunde direkt nach einer
+  // Änderung die FRISCHE Version sieht (GitHub Pages cached statische Seiten bis 10 Min).
+  // Der Wert ist der Zeitstempel der letzten Änderung → stabil, solange sich nichts ändert.
+  function mitVersion(url, roh){
+    if (!url) return url;
+    var v = roh ? String(roh).replace(/[^0-9A-Za-z]/g, "") : "";
+    if (!v) return url;
+    return url + (url.indexOf("?") === -1 ? "?" : "&") + "v=" + v;
+  }
   var doneGesehen = null;
   // Erkennt NEU erledigte Aufträge → lädt die Vorschau frisch und meldet „neu" zurück
   // (damit der Erledigt-Bereich einmalig aufklappt und den „live"-Moment zeigt).
@@ -553,7 +563,7 @@
     var badge = document.createElement("div"); badge.className = "live-badge"; badge.textContent = "live ✓"; el.appendChild(badge);
     if (job.url){
       var link = document.createElement("div"); link.className = "live-link";
-      var a = document.createElement("a"); a.href = job.url; a.target = "_blank"; a.rel = "noopener";
+      var a = document.createElement("a"); a.href = mitVersion(job.url, job.updated || job.created); a.target = "_blank"; a.rel = "noopener";
       a.textContent = "Ansehen: deine Seite ist aktualisiert →";
       link.appendChild(a); el.appendChild(link);
     }
@@ -577,6 +587,14 @@
       else if (schrittIndex(job.status) < 0) probleme.push(job); // failed/rejected → „wir melden uns"
       else aktive.push(job); // in Arbeit (pending/claimed/running/qa/approved)
     });
+
+    // „Deine Seite ansehen“-Links (Top-Button + Klick-Overlay) auf die LETZTE Änderung
+    //   cache-busten, damit ein Klick direkt nach einer Änderung die frische Version zeigt.
+    var maxT = 0, maxRaw = "";
+    erledigt.forEach(function(j){ var t = Date.parse(j.updated || j.created); if (t && t > maxT){ maxT = t; maxRaw = j.updated || j.created; } });
+    var frischUrl = maxRaw ? mitVersion("./", maxRaw) : "./";
+    var seiteBtn = document.getElementById("seite-ansehen"); if (seiteBtn) seiteBtn.href = frischUrl;
+    var klickLink = document.querySelector(".seite-fenster .klick"); if (klickLink) klickLink.href = frischUrl;
 
     if (aktive.length || probleme.length){
       aktive.forEach(function(job){ box.appendChild(macheAktivKarte(job)); });
