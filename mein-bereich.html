@@ -417,7 +417,7 @@
   }
 
   // — Status laden + Polling —
-  var kundenName = "", anrede = "", letzteSignatur = null;
+  var kundenName = "", anrede = "", letzteSignatur = null, schnellVersuche = 0;
   async function statusLaden(erster){
     try {
       var r = await api("/status");
@@ -445,7 +445,12 @@
       }).join("|");
       if (erster || neuErledigt || sig !== letzteSignatur){ jobsZeigen(jobs, neuErledigt); letzteSignatur = sig; }
     } catch(e){
-      if (erster){ app.style.display = ""; } // Netzproblem: Bereich trotzdem zeigen
+      if (erster){
+        app.style.display = ""; // Netzproblem: Bereich trotzdem zeigen …
+        var jb = document.getElementById("jobs"), leer = jb && jb.querySelector(".leer");
+        if (leer) leer.textContent = "Einen Moment — deine Aufträge werden geladen …";
+        if (schnellVersuche < 3){ schnellVersuche++; setTimeout(function(){ statusLaden(true); }, 3000); } // … schnell erneut (max 3×), danach greift der 30-s-Poll
+      }
     }
   }
 
