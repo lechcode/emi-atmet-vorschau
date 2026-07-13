@@ -135,12 +135,17 @@
   "use strict";
   var LC_API = "https://lechcode-api.nameless-waterfall-55e5.workers.dev"; /* LC-API-URL — wird von lechcode-plattform/bin/set-api-url.sh gesetzt */
 
-  // Token aus #k=… (wie mein-bereich.html)
+  // Token aus #k=… — pro Kunde eindeutig speichern (geteilte Origin lechcode.github.io!).
+  //   Gleicher Slug-Namespace wie mein-bereich.html, damit der Token auf beiden Seiten gilt.
+  var pfadSlug = (location.pathname.match(/\/([a-z0-9][a-z0-9-]*)-vorschau\//) || [])[1] || null;
+  var nsSlug = pfadSlug || location.hostname || "lc";
+  function nsKey(basis){ return basis + ":" + nsSlug; }
+  try { localStorage.removeItem("lc-zugang"); } catch(e){}
   var token = "";
   var m = (location.hash || "").match(/[#&]k=([A-Za-z0-9]+)/);
-  if (m){ token = m[1]; try{ localStorage.setItem("lc-zugang", token); }catch(e){}
+  if (m){ token = m[1]; try{ localStorage.setItem(nsKey("lc-zugang"), token); }catch(e){}
     history.replaceState(null, "", location.pathname + location.search); }
-  else { try{ token = localStorage.getItem("lc-zugang") || ""; }catch(e){} }
+  else { try{ token = localStorage.getItem(nsKey("lc-zugang")) || ""; }catch(e){} }
 
   var app = document.getElementById("app");
   function zeigeKeinZugang(){ document.getElementById("kein-zugang").classList.add("an"); }

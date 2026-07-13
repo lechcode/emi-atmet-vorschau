@@ -34,6 +34,7 @@
   h1,h2,h3{line-height:1.2;letter-spacing:-.02em;color:#241d12;text-wrap:balance;}
   a{color:var(--ember);text-decoration:underline;text-underline-offset:3px;}
   img,svg{display:block;max-width:100%;}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}
   .wrap{width:min(760px,94vw);margin-inline:auto;}
   .kopfzeile{position:sticky;top:0;z-index:40;background:rgba(247,239,224,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
   .kopfzeile .wrap{height:60px;display:flex;align-items:center;justify-content:space-between;}
@@ -70,7 +71,7 @@
   .schritt{display:flex;align-items:center;gap:0;flex:1;}
   .punkt{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:11px;flex:none;background:var(--night-2);color:var(--muted);}
   .strich{height:2px;background:var(--line);flex:1;}
-  .schritt.aktiv .punkt{border-color:var(--amber);color:var(--amber);}
+  .schritt.aktiv .punkt{background:var(--amber);border-color:var(--amber);color:#2a1808;}
   .schritt.fertig .punkt{background:var(--gruen);border-color:var(--gruen);color:#1c2413;}
   .schritt.fertig .strich,.schritt.aktiv .strich{background:var(--amber);}
   .schritt-namen{display:flex;justify-content:space-between;margin-top:6px;color:var(--muted);font-size:11.5px;}
@@ -145,13 +146,15 @@
   .upload-status.an{display:block;}
   .upload-status.fehler{color:#f0b090;}
 
-  /* FAQ */
-  details{border-bottom:1px solid var(--line);padding:12px 2px;}
-  details:last-of-type{border-bottom:none;}
-  summary{cursor:pointer;font-weight:600;font-size:15px;list-style:none;display:flex;justify-content:space-between;gap:10px;}
-  summary::after{content:"+";color:var(--gold);font-family:var(--mono);}
-  details[open] summary::after{content:"–";}
-  details p{color:var(--bone-dim);font-size:14.5px;margin-top:8px;}
+  /* FAQ — auf .faq gescoped, damit die generischen details/summary-Regeln NICHT
+     in andere <details> (z. B. den „Erledigt"-Klappbereich) leaken. */
+  .faq details{border-bottom:1px solid var(--line);padding:12px 2px;}
+  .faq details:last-of-type{border-bottom:none;}
+  .faq summary{cursor:pointer;font-weight:600;font-size:15px;list-style:none;display:flex;justify-content:space-between;gap:10px;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq summary::after{content:"+";color:var(--gold);font-family:var(--mono);}
+  .faq details[open] summary::after{content:"–";}
+  .faq details p{color:var(--bone-dim);font-size:14.5px;margin-top:8px;}
 
   /* Zugang fehlt / Fehler */
   .vollbild{display:none;place-items:center;min-height:70dvh;text-align:center;padding:24px;}
@@ -178,6 +181,22 @@
   .job-fb .fb-frage{font-size:13.5px;color:var(--bone-dim);}
   .job-fb .fb-btn{font-size:13px;padding:6px 14px;}
   .job-fb .fb-dank{font-size:13.5px;color:var(--gruen);}
+  /* Erledigt — einklappbarer Verlauf */
+  .erledigt{margin-top:12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);overflow:hidden;}
+  .erledigt > summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:9px;padding:13px 16px;font-weight:600;font-size:14.5px;color:var(--bone-dim);user-select:none;}
+  .erledigt > summary::-webkit-details-marker{display:none;}
+  .erledigt > summary::after{content:"▾";margin-left:auto;color:var(--muted);transition:transform .25s;}
+  .erledigt[open] > summary::after{transform:rotate(180deg);}
+  .erledigt > summary:hover{color:var(--bone);}
+  .erledigt .erl-check{width:20px;height:20px;border-radius:50%;background:var(--gruen);color:#1c2413;display:grid;place-items:center;font-size:11px;flex:none;}
+  .erledigt .erl-n{color:var(--muted);font-weight:600;}
+  .erledigt-liste{padding:0 12px 12px;display:grid;gap:8px;}
+  .erl-item{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--night-2);}
+  .erl-item .zeile1{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap;}
+  .erl-item .was{font-weight:600;font-size:14.5px;}
+  .erl-item .wann{color:var(--muted);font-size:12px;font-family:var(--mono);}
+  .erl-item .live-badge{color:var(--gruen);font-size:13px;font-weight:600;margin-top:2px;}
+  .erl-item .live-link{margin-top:6px;font-size:13.5px;}
   /* ===== Sprachnachricht ===== */
   .lc-mic{flex:none;width:40px;height:40px;border-radius:50%;border:none;background:transparent;color:var(--gold);display:grid;place-items:center;cursor:pointer;transition:color .2s,background .2s;}
   .lc-mic:hover{color:var(--ember);background:rgba(231,185,100,.09);}
@@ -256,12 +275,15 @@
     <section class="karte" id="status-karte">
       <h2>Deine Aufträge</h2>
       <p class="unter">Hier siehst du live, was gerade passiert. Die Anzeige aktualisiert sich von selbst.</p>
+      <div id="lc-ansage" class="sr-only" aria-live="polite" role="status"></div>
       <div id="jobs"><p class="leer">Noch keine Aufträge — schreib unten einfach deinen ersten Wunsch in den Chat. 🌿</p></div>
+      <div id="erledigt-wrap"></div>
     </section>
 
     <section class="karte">
       <h2>Dein KI-Berater 💬</h2>
       <p class="unter">Frag mich alles rund um deine Website, deine Texte und wie du besser gefunden wirst — oder sag mir einfach, was ich für dich ändern soll.</p>
+      <p class="ki-hinweis"><span aria-hidden="true">ℹ️</span><span>Hinweis: Hier antwortet eine <strong>KI</strong>, kein Mensch. Ein echter Mensch ist jederzeit über <a href="mailto:info@lechcode.de">info@lechcode.de</a> für dich da.</span></p>
       <div class="chat-verlauf" id="chat-verlauf"></div>
       <p class="tipp" id="tipp">… schreibt</p>
       <div class="chat-eingabe" id="chat-eingabe-zeile">
@@ -309,7 +331,7 @@
       <p class="upload-status" id="upload-status"></p>
     </section>
 
-    <section class="karte">
+    <section class="karte faq">
       <h2>Häufige Fragen</h2>
       <details><summary>Was kostet eine Änderung?</summary><p>Nichts extra — kleine Änderungen sind in deiner Pflege (19 €/Monat) einfach drin. Schreib so oft du magst.</p></details>
       <details><summary>Wie schnell ist meine Änderung online?</summary><p>Meist innerhalb weniger Minuten bis Stunden. Du siehst den Fortschritt oben unter „Deine Aufträge“ — und bekommst dort auch den Link, sobald es live ist.</p></details>
@@ -349,22 +371,39 @@
   function seiteLaden(){ if (seiteIframe) seiteIframe.src = "./?v=" + Date.now(); }
   seiteLaden();
   var doneGesehen = null;
-  function seiteAktualisieren(jobs){
-    var jetzt = {};
+  // Erkennt NEU erledigte Aufträge → lädt die Vorschau frisch und meldet „neu" zurück
+  // (damit der Erledigt-Bereich einmalig aufklappt und den „live"-Moment zeigt).
+  function pruefeNeuErledigt(jobs){
+    var jetzt = {}, neu = false;
     (jobs || []).forEach(function(job){ if (job && job.status === "done") jetzt[job.id] = true; });
     if (doneGesehen){
-      var neu = Object.keys(jetzt).some(function(id){ return !doneGesehen[id]; });
-      if (neu) seiteLaden(); // eine Änderung ist gerade live gegangen → Vorschau frisch laden
+      neu = Object.keys(jetzt).some(function(id){ return !doneGesehen[id]; });
+      if (neu){
+        seiteLaden();
+        var an = document.getElementById("lc-ansage");
+        if (an) an.textContent = "Deine Änderung ist jetzt live.";
+      }
     }
     doneGesehen = jetzt;
+    return neu;
   }
 
-  // — Token: aus #k=… übernehmen, in localStorage sichern, URL säubern —
+  // — Mandanten-Trennung: ALLE Kundenbereiche liegen auf DERSELBEN Origin
+  //   (lechcode.github.io) → localStorage ist geteilt. Deshalb jeden Schlüssel pro
+  //   Kunde eindeutig machen (Slug aus dem Pfad „…/<slug>-vorschau/…", sonst Hostname
+  //   bei eigener Domain). Sonst „leakt" Token/Zustand eines Kunden auf andere Seiten. —
+  var pfadSlug = (location.pathname.match(/\/([a-z0-9][a-z0-9-]*)-vorschau\//) || [])[1] || null;
+  var nsSlug = pfadSlug || location.hostname || "lc";
+  function nsKey(basis){ return basis + ":" + nsSlug; }
+  // Alte, unscoped Schlüssel wegräumen (verhindert Alt-Leaks aus früheren Versionen).
+  try { localStorage.removeItem("lc-zugang"); localStorage.removeItem("lc-opener-done"); } catch(e){}
+
+  // — Token: aus #k=… übernehmen, pro Kunde sichern, URL säubern —
   var token = "";
   var m = (location.hash || "").match(/[#&]k=([A-Za-z0-9]+)/);
-  if (m){ token = m[1]; try{ localStorage.setItem("lc-zugang", token); }catch(e){}
+  if (m){ token = m[1]; try{ localStorage.setItem(nsKey("lc-zugang"), token); }catch(e){}
     history.replaceState(null, "", location.pathname + location.search); }
-  else { try{ token = localStorage.getItem("lc-zugang") || ""; }catch(e){} }
+  else { try{ token = localStorage.getItem(nsKey("lc-zugang")) || ""; }catch(e){} }
 
   var app = document.getElementById("app");
   var keinZugang = document.getElementById("kein-zugang");
@@ -378,20 +417,33 @@
   }
 
   // — Status laden + Polling —
-  var kundenName = "", anrede = "";
+  var kundenName = "", anrede = "", letzteSignatur = null;
   async function statusLaden(erster){
     try {
       var r = await api("/status");
       if (r.status === 401){ zeigeKeinZugang(); return; }
       var j = await r.json();
       if (!j.ok) throw new Error();
+      // Schutz: gehört der Token wirklich zu DIESER Seite? (fremder/falscher Link)
+      if (pfadSlug && j.slug && j.slug !== pfadSlug){
+        try { localStorage.removeItem(nsKey("lc-zugang")); } catch(e){}
+        zeigeKeinZugang(); return;
+      }
       if (erster){
         anrede = j.anrede || (j.name || "").split(" ")[0] || "";
         document.getElementById("gruss-titel").textContent = anrede ? ("Hallo " + anrede + ", schön dass du da bist!") : "Schön, dass du da bist!";
         app.style.display = "";
       }
-      jobsZeigen(j.jobs || []);
-      seiteAktualisieren(j.jobs || []);
+      var jobs = j.jobs || [];
+      var neuErledigt = pruefeNeuErledigt(jobs);
+      // Nur neu rendern, wenn sich wirklich etwas geändert hat (verhindert 30-s-Flackern
+      //   und Aufklapp-/Fokus-Sprünge). „lang" fängt die zeitbasierte Hänge-Meldung mit ein.
+      var sig = jobs.map(function(x){
+        var i = schrittIndex(x.status);
+        var lang = (i >= 0 && i < 3 && jobAlterMin(x) > LAENGER_MIN) ? 1 : 0;
+        return x.id + ":" + x.status + ":" + (x.url ? 1 : 0) + ":" + lang;
+      }).join("|");
+      if (erster || neuErledigt || sig !== letzteSignatur){ jobsZeigen(jobs, neuErledigt); letzteSignatur = sig; }
     } catch(e){
       if (erster){ app.style.display = ""; } // Netzproblem: Bereich trotzdem zeigen
     }
@@ -405,85 +457,134 @@
     return -1; // failed/rejected
   }
 
-  function jobsZeigen(jobs){
-    var box = document.getElementById("jobs");
-    if (!jobs.length) return;
-    box.innerHTML = "";
-    jobs.forEach(function(job){
-      var el = document.createElement("div");
-      var idx = schrittIndex(job.status);
-      el.className = "job" + (idx < 0 ? " problem" : "");
-      var kopf = document.createElement("div"); kopf.className = "zeile1";
-      var was = document.createElement("span"); was.className = "was"; was.textContent = job.kurz || "Auftrag";
-      var wann = document.createElement("span"); wann.className = "wann"; wann.textContent = (job.created || "").slice(0, 16).replace("T", " · ");
-      kopf.appendChild(was); kopf.appendChild(wann); el.appendChild(kopf);
+  // Feedback-Block („Passt so?") für einen erledigten Auftrag — Zustand pro Kunde.
+  function macheFeedback(job){
+    var fbState = null; try { fbState = localStorage.getItem(nsKey("lc-fb") + ":" + job.id); } catch(e){}
+    var fb = document.createElement("div"); fb.className = "job-fb";
+    if (fbState === "ok"){
+      fb.innerHTML = "<span class='fb-dank'>Freut mich, dass es passt! 🌿</span>";
+    } else if (fbState === "redo"){
+      fb.innerHTML = "<span class='fb-dank'>Alles klar — schreib unten kurz, was noch anders soll. 🙌</span>";
+    } else {
+      var frage = document.createElement("span"); frage.className = "fb-frage"; frage.textContent = "War die Änderung wie gewünscht?";
+      var ja = document.createElement("button"); ja.type = "button"; ja.className = "btn btn-ghost fb-btn"; ja.textContent = "Ja, perfekt 👍";
+      var nein = document.createElement("button"); nein.type = "button"; nein.className = "btn btn-ghost fb-btn"; nein.textContent = "Nicht ganz 🙅";
+      ja.addEventListener("click", function(){
+        try { localStorage.setItem(nsKey("lc-fb") + ":" + job.id, "ok"); } catch(e){}
+        fb.innerHTML = "<span class='fb-dank'>Freut mich, dass es passt! 🌿</span>";
+      });
+      nein.addEventListener("click", function(){
+        try { localStorage.setItem(nsKey("lc-fb") + ":" + job.id, "redo"); } catch(e){}
+        var feld = document.getElementById("chat-eingabe");
+        if (feld){
+          // Bereits getippten Text NICHT verwerfen — Kontext voranstellen.
+          var pre = "Die letzte Änderung (" + (job.kurz || "") + ") passt noch nicht ganz — ";
+          var alt = (feld.value || "").trim();
+          feld.value = alt ? (pre + alt) : pre;
+          try { feld.dispatchEvent(new Event("input")); } catch(e){}
+          feld.focus();
+        }
+        var cv = document.getElementById("chat-verlauf");
+        if (cv) cv.scrollIntoView({behavior:"smooth", block:"center"});
+        fb.innerHTML = "<span class='fb-dank'>Alles klar — schreib unten kurz, was noch anders soll. 🙌</span>";
+      });
+      fb.appendChild(frage); fb.appendChild(ja); fb.appendChild(nein);
+    }
+    return fb;
+  }
 
-      if (idx >= 0){
-        var leiste = document.createElement("div"); leiste.className = "schritte";
-        for (var s = 0; s < 4; s++){
-          var sch = document.createElement("div");
-          sch.className = "schritt" + (s < idx ? " fertig" : s === idx ? (idx === 3 ? " fertig" : " aktiv") : "");
-          var p = document.createElement("span"); p.className = "punkt"; p.textContent = (s < idx || idx === 3 && s === 3) ? "✓" : (s + 1);
-          sch.appendChild(p);
-          if (s < 3){ var st = document.createElement("span"); st.className = "strich"; sch.appendChild(st); }
-          leiste.appendChild(sch);
-        }
-        el.appendChild(leiste);
-        var namen = document.createElement("div"); namen.className = "schritt-namen";
-        SCHRITTE.forEach(function(n){ var sp = document.createElement("span"); sp.textContent = n; namen.appendChild(sp); });
-        el.appendChild(namen);
-        if (idx < 3){
-          var alter = jobAlterMin(job);
-          if (alter !== null && alter > LAENGER_MIN){
-            var lg = document.createElement("div"); lg.className = "laenger";
-            lg.textContent = "⏳ Das dauert gerade länger als sonst — wir schauen persönlich drauf und melden uns bei dir. 🤝";
-            el.appendChild(lg);
-          }
-        }
-      } else {
-        var info = document.createElement("div"); info.style.cssText = "color:var(--muted);font-size:14px;margin-top:4px;";
-        info.textContent = "Das übernehmen wir persönlich — wir melden uns bei dir. 🤝";
-        el.appendChild(info);
+  // Aktiver / fehlgeschlagener Auftrag: volle Karte mit Zeitleiste bzw. Hinweis.
+  function macheAktivKarte(job){
+    var el = document.createElement("div");
+    var idx = schrittIndex(job.status);
+    el.className = "job" + (idx < 0 ? " problem" : "");
+    var kopf = document.createElement("div"); kopf.className = "zeile1";
+    var was = document.createElement("span"); was.className = "was"; was.textContent = job.kurz || "Auftrag";
+    var wann = document.createElement("span"); wann.className = "wann"; wann.textContent = (job.created || "").slice(0, 16).replace("T", " · ");
+    kopf.appendChild(was); kopf.appendChild(wann); el.appendChild(kopf);
+    if (idx >= 0){
+      var leiste = document.createElement("div"); leiste.className = "schritte";
+      for (var s = 0; s < 4; s++){
+        var sch = document.createElement("div");
+        sch.className = "schritt" + (s < idx ? " fertig" : s === idx ? (idx === 3 ? " fertig" : " aktiv") : "");
+        var p = document.createElement("span"); p.className = "punkt"; p.textContent = (s < idx || idx === 3 && s === 3) ? "✓" : (s + 1);
+        sch.appendChild(p);
+        if (s < 3){ var st = document.createElement("span"); st.className = "strich"; sch.appendChild(st); }
+        leiste.appendChild(sch);
       }
-      if (job.status === "done" && job.url){
-        var link = document.createElement("div"); link.className = "live-link";
-        var a = document.createElement("a"); a.href = job.url; a.target = "_blank"; a.rel = "noopener";
-        a.textContent = "Ansehen: deine Seite ist aktualisiert →";
-        link.appendChild(a); el.appendChild(link);
-      }
-      if (job.status === "done"){
-        var fbState = null; try { fbState = localStorage.getItem("lc-fb:" + job.id); } catch(e){}
-        var fb = document.createElement("div"); fb.className = "job-fb";
-        if (fbState === "ok"){
-          fb.innerHTML = "<span class='fb-dank'>Freut mich, dass es passt! 🌿</span>";
-        } else if (fbState === "redo"){
-          fb.innerHTML = "<span class='fb-dank'>Alles klar — schreib unten kurz, was noch anders soll. 🙌</span>";
-        } else {
-          var frage = document.createElement("span"); frage.className = "fb-frage"; frage.textContent = "War die Änderung wie gewünscht?";
-          var ja = document.createElement("button"); ja.type = "button"; ja.className = "btn btn-ghost fb-btn"; ja.textContent = "Ja, perfekt 👍";
-          var nein = document.createElement("button"); nein.type = "button"; nein.className = "btn btn-ghost fb-btn"; nein.textContent = "Nicht ganz 🙅";
-          ja.addEventListener("click", function(){
-            try { localStorage.setItem("lc-fb:" + job.id, "ok"); } catch(e){}
-            fb.innerHTML = "<span class='fb-dank'>Freut mich, dass es passt! 🌿</span>";
-          });
-          nein.addEventListener("click", function(){
-            try { localStorage.setItem("lc-fb:" + job.id, "redo"); } catch(e){}
-            var feld = document.getElementById("chat-eingabe");
-            if (feld){
-              feld.value = "Die letzte Änderung (" + (job.kurz || "") + ") passt noch nicht ganz — ";
-              try { feld.dispatchEvent(new Event("input")); } catch(e){}
-              feld.focus();
-            }
-            var cv = document.getElementById("chat-verlauf");
-            if (cv) cv.scrollIntoView({behavior:"smooth", block:"center"});
-            fb.innerHTML = "<span class='fb-dank'>Alles klar — schreib unten kurz, was noch anders soll. 🙌</span>";
-          });
-          fb.appendChild(frage); fb.appendChild(ja); fb.appendChild(nein);
+      el.appendChild(leiste);
+      var namen = document.createElement("div"); namen.className = "schritt-namen";
+      SCHRITTE.forEach(function(n){ var sp = document.createElement("span"); sp.textContent = n; namen.appendChild(sp); });
+      el.appendChild(namen);
+      if (idx < 3){
+        var alter = jobAlterMin(job);
+        if (alter !== null && alter > LAENGER_MIN){
+          var lg = document.createElement("div"); lg.className = "laenger";
+          lg.textContent = "⏳ Das dauert gerade länger als sonst — wir schauen persönlich drauf und melden uns bei dir. 🤝";
+          el.appendChild(lg);
         }
-        el.appendChild(fb);
       }
-      box.appendChild(el);
-    });
+    } else {
+      var info = document.createElement("div"); info.style.cssText = "color:var(--muted);font-size:14px;margin-top:4px;";
+      info.textContent = "Das übernehmen wir persönlich — wir melden uns bei dir. 🤝";
+      el.appendChild(info);
+    }
+    return el;
+  }
+
+  // Erledigter Auftrag: kompakt (Titel, Datum, live ✓, Ansehen, Feedback).
+  function macheErledigtItem(job){
+    var el = document.createElement("div"); el.className = "erl-item";
+    var kopf = document.createElement("div"); kopf.className = "zeile1";
+    var was = document.createElement("span"); was.className = "was"; was.textContent = job.kurz || "Auftrag";
+    var wann = document.createElement("span"); wann.className = "wann"; wann.textContent = (job.created || "").slice(0, 16).replace("T", " · ");
+    kopf.appendChild(was); kopf.appendChild(wann); el.appendChild(kopf);
+    var badge = document.createElement("div"); badge.className = "live-badge"; badge.textContent = "live ✓"; el.appendChild(badge);
+    if (job.url){
+      var link = document.createElement("div"); link.className = "live-link";
+      var a = document.createElement("a"); a.href = job.url; a.target = "_blank"; a.rel = "noopener";
+      a.textContent = "Ansehen: deine Seite ist aktualisiert →";
+      link.appendChild(a); el.appendChild(link);
+    }
+    el.appendChild(macheFeedback(job));
+    return el;
+  }
+
+  var erledigtOffen = false; // merkt sich die Aufklapp-Wahl über Re-Renders
+  function jobsZeigen(jobs, autoOpen){
+    var box = document.getElementById("jobs");
+    var erlWrap = document.getElementById("erledigt-wrap");
+    var altDet = document.getElementById("erledigt-details");
+    var istReRender = !!altDet;
+    if (altDet) erledigtOffen = altDet.open; // vom Nutzer geänderten Aufklapp-Zustand übernehmen
+    box.innerHTML = ""; erlWrap.innerHTML = "";
+
+    var aktive = [], erledigt = [];
+    (jobs || []).forEach(function(job){ (job && job.status === "done" ? erledigt : aktive).push(job); });
+
+    if (aktive.length){
+      aktive.forEach(function(job){ box.appendChild(macheAktivKarte(job)); });
+    } else {
+      var leer = document.createElement("p"); leer.className = "leer";
+      leer.textContent = erledigt.length
+        ? "Gerade läuft nichts Neues — deine erledigten Änderungen siehst du unten. 🌿"
+        : "Noch keine Aufträge — schreib unten einfach deinen ersten Wunsch in den Chat. 🌿";
+      box.appendChild(leer);
+    }
+
+    if (erledigt.length){
+      var det = document.createElement("details"); det.id = "erledigt-details"; det.className = "erledigt";
+      // Standard: offen, wenn nichts aktiv läuft (dann IST der Erledigt-Bereich der Inhalt)
+      //   oder gerade etwas neu live ging. Beim Re-Render bewahren wir den Zustand des Nutzers.
+      det.open = (!!autoOpen) || (istReRender ? erledigtOffen : (aktive.length === 0));
+      var sum = document.createElement("summary");
+      sum.innerHTML = "<span class='erl-check'>✓</span> Erledigt <span class='erl-n'>· " + erledigt.length + "</span>";
+      det.appendChild(sum);
+      var liste = document.createElement("div"); liste.className = "erledigt-liste";
+      erledigt.forEach(function(job){ liste.appendChild(macheErledigtItem(job)); });
+      det.appendChild(liste);
+      erlWrap.appendChild(det);
+    }
   }
   statusLaden(true);
   setInterval(function(){ statusLaden(false); }, 30000);
@@ -629,7 +730,7 @@
   //   danach ruhig & sofort. Bei Fehler still auf eine schlichte Begrüßung zurückfallen. —
   var OPENER_INSTR = "[Hinweis, den du NICHT erwähnst: Der Kunde hat gerade seinen Kundenbereich geöffnet. Begrüße ihn herzlich in 2–4 Sätzen, beziehe dich dabei konkret und positiv auf EINEN Punkt seiner aktuellen Startseite (zeig, dass du sie kennst — ohne Fakten zu erfinden), und frage mit genau EINER Frage, womit er anfangen möchte.]";
   async function openerZeigen(){
-    var schonDa = false; try { schonDa = !!localStorage.getItem("lc-opener-done"); } catch(e){}
+    var schonDa = false; try { schonDa = !!localStorage.getItem(nsKey("lc-opener-done")); } catch(e){}
     if (schonDa){
       bubble("assistant", "Schön, dass du wieder da bist! 🌿 Frag mich alles rund um deine Seite — oder sag einfach, was ich für dich ändern soll.");
       return;
@@ -638,7 +739,7 @@
     beschaeftigt = true; sendBtn.disabled = true;
     var txt = await streamAntwort({stillBeiFehler:true});
     beschaeftigt = false; sendBtn.disabled = false;
-    if (txt){ try { localStorage.setItem("lc-opener-done", "1"); } catch(e){} }
+    if (txt){ try { localStorage.setItem(nsKey("lc-opener-done"), "1"); } catch(e){} }
     else { messages = []; bubble("assistant", "Hallo! 🌿 Ich bin dein persönlicher Berater rund um deine Website. Frag mich alles — oder sag einfach, was ich für dich ändern soll."); }
   }
   openerZeigen();
