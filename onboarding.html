@@ -200,15 +200,28 @@
     app.style.display = "";
   }
 
-  api("/onboarding").then(function(r){
-    if (r.status === 401){ zeigeKeinZugang(); return null; }
-    return r.json();
-  }).then(function(j){
-    if (j && j.ok) bauen(j);
-    else if (j) zeigeKeinZugang();
-  }).catch(function(){
-    zeigeKeinZugang();
-  });
+  var obVersuche = 0;
+  function ladeFragen(){
+    api("/onboarding").then(function(r){
+      if (r.status === 401){ zeigeKeinZugang(); return null; }
+      if (!r.ok) throw new Error("http " + r.status); // 5xx/429 → gleich nochmal versuchen (kein „Link fehlt")
+      return r.json();
+    }).then(function(j){
+      if (j === null) return; // 401 bereits behandelt
+      if (j && j.ok){
+        // Schutz: gehört der Token wirklich zu DIESER Seite? (fremder/falscher Link → keine Fremddaten)
+        if (pfadSlug && j.slug && j.slug !== pfadSlug){ try{ localStorage.removeItem(nsKey("lc-zugang")); }catch(e){} zeigeKeinZugang(); return; }
+        // Schon abgeschickt? → direkt „Danke", kein Doppel-Versand.
+        var schon = false; try { schon = !!localStorage.getItem(nsKey("lc-onboarding-done")); } catch(e){}
+        if (schon){ document.getElementById("danke").classList.add("an"); return; }
+        bauen(j);
+      } else if (j) zeigeKeinZugang(); // ok:false = echter Zugangsfehler
+    }).catch(function(){
+      if (obVersuche < 3){ obVersuche++; setTimeout(ladeFragen, 2500); } // transienter Fehler → kurz erneut
+      else zeigeKeinZugang();
+    });
+  }
+  ladeFragen();
 
   document.getElementById("absenden").addEventListener("click", async function(){
     var knopf = this; var fehlerEl = document.getElementById("fehler");
@@ -236,6 +249,7 @@
         body: JSON.stringify({type:"onboarding-answers", payload:{antworten: antworten, freitext: document.getElementById("freitext").value.trim()}})});
       var j = await r.json();
       if (!j.ok) throw new Error(j.meldung || "");
+      try { localStorage.setItem(nsKey("lc-onboarding-done"), "1"); } catch(e){} // gegen versehentlichen Doppel-Versand
       app.style.display = "none";
       document.getElementById("danke").classList.add("an");
       window.scrollTo({top:0});

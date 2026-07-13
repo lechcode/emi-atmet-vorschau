@@ -380,8 +380,11 @@
       neu = Object.keys(jetzt).some(function(id){ return !doneGesehen[id]; });
       if (neu){
         seiteLaden();
+        var neuId = Object.keys(jetzt).filter(function(id){ return !doneGesehen[id]; })[0];
+        var neuJob = (jobs || []).filter(function(x){ return x && x.id === neuId; })[0];
         var an = document.getElementById("lc-ansage");
-        if (an) an.textContent = "Deine Änderung ist jetzt live.";
+        // Titel einbauen → jede Ansage hat neuen Text (sonst verschluckt der Screenreader die 2.).
+        if (an) an.textContent = ((neuJob && neuJob.kurz) ? ("„" + neuJob.kurz + "“ ist") : "Deine Änderung ist") + " jetzt live.";
       }
     }
     doneGesehen = jetzt;
@@ -417,7 +420,7 @@
   }
 
   // — Status laden + Polling —
-  var kundenName = "", anrede = "", letzteSignatur = null, schnellVersuche = 0;
+  var kundenName = "", anrede = "", letzteSignatur = null, schnellVersuche = 0, begruesstGesetzt = false;
   async function statusLaden(erster){
     try {
       var r = await api("/status");
@@ -429,10 +432,13 @@
         try { localStorage.removeItem(nsKey("lc-zugang")); } catch(e){}
         zeigeKeinZugang(); return;
       }
-      if (erster){
+      // Bereich zeigen + einmalig personalisieren — unabhängig von 'erster', damit die
+      //   Begrüßung auch nach einem fehlgeschlagenen Erst-Laden noch gesetzt wird.
+      app.style.display = "";
+      if (!begruesstGesetzt){
         anrede = j.anrede || (j.name || "").split(" ")[0] || "";
         document.getElementById("gruss-titel").textContent = anrede ? ("Hallo " + anrede + ", schön dass du da bist!") : "Schön, dass du da bist!";
-        app.style.display = "";
+        begruesstGesetzt = true;
       }
       var jobs = j.jobs || [];
       var neuErledigt = pruefeNeuErledigt(jobs);
@@ -525,7 +531,7 @@
         var alter = jobAlterMin(job);
         if (alter !== null && alter > LAENGER_MIN){
           var lg = document.createElement("div"); lg.className = "laenger";
-          lg.textContent = "⏳ Das dauert gerade länger als sonst — wir schauen persönlich drauf und melden uns bei dir. 🤝";
+          lg.textContent = "⏳ Das dauert gerade etwas länger als sonst — kein Grund zur Sorge, wir haben es im Blick. Du musst nichts tun. 🌿";
           el.appendChild(lg);
         }
       }
@@ -564,11 +570,17 @@
     if (altDet) erledigtOffen = altDet.open; // vom Nutzer geänderten Aufklapp-Zustand übernehmen
     box.innerHTML = ""; erlWrap.innerHTML = "";
 
-    var aktive = [], erledigt = [];
-    (jobs || []).forEach(function(job){ (job && job.status === "done" ? erledigt : aktive).push(job); });
+    var aktive = [], probleme = [], erledigt = [];
+    (jobs || []).forEach(function(job){
+      if (!job) return;
+      if (job.status === "done") erledigt.push(job);
+      else if (schrittIndex(job.status) < 0) probleme.push(job); // failed/rejected → „wir melden uns"
+      else aktive.push(job); // in Arbeit (pending/claimed/running/qa/approved)
+    });
 
-    if (aktive.length){
+    if (aktive.length || probleme.length){
       aktive.forEach(function(job){ box.appendChild(macheAktivKarte(job)); });
+      probleme.forEach(function(job){ box.appendChild(macheAktivKarte(job)); });
     } else {
       var leer = document.createElement("p"); leer.className = "leer";
       leer.textContent = erledigt.length
