@@ -635,6 +635,7 @@
   var zeileEl = document.getElementById("chat-eingabe-zeile");
   var beauftragenBox = document.getElementById("beauftragen");
   var letzterRequest = null;
+  var bekannteProaktiv = {}; // schon gezeigte proaktive Nachrichten (id → 1), gegen Doppel-Anzeige
 
   // ===== Sprachnachricht-Bausteine (identisch in berater.html & mein-bereich.html) =====
   function lcVoiceUnterstuetzt(){ return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder); }
@@ -787,26 +788,76 @@
     try {
       var arr = messages.slice(-60);                       // Speicher deckeln
       while (arr.length && arr[0].role !== "user") arr.shift(); // immer mit „user" beginnen
-      if (!arr.length){ localStorage.removeItem(nsKey("lc-chat")); return; }
-      localStorage.setItem(nsKey("lc-chat"), JSON.stringify(arr));
+      if (!arr.length){ localStorage.removeItem(nsKey("lc-chat")); }
+      else localStorage.setItem(nsKey("lc-chat"), JSON.stringify(arr));
     } catch(e){}
+    serverSpeichern();
+  }
+  // Verlauf zusätzlich server-seitig sichern (Wahrheit, geräteübergreifend). Entprellt,
+  // Fire-and-forget; der Server erhält proaktive Nachrichten merge-sicher (per id).
+  var saveTimer = null;
+  function serverSpeichern(){
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function(){
+      try {
+        api("/dashboard-chat/save", {method:"POST", headers:{"content-type":"application/json"},
+          body: JSON.stringify({messages: messages.slice(-80)})}).catch(function(){});
+      } catch(e){}
+    }, 400);
   }
   function chatLaden(){
     try { var a = JSON.parse(localStorage.getItem(nsKey("lc-chat")) || "null"); return Array.isArray(a) ? a : null; }
     catch(e){ return null; }
   }
 
-  var fruehererVerlauf = chatLaden();
-  if (fruehererVerlauf && fruehererVerlauf.length){
-    // Verlauf wiederherstellen — kein neuer Opener, damit es sich wie Weitermachen anfühlt.
-    messages = fruehererVerlauf;
-    fruehererVerlauf.forEach(function(m){
+  function verlaufRendern(arr){
+    arr.forEach(function(m){
       if (!m || !m.content) return;
       if (m.role === "user" && m.content === OPENER_INSTR) return; // versteckte Begrüßungs-Anweisung nie anzeigen
+      if (m.proaktiv && m.id) bekannteProaktiv[m.id] = 1;
       bubble(m.role === "user" ? "user" : "assistant", m.content);
     });
-  } else {
-    openerZeigen();
+  }
+  // Verlauf laden: Server ist die Wahrheit (geräteübergreifend, wir können reinschreiben).
+  // localStorage nur als Offline-Fallback; ein reiner Browser-Verlauf wird einmalig migriert.
+  (async function ladeVerlauf(){
+    var serverArr = null;
+    try {
+      var r = await api("/dashboard-chat/verlauf", {method:"GET"});
+      var j = await r.json();
+      if (j && j.ok && Array.isArray(j.messages)) serverArr = j.messages;
+    } catch(e){}
+    if (serverArr && serverArr.length){
+      messages = serverArr; verlaufRendern(serverArr);
+    } else {
+      var lokal = chatLaden();
+      if (lokal && lokal.length){
+        messages = lokal; verlaufRendern(lokal); serverSpeichern(); // einmalig zum Server migrieren
+      } else {
+        openerZeigen();
+      }
+    }
+    setInterval(proaktivPoll, 30000); // proaktive Nachrichten (z. B. „Änderung ist live") abholen
+  })();
+
+  // Neue proaktive Berater-Nachrichten vom Server holen und einblenden (id-dedupliziert).
+  async function proaktivPoll(){
+    if (beschaeftigt) return;
+    var arr = null;
+    try {
+      var r = await api("/dashboard-chat/verlauf", {method:"GET"});
+      var j = await r.json();
+      if (j && j.ok && Array.isArray(j.messages)) arr = j.messages;
+    } catch(e){ return; }
+    if (!arr) return;
+    var neue = arr.filter(function(m){ return m && m.proaktiv && m.id && !bekannteProaktiv[m.id]; });
+    if (!neue.length) return;
+    neue.forEach(function(m){
+      bekannteProaktiv[m.id] = 1;
+      messages.push({role:"assistant", content:m.content, proaktiv:true, id:m.id, t:m.t});
+      bubble("assistant", m.content);
+    });
+    try { var arr2 = messages.slice(-60); localStorage.setItem(nsKey("lc-chat"), JSON.stringify(arr2)); } catch(e){}
   }
 
   // Blendet den technischen Bereitschafts-Marker aus der Anzeige aus (auch als Teil-Marker
