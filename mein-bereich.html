@@ -225,8 +225,8 @@
   .lc-rec-dot{width:11px;height:11px;border-radius:50%;background:var(--amber);flex:none;animation:lc-pulse 1.4s infinite;}
   @keyframes lc-pulse{0%{box-shadow:0 0 0 0 rgba(232,146,63,.55)}70%{box-shadow:0 0 0 9px rgba(232,146,63,0)}100%{box-shadow:0 0 0 0 rgba(232,146,63,0)}}
   .lc-rec-time{font-family:var(--mono);font-size:13px;color:var(--bone-dim);flex:none;min-width:36px;font-variant-numeric:tabular-nums;}
-  .lc-rec-wave{flex:1;display:flex;align-items:center;gap:3px;height:26px;overflow:hidden;}
-  .lc-rec-wave i{flex:1;min-width:2px;max-width:6px;height:10%;background:linear-gradient(180deg,var(--ember),var(--amber));border-radius:2px;transition:height .07s linear;}
+  .lc-rec-wave{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:3px;height:26px;overflow:hidden;}
+  .lc-rec-wave i{flex:none;width:3px;height:8%;background:linear-gradient(180deg,var(--ember),var(--amber));border-radius:2px;transition:height .09s ease;}
   .lc-rec-btn{flex:none;width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;display:grid;place-items:center;font-size:16px;line-height:1;}
   .lc-rec-cancel{background:transparent;color:var(--bone-dim);border:1px solid rgba(231,185,100,.22);}
   .lc-rec-cancel:hover{color:#f0b090;}
@@ -651,7 +651,7 @@
       var rec = mime ? new MediaRecorder(stream, {mimeType:mime}) : new MediaRecorder(stream);
       var chunks = []; rec.ondataavailable = function(e){ if (e.data && e.data.size) chunks.push(e.data); };
       var actx = new (window.AudioContext||window.webkitAudioContext)();
-      var ana = actx.createAnalyser(); ana.fftSize = 64;
+      var ana = actx.createAnalyser(); ana.fftSize = 256; ana.smoothingTimeConstant = 0.75;
       actx.createMediaStreamSource(stream).connect(ana);
       var freq = new Uint8Array(ana.frequencyBinCount), peaks = [];
 
@@ -660,18 +660,36 @@
       var dot = document.createElement("span"); dot.className = "lc-rec-dot";
       var time = document.createElement("span"); time.className = "lc-rec-time"; time.textContent = "0:00";
       var wave = document.createElement("div"); wave.className = "lc-rec-wave";
-      var BARS = 22, ibars = []; for (var i=0;i<BARS;i++){ var bi = document.createElement("i"); wave.appendChild(bi); ibars.push(bi); }
       var send = document.createElement("button"); send.className = "lc-rec-btn lc-rec-send"; send.type = "button"; send.setAttribute("aria-label","Sprachnachricht senden"); send.innerHTML = "→";
       bar.appendChild(cancel); bar.appendChild(dot); bar.appendChild(time); bar.appendChild(wave); bar.appendChild(send);
       verstecken.forEach(function(el){ el.style.display = "none"; });
       zeile.appendChild(bar);
 
+      // Balkenzahl an die tatsächliche Wellenform-Breite anpassen → füllt jede Breite dicht
+      // (Desktop viele, Mobil weniger); Balken je 3px + 3px Lücke = 6px.
+      var BARS = Math.max(20, Math.min(96, Math.floor(((wave.clientWidth || 320) + 3) / 6)));
+      var ibars = [], form = [];
+      for (var i=0;i<BARS;i++){
+        var bi = document.createElement("i"); wave.appendChild(bi); ibars.push(bi);
+        // stabile, organische Silhouette: sanfter Bogen (Mitte höher) + leichte Streuung
+        var t0 = BARS > 1 ? i/(BARS-1) : 0.5;
+        form.push((0.6 + 0.4*Math.sin(Math.PI*t0)) * (0.78 + 0.44*Math.random()));
+      }
+
       var start = Date.now(), raf, abgebrochen = false;
       function tick(){
         ana.getByteFrequencyData(freq);
-        var sum = 0;
-        for (var i=0;i<BARS;i++){ var v = freq[i]/255; ibars[i].style.height = Math.max(8, v*100) + "%"; sum += v; }
-        peaks.push(sum/BARS);
+        var bins = freq.length;
+        var vBins = Math.max(6, Math.floor(bins*0.55));       // Sprach-Energie sitzt in den unteren Bins
+        var level = 0; for (var k=0;k<vBins;k++) level += freq[k]; level = (level/vBins)/255; // 0..1
+        for (var i=0;i<BARS;i++){
+          var t = BARS>1 ? i/(BARS-1) : 0.5;
+          var spec = freq[Math.floor(t*(vBins-1))]/255;       // etwas Spektral-Bewegung über die Breite
+          var h = level*form[i]*1.5 + spec*0.25;              // Lautstärke (überall) + Bewegung
+          if (h > 1) h = 1;
+          ibars[i].style.height = Math.max(8, h*100) + "%";
+        }
+        peaks.push(level);                                     // Hüllkurve für die gesendete Sprach-Bubble
         var dauer = (Date.now()-start)/1000; time.textContent = lcFmtZeit(dauer);
         if (dauer > 90){ beenden(); return; }
         raf = requestAnimationFrame(tick);
