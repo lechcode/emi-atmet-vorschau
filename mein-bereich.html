@@ -97,7 +97,7 @@
   .tipp.an{display:block;}
 
   /* Composer — ein zusammenhängendes Eingabefeld (wie die Aufnahme-Leiste) */
-  .chat-eingabe{display:flex;}
+  .chat-eingabe{display:flex;flex-direction:column;gap:8px;}
   .composer{flex:1;min-width:0;display:flex;align-items:flex-end;gap:4px;background:var(--night-2);
     border:1px solid rgba(231,185,100,.22);border-radius:18px;padding:6px 6px 6px 6px;
     transition:border-color .2s,box-shadow .2s;}
@@ -113,6 +113,25 @@
   .composer-send:focus-visible{outline:none;box-shadow:var(--focus);}
   .composer-send[disabled]{opacity:.4;cursor:default;transform:none;}
   .composer-send svg{width:19px;height:19px;}
+  /* Datei im Chat: Büroklammer im Composer + Anhang-Leiste + Datei-Bubble */
+  .lc-attach{flex:none;width:40px;height:40px;border-radius:50%;border:none;background:transparent;color:var(--gold);display:grid;place-items:center;cursor:pointer;transition:color .2s,background .2s;}
+  .lc-attach:hover{color:var(--ember);background:rgba(231,185,100,.09);}
+  .lc-attach:focus-visible{outline:none;box-shadow:var(--focus);}
+  .lc-attach svg{width:20px;height:20px;}
+  .chat-anhang{display:none;align-items:center;gap:11px;padding:8px 10px;border:1px solid var(--line);border-radius:14px;background:var(--night-2);}
+  .chat-anhang.an{display:flex;}
+  .chat-anhang img{width:46px;height:46px;object-fit:cover;border-radius:9px;border:1px solid var(--line);flex:none;}
+  .chat-anhang .ah-ic{width:46px;height:46px;border-radius:9px;border:1px solid var(--line);background:var(--panel);display:grid;place-items:center;font-size:22px;flex:none;}
+  .chat-anhang .ah-meta{min-width:0;flex:1;display:flex;flex-direction:column;line-height:1.3;}
+  .chat-anhang .ah-name{font-size:14px;color:var(--bone);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .chat-anhang .ah-size{font-size:12px;color:var(--muted);}
+  .chat-anhang .ah-x{flex:none;width:28px;height:28px;border-radius:50%;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:16px;display:grid;place-items:center;}
+  .chat-anhang .ah-x:hover{background:rgba(255,255,255,.06);color:var(--bone);}
+  .chat-eingabe-zeile.zieht .composer{border-color:var(--amber);box-shadow:0 0 0 3px rgba(232,146,63,.13);}
+  .msg.datei{display:flex;flex-direction:column;gap:7px;}
+  .msg.datei img{max-width:220px;width:100%;border-radius:11px;border:1px solid rgba(255,255,255,.14);display:block;}
+  .msg.datei .d-chip{display:flex;align-items:center;gap:9px;}
+  .msg.datei .d-chip .d-ic{font-size:22px;flex:none;}
   .chat-tools{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:14px;color:var(--muted);font-size:13px;}
   .chat-tools .btn-ghost{font-size:14px;padding:9px 18px;white-space:nowrap;}
   .chat-verlauf::-webkit-scrollbar{width:8px;}
@@ -287,11 +306,16 @@
       <div class="chat-verlauf" id="chat-verlauf"></div>
       <p class="tipp" id="tipp">… schreibt</p>
       <div class="chat-eingabe" id="chat-eingabe-zeile">
+        <div class="chat-anhang" id="chat-anhang" aria-live="polite"></div>
         <div class="composer" id="composer">
+          <input type="file" id="chat-datei" accept="image/*,.pdf,.doc,.docx,.txt,.rtf,.csv,.ppt,.pptx,.xls,.xlsx,.svg,.heic" style="display:none">
+          <button class="lc-attach" id="chat-attach" type="button" aria-label="Datei anhängen" title="Datei anhängen (Bild, PDF, Dokument)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+          </button>
           <button class="lc-mic" id="chat-mic" type="button" aria-label="Sprachnachricht aufnehmen" title="Sprachnachricht aufnehmen">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 19v3"/></svg>
           </button>
-          <textarea id="chat-eingabe" rows="1" placeholder="Schreib oder sprich …" aria-label="Nachricht an deinen Berater"></textarea>
+          <textarea id="chat-eingabe" rows="1" placeholder="Schreib, sprich oder häng was an …" aria-label="Nachricht an deinen Berater"></textarea>
           <button class="composer-send" id="chat-senden" type="button" aria-label="Senden">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 12h13M13 6l6 6-6 6"/></svg>
           </button>
@@ -306,29 +330,6 @@
         <button class="btn" id="beauftragen-btn">Ja, so beauftragen ✓</button>
         <button class="btn btn-ghost" id="beauftragen-abbruch" style="margin-left:8px;">Weiter besprechen</button>
       </div>
-    </section>
-
-    <section class="karte">
-      <h2>Dateien hochladen 📎</h2>
-      <p class="unter">Bilder, PDFs oder andere Dateien für deine Seite — leg sie hier ab und sag kurz, was damit passieren soll.</p>
-      <label class="drop" id="drop">
-        <input type="file" id="datei" accept="image/*,.pdf,.doc,.docx,.txt,.rtf,.csv,.ppt,.pptx,.xls,.xlsx,.svg,.heic">
-        <div class="gross">Datei auswählen oder hierher ziehen</div>
-        <div class="klein">Bilder, PDF &amp; Dokumente · bis 12 MB · bitte nur Dateien, die auf die Website dürfen</div>
-      </label>
-      <div class="vorschau" id="vorschau">
-        <img id="vorschau-bild" alt="Vorschau deiner Datei">
-        <div class="datei-chip" id="datei-chip">
-          <span class="datei-icon" id="datei-icon">📄</span>
-          <span class="datei-meta"><span id="datei-name"></span><small id="datei-groesse"></small></span>
-        </div>
-        <div class="rechts">
-          <label class="feld-label" for="anweisung">Was sollen wir mit dieser Datei machen?</label>
-          <textarea id="anweisung" rows="2" placeholder="z. B. „als großes Bild ganz oben auf die Startseite“, „als PDF-Download unter Angebote verlinken“ oder „ersetzt das aktuelle Team-Foto“"></textarea>
-          <button class="btn" id="hochladen">Hochladen →</button>
-        </div>
-      </div>
-      <p class="upload-status" id="upload-status"></p>
     </section>
 
     <section class="karte faq">
@@ -636,6 +637,7 @@
   var beauftragenBox = document.getElementById("beauftragen");
   var letzterRequest = null;
   var bekannteProaktiv = {}; // schon gezeigte proaktive Nachrichten (id → 1), gegen Doppel-Anzeige
+  var angehaengteDatei = null; // im Chat angehängte Datei (vor dem Senden)
 
   // ===== Sprachnachricht-Bausteine (identisch in berater.html & mein-bereich.html) =====
   function lcVoiceUnterstuetzt(){ return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder); }
@@ -908,8 +910,10 @@
   }
 
   async function senden(){
+    if (beschaeftigt) return;
     var text = eingabe.value.trim();
-    if (!text || beschaeftigt) return;
+    if (angehaengteDatei){ await dateiSenden(text); return; } // Datei angehängt → Upload-Weg
+    if (!text) return;
     beschaeftigt = true; sendBtn.disabled = true;
     eingabe.value = ""; eingabe.style.height = "auto";
     messages.push({role:"user", content:text});
@@ -1014,14 +1018,11 @@
     }
   });
 
-  // — Datei-Upload (Bilder, PDFs, Dokumente) —
-  var dateiInput = document.getElementById("datei");
-  var drop = document.getElementById("drop");
-  var vorschau = document.getElementById("vorschau");
-  var vorschauBild = document.getElementById("vorschau-bild");
-  var dateiChip = document.getElementById("datei-chip");
-  var uploadStatus = document.getElementById("upload-status");
-  var gewaehlteDatei = null;
+  // — Datei im Chat anhängen (Klick, Drag-Drop, Paste) → beim Senden hochladen —
+  var anhangEl = document.getElementById("chat-anhang");
+  var attachBtn = document.getElementById("chat-attach");
+  var chatDatei = document.getElementById("chat-datei");
+  var chatDrop = verlauf.closest(".karte") || zeileEl;
 
   function icZuTyp(name){
     var e = (name.split(".").pop() || "").toLowerCase();
@@ -1035,63 +1036,84 @@
     if (bytes < 1024*1024) return Math.max(1, Math.round(bytes/1024)) + " KB";
     return (bytes/1024/1024).toFixed(1) + " MB";
   }
-  function dateiWaehlen(f){
+  function anhangSetzen(f){
     if (!f) return;
-    if (f.size > 12 * 1024 * 1024){
-      uploadStatus.textContent = "Die Datei ist größer als 12 MB — bitte eine kleinere Version wählen.";
-      uploadStatus.className = "upload-status an fehler"; return;
-    }
-    gewaehlteDatei = f;
-    uploadStatus.className = "upload-status";
+    if (f.size > 12 * 1024 * 1024){ bubble("assistant", "Die Datei ist größer als 12 MB — magst du eine kleinere Version anhängen?"); return; }
+    angehaengteDatei = f;
+    anhangEl.innerHTML = "";
     if (f.type && f.type.indexOf("image/") === 0){
-      vorschauBild.src = URL.createObjectURL(f);
-      vorschauBild.style.display = "";
-      dateiChip.classList.remove("an");
+      var img = document.createElement("img"); img.src = URL.createObjectURL(f); img.alt = ""; anhangEl.appendChild(img);
     } else {
-      vorschauBild.style.display = "none";
-      document.getElementById("datei-icon").textContent = icZuTyp(f.name);
-      document.getElementById("datei-name").textContent = f.name;
-      document.getElementById("datei-groesse").textContent = groesse(f.size);
-      dateiChip.classList.add("an");
+      var ic = document.createElement("div"); ic.className = "ah-ic"; ic.textContent = icZuTyp(f.name); anhangEl.appendChild(ic);
     }
-    vorschau.classList.add("an");
+    var meta = document.createElement("div"); meta.className = "ah-meta";
+    var nm = document.createElement("span"); nm.className = "ah-name"; nm.textContent = f.name;
+    var sz = document.createElement("span"); sz.className = "ah-size"; sz.textContent = groesse(f.size);
+    meta.appendChild(nm); meta.appendChild(sz); anhangEl.appendChild(meta);
+    var x = document.createElement("button"); x.type = "button"; x.className = "ah-x"; x.setAttribute("aria-label","Anhang entfernen"); x.textContent = "✕";
+    x.addEventListener("click", anhangEntfernen); anhangEl.appendChild(x);
+    anhangEl.classList.add("an");
+    eingabe.focus();
   }
-  dateiInput.addEventListener("change", function(){ dateiWaehlen(this.files[0]); });
-  ["dragover","dragenter"].forEach(function(ev){ drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.add("zieht"); }); });
-  ["dragleave","drop"].forEach(function(ev){ drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.remove("zieht"); }); });
-  drop.addEventListener("drop", function(e){ dateiWaehlen(e.dataTransfer.files[0]); });
+  function anhangEntfernen(){
+    angehaengteDatei = null; anhangEl.classList.remove("an"); anhangEl.innerHTML = ""; chatDatei.value = "";
+  }
+  attachBtn.addEventListener("click", function(){ if (!beschaeftigt) chatDatei.click(); });
+  chatDatei.addEventListener("change", function(){ anhangSetzen(this.files[0]); });
+  ["dragover","dragenter"].forEach(function(ev){ chatDrop.addEventListener(ev, function(e){ e.preventDefault(); zeileEl.classList.add("zieht"); }); });
+  ["dragleave","dragend","drop"].forEach(function(ev){ chatDrop.addEventListener(ev, function(e){ e.preventDefault(); zeileEl.classList.remove("zieht"); }); });
+  chatDrop.addEventListener("drop", function(e){ if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) anhangSetzen(e.dataTransfer.files[0]); });
+  eingabe.addEventListener("paste", function(e){
+    var items = (e.clipboardData && e.clipboardData.items) || [];
+    for (var i=0;i<items.length;i++){ if (items[i].kind === "file"){ var f = items[i].getAsFile(); if (f){ e.preventDefault(); anhangSetzen(f); return; } } }
+  });
 
-  document.getElementById("hochladen").addEventListener("click", async function(){
-    if (!gewaehlteDatei) return;
-    var knopf = this; knopf.disabled = true; knopf.textContent = "Lädt hoch …";
+  // Datei-Bubble im Verlauf (Thumbnail bei Bildern, Chip bei Dokumenten) + optionale Caption
+  function dateiBubble(f, caption){
+    var el = document.createElement("div"); el.className = "msg du datei";
+    if (f.type && f.type.indexOf("image/") === 0){
+      var img = document.createElement("img"); img.src = URL.createObjectURL(f); img.alt = f.name; el.appendChild(img);
+    } else {
+      var chip = document.createElement("div"); chip.className = "d-chip";
+      var ic = document.createElement("span"); ic.className = "d-ic"; ic.textContent = icZuTyp(f.name);
+      var nm = document.createElement("span"); nm.textContent = f.name + " · " + groesse(f.size);
+      chip.appendChild(ic); chip.appendChild(nm); el.appendChild(chip);
+    }
+    if (caption){ var cap = document.createElement("div"); cap.className = "d-cap"; cap.textContent = caption; el.appendChild(cap); }
+    verlauf.appendChild(el); verlauf.scrollTop = verlauf.scrollHeight;
+  }
+
+  // Angehängte Datei senden: Bubble zeigen → /upload (Anweisung = Caption) → Bestätigung.
+  // Das Bild wird NICHT im Verlauf-Speicher (KV) abgelegt (Bloat) — dort nur eine Text-Referenz.
+  async function dateiSenden(caption){
+    var f = angehaengteDatei; if (!f) return;
+    beschaeftigt = true; sendBtn.disabled = true;
+    var name = f.name;
+    dateiBubble(f, caption);
+    anhangEntfernen(); eingabe.value = ""; eingabe.style.height = "auto";
+    messages.push({role:"user", content:"📎 Datei gesendet: " + name + (caption ? " — " + caption : "")});
+    chatSpeichern();
+    var warte = bubble("assistant", "Lädt hoch … 🌿");
     try {
       var b64 = await new Promise(function(res, rej){
-        var fr = new FileReader();
-        fr.onload = function(){ res(String(fr.result).split(",")[1]); };
-        fr.onerror = rej;
-        fr.readAsDataURL(gewaehlteDatei);
+        var fr = new FileReader(); fr.onload = function(){ res(String(fr.result).split(",")[1]); }; fr.onerror = rej; fr.readAsDataURL(f);
       });
       var r = await api("/upload", {method:"POST", headers:{"content-type":"application/json"},
-        body: JSON.stringify({
-          filename: gewaehlteDatei.name,
-          content_b64: b64,
-          anweisung: document.getElementById("anweisung").value.trim()
-        })});
+        body: JSON.stringify({filename: name, content_b64: b64, anweisung: caption})});
       var j = await r.json();
       if (!j.ok) throw new Error(j.meldung || "");
-      uploadStatus.textContent = "Angekommen ✓ — wir kümmern uns darum. Fortschritt siehst du oben.";
-      uploadStatus.className = "upload-status an";
-      vorschau.classList.remove("an");
-      dateiChip.classList.remove("an"); vorschauBild.style.display = "";
-      gewaehlteDatei = null; dateiInput.value = "";
-      document.getElementById("anweisung").value = "";
+      var okText = caption
+        ? "Angekommen ✓ — ich kümmere mich darum. Den Fortschritt siehst du oben unter „Deine Aufträge“, dort kommt auch der Link, sobald es live ist."
+        : "Angekommen ✓ — die Datei liegt bei uns. Sag mir gern noch, was ich damit machen soll (z. B. „als großes Bild ganz oben“), dann baue ich sie ein.";
+      warte.innerHTML = kiMd(okText);
+      messages.push({role:"assistant", content: okText}); chatSpeichern();
       statusLaden(false);
     } catch(e){
-      uploadStatus.textContent = (e && e.message) ? e.message : "Der Upload hat nicht geklappt — bitte noch einmal versuchen.";
-      uploadStatus.className = "upload-status an fehler";
+      warte.innerHTML = kiMd((e && e.message) ? e.message : "Der Upload hat gerade nicht geklappt — magst du es noch einmal versuchen?");
     }
-    knopf.disabled = false; knopf.textContent = "Hochladen →";
-  });
+    verlauf.scrollTop = verlauf.scrollHeight;
+    beschaeftigt = false; sendBtn.disabled = false;
+  }
 })();
 </script>
 </body>
