@@ -30,7 +30,8 @@
     --focus:0 0 0 3px rgba(232,146,63,.45);
   }
   *{margin:0;padding:0;box-sizing:border-box;}
-  body{background:var(--night);color:var(--bone);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100dvh;}
+  html{overflow-x:clip;}
+  body{background:var(--night);color:var(--bone);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100dvh;overflow-x:clip;-webkit-text-size-adjust:100%;max-width:100%;}
   h1,h2,h3{line-height:1.2;letter-spacing:-.02em;color:#241d12;text-wrap:balance;}
   a{color:var(--ember);text-decoration:underline;text-underline-offset:3px;}
   img,svg{display:block;max-width:100%;}
@@ -87,7 +88,7 @@
   .msg-avatar{flex:none;width:28px;height:28px;border-radius:50%;background:var(--panel-2);
     border:1px solid rgba(231,185,100,.3);display:grid;place-items:center;margin-bottom:2px;}
   .msg-avatar svg{width:17px;height:17px;color:var(--gold);}
-  .msg{padding:11px 15px;border-radius:16px;font-size:15px;line-height:1.55;white-space:pre-wrap;overflow-wrap:break-word;}
+  .msg{padding:11px 15px;border-radius:16px;font-size:15px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;}
   .msg-row .msg{min-width:0;}
   .msg.ki{align-self:flex-start;background:var(--panel-2);color:var(--bone);border-bottom-left-radius:5px;}
   .msg.du{align-self:flex-end;max-width:min(78%,480px);
@@ -244,7 +245,14 @@
   .lc-vtext.warten{color:var(--bone-dim);font-style:italic;}
   .lc-vtext .lc-mini{opacity:.6;margin-right:5px;}
   @media (prefers-reduced-motion:reduce){.lc-rec-dot{animation:none;}.lc-rec-wave i,.lc-vwave i{transition:none;}}
-  @media (max-width:640px){ .vorschau img,.datei-chip{width:100%;} }
+  @media (max-width:640px){
+    .chat-verlauf{max-height:min(62vh,460px);}   /* handlicher: nutzt mehr Höhe, weniger „kleines Fenster im großen Scroll“ */
+    .msg-row{max-width:100%;}
+    .msg.du{max-width:82%;}
+    .msg.datei img{max-width:min(220px,72vw);}
+    .lc-vwave{overflow:hidden;}
+    #gruss-titel{font-size:clamp(26px,7vw,34px);}
+  }
   </style>
 </head>
 <body>
@@ -1009,6 +1017,9 @@
   document.getElementById("chat-senden").addEventListener("click", senden);
   eingabe.addEventListener("keydown", function(e){ if (e.key === "Enter" && !e.shiftKey){ e.preventDefault(); senden(); } });
   eingabe.addEventListener("input", function(){ this.style.height = "auto"; this.style.height = Math.min(this.scrollHeight, 130) + "px"; });
+  // Placeholder responsiv: mobil kurz (passt ohne Abschneiden), Desktop mit vollem Hinweis
+  function placeholderAnpassen(){ eingabe.setAttribute("placeholder", window.innerWidth < 560 ? "Schreib oder sprich …" : "Schreib, sprich oder häng was an …"); }
+  placeholderAnpassen(); window.addEventListener("resize", placeholderAnpassen);
   document.getElementById("beauftragen-abbruch").addEventListener("click", function(){ beauftragenBox.classList.remove("an"); eingabe.focus(); });
 
   document.getElementById("beauftragen-btn").addEventListener("click", async function(){
