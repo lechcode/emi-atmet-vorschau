@@ -253,6 +253,37 @@
     .lc-vwave{overflow:hidden;}
     #gruss-titel{font-size:clamp(26px,7vw,34px);}
   }
+
+  /* ===== Umzugs-Assistent (Domain verbinden) ===== */
+  .umzug-intro{color:var(--bone-dim);font-size:14.5px;margin-bottom:14px;}
+  .umzug-feld{display:flex;gap:8px;flex-wrap:wrap;align-items:stretch;margin-bottom:4px;}
+  .umzug-feld input{flex:1;min-width:200px;border:1px solid var(--line);background:var(--panel);color:var(--bone);font-family:var(--sans);font-size:16px;border-radius:12px;padding:11px 14px;}
+  .umzug-feld input:focus-visible{outline:none;box-shadow:var(--focus);}
+  .umzug-hinweis{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.5;}
+  .umzug-box{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin:12px 0;font-size:14.5px;line-height:1.6;}
+  .umzug-box.gut{border-color:rgba(122,162,89,.5);background:rgba(122,162,89,.10);}
+  .umzug-box.warm{border-color:rgba(232,146,63,.4);background:rgba(232,146,63,.09);}
+  .umzug-box b{color:var(--gold);}
+  .stepper{list-style:none;display:grid;gap:0;margin:8px 0 4px;padding:0;}
+  .stepper li{display:grid;grid-template-columns:26px minmax(0,1fr);gap:12px;padding:0 0 18px;position:relative;}
+  .stepper li::before{content:"";position:absolute;left:12px;top:26px;bottom:0;width:2px;background:var(--line);}
+  .stepper li:last-child::before{display:none;}
+  .stepper .st-punkt{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);background:var(--night-2);display:grid;place-items:center;font-size:13px;color:var(--muted);z-index:1;}
+  .stepper li.fertig .st-punkt{background:var(--gruen);border-color:var(--gruen);color:#1c2413;}
+  .stepper li[aria-current="step"] .st-punkt{background:var(--amber);border-color:var(--amber);color:#2a1808;}
+  .stepper .st-inhalt{padding-top:2px;min-width:0;}
+  .stepper .st-titel{font-weight:600;font-size:15px;}
+  .stepper li:not([aria-current="step"]):not(.fertig) .st-inhalt{opacity:.5;}
+  .stepper .st-detail{margin-top:8px;font-size:14px;color:var(--bone-dim);line-height:1.6;}
+  .ns-liste{display:grid;gap:8px;margin:10px 0;}
+  .ns-zeile{display:flex;align-items:center;gap:8px;background:var(--night-2);border:1px solid var(--line);border-radius:12px;padding:7px 8px 7px 12px;}
+  .ns-zeile code{flex:1;min-width:0;font-family:var(--mono);font-size:15px;color:var(--bone);user-select:all;overflow:auto;white-space:nowrap;}
+  .ns-copy{flex:none;border:1px solid var(--line);background:transparent;color:var(--gold);cursor:pointer;font-size:13px;padding:6px 11px;border-radius:9px;font-family:var(--sans);}
+  .ns-copy:hover{background:rgba(231,185,100,.12);color:var(--ember);}
+  .ns-copy:focus-visible{outline:none;box-shadow:var(--focus);}
+  .umzug-schritte{margin:10px 0 4px;padding-left:20px;font-size:14px;color:var(--bone-dim);line-height:1.6;}
+  .umzug-schritte li{margin-bottom:6px;}
+  .umzug-schritte .sub{display:block;color:var(--muted);font-size:12.5px;font-family:var(--mono);margin-top:2px;word-break:break-word;}
   </style>
 </head>
 <body>
@@ -264,13 +295,19 @@
     </div>
   </header>
 
-  <!-- Zugang fehlt -->
+  <!-- Login (passwortlos, per E-Mail-Link) -->
   <div class="vollbild" id="kein-zugang">
     <div class="inhalt">
       <div class="zeichen">🔑</div>
-      <h1 style="font-size:22px;">Dein persönlicher Link fehlt</h1>
-      <p style="color:var(--bone-dim);font-size:15px;">Diesen Bereich öffnest du über deinen persönlichen Zugangslink — den haben wir dir per E-Mail geschickt. Nicht zur Hand? Schreib uns kurz, wir schicken sofort einen neuen.</p>
-      <a class="btn" href="mailto:info@lechcode.de?subject=Neuer%20Zugangslink">Neuen Link anfordern</a>
+      <h1 style="font-size:22px;">Anmelden</h1>
+      <p style="color:var(--bone-dim);font-size:15px;">Gib deine E-Mail-Adresse ein — wir schicken dir einen Login-Link. So kommst nur du in deinen Bereich, sonst niemand.</p>
+      <form id="login-form" style="display:flex;flex-direction:column;gap:10px;max-width:340px;margin:4px auto 0;">
+        <input id="login-email" type="email" required autocomplete="email" inputmode="email" placeholder="deine@email.de"
+          style="border:1px solid var(--line);background:var(--panel);color:var(--bone);font-family:var(--sans);font-size:16px;border-radius:12px;padding:12px 14px;width:100%;box-sizing:border-box;">
+        <button class="btn" type="submit" id="login-btn">Login-Link schicken</button>
+      </form>
+      <p id="login-status" role="status" aria-live="polite" style="min-height:20px;color:var(--bone-dim);font-size:14px;margin-top:12px;"></p>
+      <p style="color:var(--bone-dim);font-size:13px;margin-top:2px;">Kein Zugang mehr? Schreib uns: <a href="mailto:info@lechcode.de" style="color:inherit;">info@lechcode.de</a></p>
     </div>
   </div>
 
@@ -305,6 +342,12 @@
       <div id="lc-ansage" class="sr-only" aria-live="polite" role="status"></div>
       <div id="jobs"><p class="leer">Noch keine Aufträge — schreib unten einfach deinen ersten Wunsch in den Chat. 🌿</p></div>
       <div id="erledigt-wrap"></div>
+    </section>
+
+    <section class="karte" id="umzug-karte" style="display:none;">
+      <h2>Deine Domain verbinden 🌐</h2>
+      <p class="unter">Schalte deine Wunsch-Adresse in wenigen einfachen Schritten live — deine E-Mails bleiben dabei sicher. Bei jeder Frage sind wir da.</p>
+      <div id="umzug-inhalt"></div>
     </section>
 
     <section class="karte">
@@ -354,14 +397,14 @@
   <footer>
     <div class="wrap">
       <span>lech<span style="color:var(--gold);font-family:var(--mono);">code</span> · Code mit Seele · Landsberg am Lech</span>
-      <span><a href="mailto:info@lechcode.de">info@lechcode.de</a></span>
+      <span><a href="mailto:info@lechcode.de">info@lechcode.de</a> · <a href="#" id="lc-abmelden" style="color:var(--bone-dim);display:none;">Abmelden</a></span>
     </div>
   </footer>
 
 <script>
 (function(){
   "use strict";
-  var LC_API = "https://lechcode-api.nameless-waterfall-55e5.workers.dev"; /* LC-API-URL — wird von lechcode-plattform/bin/set-api-url.sh gesetzt */
+  var LC_API = "https://lechcode-api.nameless-waterfall-55e5.workers.dev"; /* LC-API-URL — wird von plattform/bin/set-api-url.sh gesetzt */
 
   var STATUS_TEXT = { pending:"empfangen", claimed:"wird gebaut", running:"wird gebaut", qa:"Qualitätsprüfung", approved:"wird gebaut", done:"live ✓", failed:"wir schauen persönlich drauf", rejected:"wir schauen persönlich drauf" };
   var SCHRITTE = ["empfangen","wird gebaut","Qualitätsprüfung","live ✓"];
@@ -394,7 +437,7 @@
   // (damit der Erledigt-Bereich einmalig aufklappt und den „live"-Moment zeigt).
   function pruefeNeuErledigt(jobs){
     var jetzt = {}, neu = false;
-    (jobs || []).forEach(function(job){ if (job && job.status === "done") jetzt[job.id] = true; });
+    (jobs || []).forEach(function(job){ if (job && job.status === "done" && job.type !== "domain-selfservice") jetzt[job.id] = true; });
     if (doneGesehen){
       neu = Object.keys(jetzt).some(function(id){ return !doneGesehen[id]; });
       if (neu){
@@ -420,6 +463,22 @@
   // Alte, unscoped Schlüssel wegräumen (verhindert Alt-Leaks aus früheren Versionen).
   try { localStorage.removeItem("lc-zugang"); localStorage.removeItem("lc-opener-done"); } catch(e){}
 
+  // — Magic-Link-Login: ?login=<code> → 30-Tage-Session holen, dann sauber neu laden —
+  var loginCode = ((location.search || "").match(/[?&]login=([A-Za-z0-9]+)/) || [])[1];
+  if (loginCode){
+    fetch(LC_API + "/auth/verify", { method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({ code: loginCode }) })
+      .then(function(r){ return r.json().catch(function(){ return {}; }); })
+      .then(function(j){
+        try {
+          if (j && j.ok && j.token){ localStorage.setItem(nsKey("lc-zugang"), j.token); }
+          else { sessionStorage.setItem("lc-login-fehler", "1"); }
+        } catch(e){}
+      })
+      .catch(function(){ try { sessionStorage.setItem("lc-login-fehler", "1"); } catch(e){} })
+      .then(function(){ location.replace(location.pathname); }); // Query weg, frisch initialisieren
+    return;
+  }
+
   // — Token: aus #k=… übernehmen, pro Kunde sichern, URL säubern —
   var token = "";
   var m = (location.hash || "").match(/[#&]k=([A-Za-z0-9]+)/);
@@ -429,7 +488,31 @@
 
   var app = document.getElementById("app");
   var keinZugang = document.getElementById("kein-zugang");
-  function zeigeKeinZugang(){ keinZugang.classList.add("an"); app.style.display = "none"; }
+  var loginGewired = false;
+  function loginWiren(){
+    if (loginGewired) return; loginGewired = true;
+    var form = document.getElementById("login-form");
+    var statusEl = document.getElementById("login-status");
+    try { if (sessionStorage.getItem("lc-login-fehler")){ sessionStorage.removeItem("lc-login-fehler");
+      if (statusEl) statusEl.textContent = "Der Link war abgelaufen oder schon benutzt. Fordere dir einfach einen neuen an."; } } catch(e){}
+    if (!form) return;
+    form.addEventListener("submit", function(ev){
+      ev.preventDefault();
+      var email = (document.getElementById("login-email").value || "").trim();
+      var btn = document.getElementById("login-btn");
+      if (!email) return;
+      if (btn){ btn.disabled = true; btn.textContent = "Wird gesendet …"; }
+      fetch(LC_API + "/auth/request", { method:"POST", headers:{"content-type":"application/json"},
+        body: JSON.stringify({ email: email, ruecklink: location.origin + location.pathname }) })
+        .catch(function(){})
+        .then(function(){
+          // Immer dieselbe Antwort — verrät nicht, ob die Adresse hinterlegt ist.
+          if (statusEl) statusEl.textContent = "Wenn diese Adresse bei uns hinterlegt ist, ist dein Login-Link jetzt unterwegs. Schau in dein Postfach (auch im Spam).";
+          if (btn){ btn.disabled = false; btn.textContent = "Login-Link schicken"; }
+        });
+    });
+  }
+  function zeigeKeinZugang(){ keinZugang.classList.add("an"); app.style.display = "none"; loginWiren(); }
   if (!token){ zeigeKeinZugang(); return; }
 
   function api(pfad, opts){
@@ -437,6 +520,19 @@
     opts.headers = Object.assign({"authorization":"Bearer " + token}, opts.headers || {});
     return fetch(LC_API + pfad, opts);
   }
+
+  // — Abmelden (Session beenden — wichtig am fremden/geteilten Rechner) —
+  (function(){
+    var ab = document.getElementById("lc-abmelden");
+    if (!ab) return;
+    ab.style.display = "inline";
+    ab.addEventListener("click", function(ev){
+      ev.preventDefault();
+      try { api("/auth/logout", { method:"POST" }); } catch(e){}
+      try { localStorage.removeItem(nsKey("lc-zugang")); } catch(e){}
+      location.replace(location.pathname);
+    });
+  })();
 
   // — Status laden + Polling —
   var kundenName = "", anrede = "", letzteSignatur = null, schnellVersuche = 0, begruesstGesetzt = false;
@@ -461,6 +557,7 @@
       }
       var jobs = j.jobs || [];
       var neuErledigt = pruefeNeuErledigt(jobs);
+      try { umzugLetzteJobs = jobs; umzugAktualisieren(jobs); } catch(e){}
       // Nur neu rendern, wenn sich wirklich etwas geändert hat (verhindert 30-s-Flackern
       //   und Aufklapp-/Fokus-Sprünge). „lang" fängt die zeitbasierte Hänge-Meldung mit ein.
       var sig = jobs.map(function(x){
@@ -592,6 +689,7 @@
     var aktive = [], probleme = [], erledigt = [];
     (jobs || []).forEach(function(job){
       if (!job) return;
+      if (job.type === "domain-selfservice") return; // eigener Stepper (Umzugs-Assistent), nicht in der Job-Liste
       if (job.status === "done") erledigt.push(job);
       else if (schrittIndex(job.status) < 0) probleme.push(job); // failed/rejected → „wir melden uns"
       else aktive.push(job); // in Arbeit (pending/claimed/running/qa/approved)
@@ -630,6 +728,244 @@
       erlWrap.appendChild(det);
     }
   }
+  // ===== Umzugs-Assistent: „Deine Domain verbinden" (Nameserver-Delegation zu INWX) =====
+  // Der Kunde führt den Umzug selbst; die Ausführung (INWX-Zone + GitHub-Pages + Mail-Spiegelung)
+  // macht der Runner voll-auto. Fixe Nameserver → kein Warten auf Werte, Go-Live erkennt das
+  // Dashboard selbst per /domain-check-Nachpoll. Zustand pro Kunde in localStorage (nsKey).
+  var umzugSig = null, umzugChecking = false, umzugLetzteJobs = [];
+  function umzugDomain(){ try { return localStorage.getItem(nsKey("umzug-domain")) || ""; } catch(e){ return ""; } }
+  function umzugNsOk(){ try { return localStorage.getItem(nsKey("umzug-ns-ok")) === "1"; } catch(e){ return false; } }
+  function umzugIstLive(){ try { return localStorage.getItem(nsKey("umzug-live")) === "1"; } catch(e){ return false; } }
+  function ansage(text){ var an = document.getElementById("lc-ansage"); if (an) an.textContent = text; }
+
+  function umzugAktualisieren(jobs){
+    var karte = document.getElementById("umzug-karte"), box = document.getElementById("umzug-inhalt");
+    if (!karte || !box) return;
+    umzugLetzteJobs = jobs || [];
+    karte.style.display = "";
+    var job = (jobs || []).filter(function(x){ return x && x.type === "domain-selfservice"; })
+                          .sort(function(a,b){ return a.id < b.id ? 1 : -1; })[0] || null;
+    // Läuft ein echter Umzug, ist der „Sonderfall"-Merker hinfällig.
+    if (job){ try { localStorage.removeItem(nsKey("umzug-mensch")); } catch(e){} }
+    var menschGrund = null; if (!job){ try { menschGrund = localStorage.getItem(nsKey("umzug-mensch")); } catch(e){} }
+    var phase = job ? (job.phase || "vorbereitet") : (menschGrund ? "mensch-statisch" : "start");
+    if (job && job.domain){ try { if (umzugDomain() !== job.domain) localStorage.setItem(nsKey("umzug-domain"), job.domain); } catch(e){} }
+    var dom = (job && job.domain) || umzugDomain();
+    // Go-Live-Erkennung: sobald der Kunde die NS bestätigt hat und noch nicht live.
+    if (!umzugIstLive() && job && phase === "nameserver" && umzugNsOk() && dom) umzugGoLiveCheck(dom);
+    var sig = (job ? job.id : "-") + ":" + phase + ":" + (umzugIstLive() ? "L" : "") + ":" + (umzugNsOk() ? "N" : "");
+    if (sig === umzugSig) return; // kein echter Zustandswechsel → nicht neu rendern (kein Flackern)
+    umzugSig = sig;
+    box.innerHTML = "";
+    if (umzugIstLive()){ umzugRenderLive(box, dom); return; }
+    if (phase === "start"){ umzugRenderStart(box); return; }
+    if (phase === "mensch-statisch"){ umzugRenderMenschStatisch(box, menschGrund); return; }
+    if (phase === "mensch_uebernimmt"){ umzugRenderMensch(box, job); return; }
+    if (phase === "nameserver"){ umzugRenderNameserver(box, job, dom); return; }
+    umzugRenderVorbereitet(box); // Job da, aber Runner noch nicht durch
+  }
+  function umzugNeuRendern(){ umzugSig = null; umzugAktualisieren(umzugLetzteJobs); }
+
+  function normDomain(roh){
+    return (roh || "").trim().toLowerCase()
+      .replace(/^https?:\/\//, "").replace(/\/.*$/, "").replace(/^www\./, "").replace(/\.$/, "");
+  }
+
+  function umzugRenderStart(box){
+    var wrap = document.createElement("div");
+    var intro = document.createElement("p"); intro.className = "umzug-intro";
+    intro.textContent = "Gib deine Wunsch-Adresse ein — ich prüfe kurz, wie sie eingerichtet ist. Deine E-Mails rühre ich dabei nicht an.";
+    wrap.appendChild(intro);
+    var feld = document.createElement("div"); feld.className = "umzug-feld";
+    var inp = document.createElement("input"); inp.type = "text"; inp.placeholder = "z. B. meine-praxis.de"; inp.setAttribute("aria-label", "Deine Domain");
+    inp.value = umzugDomain();
+    var btn = document.createElement("button"); btn.className = "btn"; btn.type = "button"; btn.textContent = "Domain prüfen";
+    feld.appendChild(inp); feld.appendChild(btn); wrap.appendChild(feld);
+    var out = document.createElement("div"); wrap.appendChild(out);
+    function los(){ umzugPruefen(inp.value, out, btn); }
+    btn.addEventListener("click", los);
+    inp.addEventListener("keydown", function(e){ if (e.key === "Enter"){ e.preventDefault(); los(); } });
+    box.appendChild(wrap);
+  }
+
+  function umzugPruefen(roh, out, btn){
+    var domain = normDomain(roh);
+    if (!/^[a-z0-9ä-ü][a-z0-9ä-ü.-]*\.[a-z0-9ä-ü-]{2,}$/i.test(domain)){
+      out.innerHTML = '<div class="umzug-box warm">Bitte gib eine gültige Adresse ein, z. B. <b>meine-praxis.de</b>.</div>'; return;
+    }
+    try { localStorage.setItem(nsKey("umzug-domain"), domain); } catch(e){}
+    btn.disabled = true; btn.textContent = "prüfe …"; out.innerHTML = "";
+    fetch(LC_API + "/domain-check", { method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({ domain: domain }) })
+      .then(function(r){ return r.json(); }).then(function(j){
+        btn.disabled = false; btn.textContent = "Domain prüfen";
+        if (!j || !j.ok || !j.steckbrief){
+          out.innerHTML = '<div class="umzug-box warm">Diese Adresse konnte ich gerade nicht prüfen. Schau kurz nach der Schreibweise — oder <a href="mailto:info@lechcode.de">frag uns</a>.</div>'; return;
+        }
+        var sb = j.steckbrief;
+        var mailSatz = sb.email_an_domain
+          ? ("Deine E-Mail läuft über " + (sb.email_provider || "deinen Anbieter") + " — die bleibt beim Umzug <b>unangetastet</b>.")
+          : "An dieser Adresse hängt keine E-Mail — der Umzug ist besonders unkompliziert.";
+        var g = document.createElement("div"); g.className = "umzug-box gut";
+        g.innerHTML = "<b>" + domain + "</b> liegt aktuell bei " + (sb.aktueller_anbieter || "deinem Anbieter") + ".<br>" + mailSatz +
+          "<br>Ich richte alles ein und zeige dir dann genau den <b>einen Handgriff</b>, den nur du machen kannst.";
+        out.appendChild(g);
+        var los = document.createElement("button"); los.className = "btn"; los.type = "button"; los.textContent = "Ja, Domain verbinden ✓";
+        los.addEventListener("click", function(){ umzugStarten(domain, out, los); });
+        out.appendChild(los);
+      })
+      .catch(function(){ btn.disabled = false; btn.textContent = "Domain prüfen"; out.innerHTML = '<div class="umzug-box warm">Verbindungsproblem — bitte gleich noch einmal versuchen.</div>'; });
+  }
+
+  function umzugStarten(domain, out, btn){
+    btn.disabled = true; btn.textContent = "starte …";
+    api("/job", { method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({ type:"domain-selfservice", payload:{ domain: domain } }) })
+      .then(function(r){ return r.json(); }).then(function(j){
+        if (j && j.eligible === false){
+          try { localStorage.setItem(nsKey("umzug-mensch"), j.grund || ""); } catch(e){}
+          ansage("Diesen Umzug übernehmen wir persönlich.");
+          umzugNeuRendern();
+          return;
+        }
+        if (j && j.ok){ umzugSig = null; ansage("Alles klar — ich richte deine Domain jetzt ein."); statusLaden(false); }
+        else { out.innerHTML = '<div class="umzug-box warm">Das hat gerade nicht geklappt — bitte gleich noch einmal, oder <a href="mailto:info@lechcode.de">schreib uns</a>.</div>'; btn.disabled = false; btn.textContent = "Ja, Domain verbinden ✓"; }
+      })
+      .catch(function(){ out.innerHTML = '<div class="umzug-box warm">Verbindungsproblem — bitte gleich noch einmal.</div>'; btn.disabled = false; btn.textContent = "Ja, Domain verbinden ✓"; });
+  }
+
+  function umzugRenderVorbereitet(box){
+    box.innerHTML = '<div class="umzug-box">🌿 Ich richte gerade alles ein — deine Internet-Zone, die Sicherheit (SSL) und deine E-Mail-Einträge. Das dauert nur ein, zwei Minuten. Gleich zeige ich dir den letzten Schritt.</div>';
+  }
+
+  function stepLi(titel, klasse, detailFn){
+    var li = document.createElement("li");
+    if (klasse === "current") li.setAttribute("aria-current", "step");
+    if (klasse === "fertig") li.className = "fertig";
+    var pk = document.createElement("div"); pk.className = "st-punkt"; pk.textContent = klasse === "fertig" ? "✓" : "•";
+    var inh = document.createElement("div"); inh.className = "st-inhalt";
+    var t = document.createElement("div"); t.className = "st-titel"; t.textContent = titel; inh.appendChild(t);
+    if (detailFn){ var d = detailFn(); if (d) inh.appendChild(d); }
+    li.appendChild(pk); li.appendChild(inh);
+    return li;
+  }
+
+  function umzugRenderNameserver(box, job, dom){
+    var ns = (job.ziel_ns && job.ziel_ns.length) ? job.ziel_ns : ["ns.inwx.de", "ns2.inwx.de", "ns3.inwx.eu"];
+    var anl = job.anleitung || {};
+    var nsOk = umzugNsOk();
+    var ol = document.createElement("ol"); ol.className = "stepper";
+    ol.appendChild(stepLi("Geprüft & alles vorbereitet", "fertig", null));
+    ol.appendChild(stepLi("Nameserver umstellen — dein einziger Handgriff", nsOk ? "fertig" : "current",
+      nsOk ? null : function(){ return nsSwitchDetail(ns, anl, dom); }));
+    ol.appendChild(stepLi("Wir prüfen automatisch & schalten live", nsOk ? "current" : "",
+      nsOk ? function(){
+        var d = document.createElement("div"); d.className = "st-detail";
+        d.innerHTML = "Läuft — das kann ein paar Stunden bis zu einem Tag dauern, völlig normal. Du musst nichts tun, deine E-Mails laufen weiter. Diese Seite darfst du jederzeit schließen; sobald es steht, siehst du es hier. 🌿";
+        return d;
+      } : null));
+    box.appendChild(ol);
+  }
+
+  function nsSwitchDetail(ns, anl, dom){
+    var d = document.createElement("div"); d.className = "st-detail";
+    var p = document.createElement("div");
+    p.innerHTML = "Melde dich bei <b>" + (anl.provider_name || "deinem Domain-Anbieter") + "</b> an" +
+      (anl.registrar_login_url ? ' (<a href="' + anl.registrar_login_url + '" target="_blank" rel="noopener">Login öffnen ↗</a>)' : "") +
+      " und trage dort als Nameserver <b>genau diese drei</b> ein:";
+    d.appendChild(p);
+    var liste = document.createElement("div"); liste.className = "ns-liste";
+    ns.forEach(function(n){
+      var z = document.createElement("div"); z.className = "ns-zeile";
+      var c = document.createElement("code"); c.textContent = n;
+      var b = document.createElement("button"); b.className = "ns-copy"; b.type = "button"; b.textContent = "kopieren"; b.setAttribute("aria-label", "Nameserver " + n + " kopieren");
+      b.addEventListener("click", function(){ kopieren(n, b); });
+      z.appendChild(c); z.appendChild(b); liste.appendChild(z);
+    });
+    d.appendChild(liste);
+    var schritte = anl.ns_schritte || [];
+    if (schritte.length){
+      var sol = document.createElement("ol"); sol.className = "umzug-schritte";
+      schritte.forEach(function(s){
+        var li = document.createElement("li"); li.textContent = s.text || "";
+        if (s.hinweis){ var sm = document.createElement("span"); sm.className = "sub"; sm.textContent = s.hinweis; li.appendChild(sm); }
+        sol.appendChild(li);
+      });
+      d.appendChild(sol);
+    }
+    if (anl.dnssec_hinweis){ var w = document.createElement("div"); w.className = "umzug-hinweis"; w.textContent = "⚠ " + anl.dnssec_hinweis; d.appendChild(w); }
+    var fertig = document.createElement("button"); fertig.className = "btn"; fertig.type = "button"; fertig.textContent = "Hab ich gemacht ✓"; fertig.style.marginTop = "12px";
+    fertig.addEventListener("click", function(){ try { localStorage.setItem(nsKey("umzug-ns-ok"), "1"); } catch(e){} ansage("Danke — wir prüfen jetzt automatisch, wann deine Seite live ist."); umzugNeuRendern(); });
+    var hilfe = document.createElement("button"); hilfe.className = "btn btn-ghost"; hilfe.type = "button"; hilfe.textContent = "Ich komme nicht weiter"; hilfe.style.marginLeft = "8px";
+    hilfe.addEventListener("click", function(){ umzugHilfe(dom); });
+    d.appendChild(fertig); d.appendChild(hilfe);
+    return d;
+  }
+
+  function umzugRenderMensch(box, job){
+    var grund = (job && job.grund) ? (" " + job.grund) : "";
+    box.innerHTML = '<div class="umzug-box warm">🤝 Diesen Umzug übernehmen wir <b>persönlich</b> für dich —' + (grund || " bei deiner Domain schauen wir lieber selbst genau hin.") +
+      ' Du musst nichts weiter tun; wir melden uns. Fragen? <a href="mailto:info@lechcode.de">info@lechcode.de</a></div>';
+  }
+
+  // Sonderfall aus der Vorab-Prüfung (kein domain-selfservice-Job) — persistent, mit Ausweg.
+  function umzugRenderMenschStatisch(box, grund){
+    var wrap = document.createElement("div");
+    var b = document.createElement("div"); b.className = "umzug-box warm";
+    b.innerHTML = "🤝 Diesen Umzug übernehmen wir <b>persönlich</b> für dich" + (grund ? (" — " + grund) : ".") +
+      " Wir haben dem Team schon Bescheid gegeben und melden uns bei dir. Fragen? <a href=\"mailto:info@lechcode.de\">info@lechcode.de</a>";
+    wrap.appendChild(b);
+    var neu = document.createElement("button"); neu.className = "btn btn-ghost"; neu.type = "button"; neu.textContent = "Andere Adresse verbinden";
+    neu.addEventListener("click", function(){
+      try { localStorage.removeItem(nsKey("umzug-mensch")); localStorage.removeItem(nsKey("umzug-domain")); } catch(e){}
+      umzugNeuRendern();
+    });
+    wrap.appendChild(neu);
+    box.appendChild(wrap);
+  }
+
+  function umzugRenderLive(box, dom){
+    box.innerHTML = '<div class="umzug-box gut">🎉 Geschafft! <b>' + (dom || "Deine Domain") + '</b> ist jetzt mit deiner Website verbunden — und deine E-Mails laufen unverändert weiter. 🌿</div>';
+  }
+
+  function umzugHilfe(dom){
+    try {
+      api("/job", { method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({
+        type:"change-request",
+        payload:{ wunsch_oton: "Umzugs-Assistent: Ich komme beim Nameserver-Schritt für " + (dom || umzugDomain()) + " nicht weiter. Bitte helft mir.", kategorie:"umzug-hilfe", aenderungen:[], bilder:[], transcript:[] }
+      }) }).catch(function(){});
+    } catch(e){}
+    umzugSig = "__hilfe__";
+    var box = document.getElementById("umzug-inhalt");
+    if (box) box.innerHTML = '<div class="umzug-box warm">Alles gut — wir haben dem Team Bescheid gegeben und melden uns bei dir. Du musst nichts weiter tun. 🤝</div>';
+    ansage("Wir haben dem Team Bescheid gegeben.");
+  }
+
+  function umzugGoLiveCheck(domain){
+    if (umzugChecking || umzugIstLive()) return;
+    umzugChecking = true;
+    fetch(LC_API + "/domain-check", { method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({ domain: domain }) })
+      .then(function(r){ return r.json(); }).then(function(j){
+        umzugChecking = false;
+        if (!j || !j.ok || !j.steckbrief) return;
+        var sb = j.steckbrief, a = (sb.dns_ist && sb.dns_ist.a) || [];
+        var ghp = ["185.199.108.153", "185.199.109.153", "185.199.110.153", "185.199.111.153"];
+        var aufPages = sb.aktuelles_hosting === "GitHub Pages" || a.some(function(ip){ return ghp.indexOf(ip) >= 0; });
+        var mailDa = !sb.email_an_domain || (sb.nicht_verlieren && sb.nicht_verlieren.mx && sb.nicht_verlieren.mx.length > 0);
+        if (aufPages && mailDa){
+          try { localStorage.setItem(nsKey("umzug-live"), "1"); } catch(e){}
+          ansage("Deine Domain " + domain + " ist jetzt live.");
+          seiteLaden();
+          umzugNeuRendern();
+        }
+      })
+      .catch(function(){ umzugChecking = false; });
+  }
+
+  function kopieren(text, btn){
+    var fertig = function(){ var alt = btn.textContent; btn.textContent = "kopiert ✓"; ansage(text + " kopiert."); setTimeout(function(){ btn.textContent = alt; }, 1600); };
+    if (navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(fertig, fertig); }
+    else { fertig(); }
+  }
+
   statusLaden(true);
   setInterval(function(){ statusLaden(false); }, 30000);
 
