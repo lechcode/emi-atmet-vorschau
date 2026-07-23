@@ -573,6 +573,7 @@
         var jb = document.getElementById("jobs"), leer = jb && jb.querySelector(".leer");
         if (leer) leer.textContent = "Einen Moment — deine Aufträge werden geladen …";
         if (schnellVersuche < 3){ schnellVersuche++; setTimeout(function(){ statusLaden(true); }, 3000); } // … schnell erneut (max 3×), danach greift der 30-s-Poll
+        else if (leer) leer.textContent = "Die Verbindung klemmt gerade — ich versuche es automatisch weiter. Deine Aufträge gehen dabei nicht verloren. 🌿";
       }
     }
   }
@@ -1241,6 +1242,24 @@
     try { var arr2 = messages.slice(-60); localStorage.setItem(nsKey("lc-chat"), JSON.stringify(arr2)); } catch(e){}
   }
 
+  // Nur ein FENSTER der letzten Nachrichten an den Server schicken: der gespeicherte
+  // Verlauf kann bis zu 80 Nachrichten lang sein, der Chat-Endpoint deckelt bei 40 —
+  // den kompletten Verlauf zu senden würde den Chat für Stammkunden dauerhaft brechen.
+  // Die versteckte Begrüßungs-Anweisung fliegt raus (außer sie ist die aktuelle Nachricht).
+  function chatFenster(basis){
+    var quelle = basis || messages;
+    var arr = [];
+    for (var i = 0; i < quelle.length; i++){
+      var m = quelle[i];
+      if (!m || !m.content) continue;
+      if (m.content === OPENER_INSTR && i !== quelle.length - 1) continue;
+      arr.push({role: m.role, content: m.content});
+    }
+    arr = arr.slice(-30);
+    while (arr.length && arr[0].role !== "user") arr.shift(); // sauber mit „user" beginnen
+    return arr;
+  }
+
   // Blendet den technischen Bereitschafts-Marker aus der Anzeige aus (auch als Teil-Marker
   // während des Streamens). Der Rohtext bleibt für die Marker-Erkennung erhalten.
   var AEND_MARKER = "[[AENDERUNG_BEREIT]]";
@@ -1254,7 +1273,7 @@
     tipp.classList.add("an");
     var antwortEl = null, antwortText = "";
     try {
-      var r = await api("/dashboard-chat", {method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({messages: messages})});
+      var r = await api("/dashboard-chat", {method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({messages: chatFenster()})});
       var ct = r.headers.get("content-type") || "";
       if (ct.indexOf("text/event-stream") === -1){
         var j = await r.json().catch(function(){ return {}; });
@@ -1344,11 +1363,27 @@
 
   // Prüft, ob im Gespräch eine konkrete Änderung steckt → zeigt die Beauftragen-Box, sonst freundlicher Hinweis.
   var trigBtn = document.getElementById("beauftragen-trigger");
+  var BEAUFTRAGT_TEXT = "Beauftragt! ✓ Du siehst den Fortschritt oben unter „Deine Aufträge“. Sobald es live ist, steht dort der Link.";
+  // Fürs Zusammenfassen zählt nur das Gespräch SEIT dem letzten Auftrag — sonst würde
+  // eine bereits beauftragte Änderung beim nächsten Klick gleich noch einmal beauftragt.
+  function fensterSeitLetztemAuftrag(){
+    var start = 0;
+    for (var i = 0; i < messages.length; i++){
+      if (messages[i] && messages[i].role === "assistant" && String(messages[i].content).indexOf("Beauftragt! ✓") === 0) start = i + 1;
+    }
+    return chatFenster(messages.slice(start));
+  }
   async function zusammenfassen(){
     if (beschaeftigt) return;
+    var fenster = fensterSeitLetztemAuftrag();
+    var hatWunsch = fenster.some(function(m){ return m.role === "user" && m.content !== OPENER_INSTR; });
+    if (!hatWunsch){
+      bubble("assistant", "Schreib mir erst kurz in den Chat, was ich ändern soll (z. B. „Öffnungszeiten im Footer auf Mo–Fr 9–18 Uhr“) — dann fasse ich es hier für dich zusammen.");
+      return;
+    }
     beschaeftigt = true; trigBtn.disabled = true; trigBtn.textContent = "Einen Moment …";
     try {
-      var r = await api("/dashboard-chat", {method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({messages: messages, finalize:true})});
+      var r = await api("/dashboard-chat", {method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({messages: fenster, finalize:true})});
       var j = await r.json();
       if (!j.ok){
         // Finalize-Fehler (z. B. Zusammenfassung nicht lesbar) — NICHT als „keine Änderung“ ausgeben,
@@ -1376,7 +1411,7 @@
 
   document.getElementById("chat-senden").addEventListener("click", senden);
   eingabe.addEventListener("keydown", function(e){ if (e.key === "Enter" && !e.shiftKey){ e.preventDefault(); senden(); } });
-  eingabe.addEventListener("input", function(){ this.style.height = "auto"; this.style.height = Math.min(this.scrollHeight, 130) + "px"; });
+  eingabe.addEventListener("input", function(){ this.style.height = "auto"; this.style.height = Math.min(this.scrollHeight, 120) + "px"; }); // 120 = CSS max-height (sonst springt es)
   // Placeholder responsiv: mobil kurz (passt ohne Abschneiden), Desktop mit vollem Hinweis
   function placeholderAnpassen(){ eingabe.setAttribute("placeholder", window.innerWidth < 560 ? "Schreib oder sprich …" : "Schreib, sprich oder häng was an …"); }
   placeholderAnpassen(); window.addEventListener("resize", placeholderAnpassen);
@@ -1397,8 +1432,12 @@
       var j = await r.json();
       if (!j.ok) throw new Error(j.meldung || "");
       beauftragenBox.classList.remove("an");
-      bubble("assistant", "Beauftragt! ✓ Du siehst den Fortschritt oben unter „Deine Aufträge“. Sobald es live ist, steht dort der Link.");
-      messages = []; letzterRequest = null; chatSpeichern();
+      bubble("assistant", BEAUFTRAGT_TEXT);
+      // Verlauf BEHALTEN (vorher wurde er hier gelöscht → nach einem Reload war der
+      // ganze Chat weg). Die Bestätigung wandert mit in den Verlauf und dient zugleich
+      // als Schnitt-Marker fürs nächste „Änderung beauftragen".
+      messages.push({role:"assistant", content: BEAUFTRAGT_TEXT});
+      letzterRequest = null; chatSpeichern();
       statusLaden(false);
       window.scrollTo({top:0, behavior:"smooth"});
     } catch(e){
@@ -1448,7 +1487,7 @@
     angehaengteDatei = null; anhangEl.classList.remove("an"); anhangEl.innerHTML = ""; chatDatei.value = "";
   }
   attachBtn.addEventListener("click", function(){ if (!beschaeftigt) chatDatei.click(); });
-  chatDatei.addEventListener("change", function(){ anhangSetzen(this.files[0]); });
+  chatDatei.addEventListener("change", function(){ anhangSetzen(this.files[0]); this.value = ""; }); // value leeren → dieselbe Datei ist gleich nochmal wählbar
   ["dragover","dragenter"].forEach(function(ev){ chatDrop.addEventListener(ev, function(e){ e.preventDefault(); zeileEl.classList.add("zieht"); }); });
   ["dragleave","dragend","drop"].forEach(function(ev){ chatDrop.addEventListener(ev, function(e){ e.preventDefault(); zeileEl.classList.remove("zieht"); }); });
   chatDrop.addEventListener("drop", function(e){ if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) anhangSetzen(e.dataTransfer.files[0]); });
@@ -1480,8 +1519,6 @@
     var name = f.name;
     dateiBubble(f, caption);
     anhangEntfernen(); eingabe.value = ""; eingabe.style.height = "auto";
-    messages.push({role:"user", content:"📎 Datei gesendet: " + name + (caption ? " — " + caption : "")});
-    chatSpeichern();
     var warte = bubble("assistant", "Lädt hoch … 🌿");
     try {
       var b64 = await new Promise(function(res, rej){
@@ -1495,10 +1532,14 @@
         ? "Angekommen ✓ — ich kümmere mich darum. Den Fortschritt siehst du oben unter „Deine Aufträge“, dort kommt auch der Link, sobald es live ist."
         : "Angekommen ✓ — die Datei liegt bei uns. Sag mir gern noch, was ich damit machen soll (z. B. „als großes Bild ganz oben“), dann baue ich sie ein.";
       warte.innerHTML = kiMd(okText);
+      // Erst bei ERFOLG in den Verlauf schreiben (sonst stünde „Datei gesendet" in der
+      // Historie, obwohl der Upload scheiterte).
+      messages.push({role:"user", content:"📎 Datei gesendet: " + name + (caption ? " — " + caption : "")});
       messages.push({role:"assistant", content: okText}); chatSpeichern();
       statusLaden(false);
     } catch(e){
       warte.innerHTML = kiMd((e && e.message) ? e.message : "Der Upload hat gerade nicht geklappt — magst du es noch einmal versuchen?");
+      anhangSetzen(f); // Anhang wiederherstellen — „noch einmal versuchen" geht dann ohne Neu-Anhängen
     }
     verlauf.scrollTop = verlauf.scrollHeight;
     beschaeftigt = false; sendBtn.disabled = false;
