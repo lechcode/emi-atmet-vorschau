@@ -536,6 +536,7 @@
 
   // — Status laden + Polling —
   var kundenName = "", anrede = "", letzteSignatur = null, schnellVersuche = 0, begruesstGesetzt = false;
+  var hatAktiveJobs = false; // steuert das Poll-Tempo: läuft ein Auftrag → schneller pollen
   async function statusLaden(erster){
     try {
       var r = await api("/status");
@@ -666,14 +667,19 @@
     var was = document.createElement("span"); was.className = "was"; was.textContent = job.kurz || "Auftrag";
     var wann = document.createElement("span"); wann.className = "wann"; wann.textContent = (job.created || "").slice(0, 16).replace("T", " · ");
     kopf.appendChild(was); kopf.appendChild(wann); el.appendChild(kopf);
-    var badge = document.createElement("div"); badge.className = "live-badge"; badge.textContent = "live ✓"; el.appendChild(badge);
     if (job.url){
+      var badge = document.createElement("div"); badge.className = "live-badge"; badge.textContent = "live ✓"; el.appendChild(badge);
       var link = document.createElement("div"); link.className = "live-link";
       var a = document.createElement("a"); a.href = mitVersion(job.url, job.updated || job.created); a.target = "_blank"; a.rel = "noopener";
       a.textContent = "Ansehen: deine Seite ist aktualisiert →";
       link.appendChild(a); el.appendChild(link);
+      el.appendChild(macheFeedback(job));
+    } else {
+      // Kein Deploy passiert (z. B. Datei ohne Anweisung erhalten) → NICHT fälschlich „live ✓" zeigen.
+      var note = document.createElement("div"); note.style.cssText = "font-size:13.5px;color:var(--bone-dim);margin-top:6px;";
+      note.textContent = job.notiz || "Erhalten — sag mir im Chat, was ich damit machen soll.";
+      el.appendChild(note);
     }
-    el.appendChild(macheFeedback(job));
     return el;
   }
 
@@ -694,6 +700,7 @@
       else if (schrittIndex(job.status) < 0) probleme.push(job); // failed/rejected → „wir melden uns"
       else aktive.push(job); // in Arbeit (pending/claimed/running/qa/approved)
     });
+    hatAktiveJobs = aktive.length > 0; // → Poll-Tempo (schnell, solange etwas läuft)
 
     // „Deine Seite ansehen“-Links (Top-Button + Klick-Overlay) auf die LETZTE Änderung
     //   cache-busten, damit ein Klick direkt nach einer Änderung die frische Version zeigt.
@@ -971,7 +978,13 @@
   }
 
   statusLaden(true);
-  setInterval(function(){ statusLaden(false); }, 30000);
+  // Adaptiver Poll: solange ein Auftrag läuft, alle 7 s (fast Echtzeit auf „live"); sonst alle 30 s.
+  (function planePoll(){
+    setTimeout(async function(){
+      try { await statusLaden(false); } catch(e){}
+      planePoll();
+    }, hatAktiveJobs ? 7000 : 30000);
+  })();
 
   // — Chat —
   var messages = [];
@@ -1307,6 +1320,13 @@
           try {
             var text = await transkribieren(daten.blob);
             vb.setText(text);
+            if (angehaengteDatei){
+              // Bild + gesprochene Anweisung gehören zusammen → als EIN Upload mit Anweisung senden
+              // (sonst ginge nur die Sprachnachricht raus und das Bild bliebe hängen).
+              beschaeftigt = false; sendBtn.disabled = false;
+              await dateiSenden(text);
+              return;
+            }
             messages.push({role:"user", content:text});
             var raw = await streamAntwort();
             if (raw && raw.indexOf(AEND_MARKER) !== -1 && !beauftragenBox.classList.contains("an")) zusammenfassen();
