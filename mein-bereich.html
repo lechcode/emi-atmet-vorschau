@@ -673,7 +673,13 @@
       }
     } else {
       var info = document.createElement("div"); info.style.cssText = "color:var(--muted);font-size:14px;margin-top:4px;";
-      info.textContent = "Das übernehmen wir persönlich — wir melden uns bei dir. 🤝";
+      // „Keine Änderung erkannt" ist KEIN Fehler, der einen Menschen braucht — meist war
+      // der Wunsch schon erfüllt oder nicht eindeutig. Dann ehrlich & einladend formulieren,
+      // statt fälschlich „wir melden uns persönlich" zu versprechen.
+      var nichtsGeaendert = /keine änderung|nichts geändert|schon erf/i.test(job.notiz || "");
+      info.textContent = nichtsGeaendert
+        ? "Daran war nichts zu ändern — vermutlich ist es schon so. Wenn doch etwas fehlt, beschreib mir unten im Chat kurz genauer, was anders soll. 🌿"
+        : "Das übernehmen wir persönlich — wir melden uns bei dir. 🤝";
       el.appendChild(info);
     }
     return el;
