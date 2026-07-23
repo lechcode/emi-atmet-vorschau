@@ -716,9 +716,9 @@
 
     if (erledigt.length){
       var det = document.createElement("details"); det.id = "erledigt-details"; det.className = "erledigt";
-      // Standard: offen, wenn nichts aktiv läuft (dann IST der Erledigt-Bereich der Inhalt)
-      //   oder gerade etwas neu live ging. Beim Re-Render bewahren wir den Zustand des Nutzers.
-      det.open = (!!autoOpen) || (istReRender ? erledigtOffen : (aktive.length === 0));
+      // Standardmäßig EINGEKLAPPT (Lenny-Wunsch) — nur automatisch aufklappen, wenn gerade
+      //   etwas neu live ging (autoOpen); den vom Nutzer gewählten Zustand beim Re-Render bewahren.
+      det.open = (!!autoOpen) || (istReRender ? erledigtOffen : false);
       var sum = document.createElement("summary");
       sum.innerHTML = "<span class='erl-check'>✓</span> Erledigt <span class='erl-n'>· " + erledigt.length + "</span>";
       det.appendChild(sum);
@@ -732,6 +732,9 @@
   // Der Kunde führt den Umzug selbst; die Ausführung (INWX-Zone + GitHub-Pages + Mail-Spiegelung)
   // macht der Runner voll-auto. Fixe Nameserver → kein Warten auf Werte, Go-Live erkennt das
   // Dashboard selbst per /domain-check-Nachpoll. Zustand pro Kunde in localStorage (nsKey).
+  // Umzugs-Assistent („Deine Domain verbinden") vorerst AUS, bis er 100% zuverlässig ist
+  //   (Lenny-Wunsch). Zum Reaktivieren einfach auf true setzen.
+  var UMZUG_AKTIV = false;
   var umzugSig = null, umzugChecking = false, umzugLetzteJobs = [];
   function umzugDomain(){ try { return localStorage.getItem(nsKey("umzug-domain")) || ""; } catch(e){ return ""; } }
   function umzugNsOk(){ try { return localStorage.getItem(nsKey("umzug-ns-ok")) === "1"; } catch(e){ return false; } }
@@ -741,6 +744,7 @@
   function umzugAktualisieren(jobs){
     var karte = document.getElementById("umzug-karte"), box = document.getElementById("umzug-inhalt");
     if (!karte || !box) return;
+    if (!UMZUG_AKTIV){ karte.style.display = "none"; return; } // Umzug im Dashboard ausgeblendet
     umzugLetzteJobs = jobs || [];
     karte.style.display = "";
     var job = (jobs || []).filter(function(x){ return x && x.type === "domain-selfservice"; })
