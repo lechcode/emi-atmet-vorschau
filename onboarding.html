@@ -151,6 +151,11 @@
   function zeigeKeinZugang(){ document.getElementById("kein-zugang").classList.add("an"); }
   if (!token){ zeigeKeinZugang(); return; }
 
+  // Enter in einem Textfeld darf das Formular NICHT nativ absenden (GET-Reload → alle
+  // Antworten weg). Der Absende-Button liegt außerhalb des <form> und hat einen eigenen Handler.
+  var formEl = document.getElementById("formular");
+  if (formEl) formEl.addEventListener("submit", function(e){ e.preventDefault(); });
+
   function api(pfad, opts){
     opts = opts || {};
     opts.headers = Object.assign({"authorization":"Bearer " + token}, opts.headers || {});
@@ -162,6 +167,7 @@
   function feldId(g, f){ return "f-" + g.id + "-" + f.id; }
 
   function bauen(daten){
+    document.getElementById("kein-zugang").classList.remove("an"); // evtl. gezeigten „Verbindung klemmt"-Hinweis wieder ausblenden
     var anrede = daten.anrede || (daten.name || "").split(" ")[0];
     if (anrede) document.getElementById("titel").textContent = anrede + ", kurz noch ein paar Angaben — dann ist deine Seite startklar.";
     gruppen = (daten.fragen && daten.fragen.gruppen) || [];
@@ -218,7 +224,16 @@
       } else if (j) zeigeKeinZugang(); // ok:false = echter Zugangsfehler
     }).catch(function(){
       if (obVersuche < 3){ obVersuche++; setTimeout(ladeFragen, 2500); } // transienter Fehler → kurz erneut
-      else zeigeKeinZugang();
+      else {
+        // Nach 3 Fehlversuchen NICHT „Link fehlt" behaupten (der Link ist meist gültig) —
+        // ehrlich als Verbindungsproblem zeigen und weiter im Hintergrund versuchen.
+        var kz = document.getElementById("kein-zugang");
+        var p = kz.querySelector("p");
+        if (p) p.textContent = "Die Verbindung klemmt gerade — ich versuche es weiter. Bitte lass die Seite offen oder lade sie gleich neu.";
+        var h1 = kz.querySelector("h1"); if (h1) h1.textContent = "Einen Moment noch …";
+        kz.classList.add("an");
+        setTimeout(function(){ obVersuche = 0; ladeFragen(); }, 8000);
+      }
     });
   }
   ladeFragen();
@@ -235,7 +250,12 @@
         if (f.art === "checkbox") gr[f.id] = el.checked;
         else if (f.art === "liste"){
           gr[f.id] = el.value.split("\n").map(function(z){ return z.trim(); }).filter(Boolean)
-            .map(function(z){ var t = z.split(/\s*[—–-]\s*(?=[^—–-]*$)/); return {leistung: t[0] || z, preis: t[1] || ""}; });
+            .map(function(z){
+              // Nur an einem Trenner MIT umgebendem Leerraum (oder Gedankenstrich) splitten —
+              // sonst zerschneidet „Anti-Stress-Massage" fälschlich in Leistung+Preis.
+              var t = z.split(/\s+[—–]\s+|\s+-\s+/);
+              return (t.length > 1) ? {leistung: t[0].trim(), preis: t.slice(1).join(" - ").trim()} : {leistung: z, preis: ""};
+            });
         }
         else gr[f.id] = el.value.trim();
       });

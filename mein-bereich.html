@@ -359,7 +359,7 @@
       <div class="chat-eingabe" id="chat-eingabe-zeile">
         <div class="chat-anhang" id="chat-anhang" aria-live="polite"></div>
         <div class="composer" id="composer">
-          <input type="file" id="chat-datei" accept="image/*,.pdf,.doc,.docx,.txt,.rtf,.csv,.ppt,.pptx,.xls,.xlsx,.svg,.heic" style="display:none">
+          <input type="file" id="chat-datei" accept="image/png,image/jpeg,image/webp,image/gif,image/heic,.pdf,.doc,.docx,.txt,.rtf,.csv,.ppt,.pptx,.xls,.xlsx,.heic" style="display:none">
           <button class="lc-attach" id="chat-attach" type="button" aria-label="Datei anhängen" title="Datei anhängen (Bild, PDF, Dokument)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
           </button>
@@ -515,10 +515,28 @@
   function zeigeKeinZugang(){ keinZugang.classList.add("an"); app.style.display = "none"; loginWiren(); }
   if (!token){ zeigeKeinZugang(); return; }
 
+  // Session zu Ende (401 an IRGENDEINEM Endpoint, oder fremder Slug): einmalig sauber
+  // zum Login zurück — Polls stoppen, Token nullen, verständlichen Hinweis zeigen.
+  // (Vorher behandelte nur /status den 401; alle anderen Aufrufe zeigten irreführende
+  //  „nochmal versuchen"-Texte und die Poll-Schleifen liefen mit totem Token weiter.)
+  var sessionBeendet = false, proaktivInterval = null;
+  function sessionAbgelaufen(){
+    if (sessionBeendet) return;
+    sessionBeendet = true;
+    try { if (proaktivInterval) clearInterval(proaktivInterval); } catch(e){}
+    token = "";
+    zeigeKeinZugang();
+    var st = document.getElementById("login-status");
+    if (st) st.textContent = "Deine Anmeldung ist abgelaufen — melde dich unten einfach mit deiner E-Mail neu an.";
+  }
+
   function api(pfad, opts){
     opts = opts || {};
     opts.headers = Object.assign({"authorization":"Bearer " + token}, opts.headers || {});
-    return fetch(LC_API + pfad, opts);
+    return fetch(LC_API + pfad, opts).then(function(r){
+      if (r.status === 401) sessionAbgelaufen();
+      return r;
+    });
   }
 
   // — Abmelden (Session beenden — wichtig am fremden/geteilten Rechner) —
@@ -540,13 +558,13 @@
   async function statusLaden(erster){
     try {
       var r = await api("/status");
-      if (r.status === 401){ zeigeKeinZugang(); return; }
+      if (r.status === 401){ sessionAbgelaufen(); return; }
       var j = await r.json();
       if (!j.ok) throw new Error();
       // Schutz: gehört der Token wirklich zu DIESER Seite? (fremder/falscher Link)
       if (pfadSlug && j.slug && j.slug !== pfadSlug){
         try { localStorage.removeItem(nsKey("lc-zugang")); } catch(e){}
-        zeigeKeinZugang(); return;
+        sessionAbgelaufen(); return; // stoppt auch das Chat-Polling mit dem fremden Token
       }
       // Bereich zeigen + einmalig personalisieren — unabhängig von 'erster', damit die
       //   Begrüßung auch nach einem fehlgeschlagenen Erst-Laden noch gesetzt wird.
@@ -979,11 +997,13 @@
   }
 
   statusLaden(true);
-  // Adaptiver Poll: solange ein Auftrag läuft, alle 7 s (fast Echtzeit auf „live"); sonst alle 30 s.
+  // Adaptiver Poll: solange ein FRISCHER Auftrag läuft, alle 7 s (fast Echtzeit auf „live");
+  // sonst alle 30 s. Nach Session-Ende (401/fremder Slug) hört das Pollen auf.
   (function planePoll(){
     setTimeout(async function(){
+      if (sessionBeendet) return;
       try { await statusLaden(false); } catch(e){}
-      planePoll();
+      if (!sessionBeendet) planePoll();
     }, hatAktiveJobs ? 7000 : 30000);
   })();
 
@@ -1000,6 +1020,7 @@
   var letzterRequest = null;
   var bekannteProaktiv = {}; // schon gezeigte proaktive Nachrichten (id → 1), gegen Doppel-Anzeige
   var angehaengteDatei = null; // im Chat angehängte Datei (vor dem Senden)
+  var anhangUrl = null;        // Object-URL der Anhang-Vorschau (wird beim Ersetzen/Entfernen freigegeben)
 
   // ===== Sprachnachricht-Bausteine (identisch in berater.html & mein-bereich.html) =====
   function lcVoiceUnterstuetzt(){ return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder); }
@@ -1013,6 +1034,7 @@
       var rec = mime ? new MediaRecorder(stream, {mimeType:mime}) : new MediaRecorder(stream);
       var chunks = []; rec.ondataavailable = function(e){ if (e.data && e.data.size) chunks.push(e.data); };
       var actx = new (window.AudioContext||window.webkitAudioContext)();
+      try { if (actx.state === "suspended" && actx.resume) actx.resume(); } catch(e){} // iOS: Context startet sonst „suspended" → flache Wellenform
       var ana = actx.createAnalyser(); ana.fftSize = 256; ana.smoothingTimeConstant = 0.75;
       actx.createMediaStreamSource(stream).connect(ana);
       var freq = new Uint8Array(ana.frequencyBinCount), peaks = [];
@@ -1038,7 +1060,7 @@
         form.push((0.6 + 0.4*Math.sin(Math.PI*t0)) * (0.78 + 0.44*Math.random()));
       }
 
-      var start = Date.now(), raf, abgebrochen = false;
+      var start = Date.now(), raf, abgebrochen = false, beendet = false;
       function tick(){
         ana.getByteFrequencyData(freq);
         var bins = freq.length;
@@ -1065,6 +1087,7 @@
         bar.remove(); verstecken.forEach(function(el){ el.style.display = ""; });
       }
       function beenden(){
+        if (beendet) return; beendet = true; // gegen doppeltes beenden (90-s-Auto-Stopp + gleichzeitiger Cancel-Klick)
         var dauer = (Date.now()-start)/1000;
         rec.onstop = function(){
           aufraeumen();
@@ -1219,12 +1242,12 @@
         openerZeigen();
       }
     }
-    setInterval(proaktivPoll, 30000); // proaktive Nachrichten (z. B. „Änderung ist live") abholen
+    if (!sessionBeendet) proaktivInterval = setInterval(proaktivPoll, 30000); // proaktive Nachrichten (z. B. „Änderung ist live") abholen
   })();
 
   // Neue proaktive Berater-Nachrichten vom Server holen und einblenden (id-dedupliziert).
   async function proaktivPoll(){
-    if (beschaeftigt) return;
+    if (beschaeftigt || sessionBeendet) return;
     var arr = null;
     try {
       var r = await api("/dashboard-chat/verlauf", {method:"GET"});
@@ -1255,9 +1278,18 @@
       if (m.content === OPENER_INSTR && i !== quelle.length - 1) continue;
       arr.push({role: m.role, content: m.content});
     }
-    arr = arr.slice(-30);
-    while (arr.length && arr[0].role !== "user") arr.shift(); // sauber mit „user" beginnen
-    return arr;
+    // Aufeinanderfolgende gleiche Rollen zusammenführen: schlägt eine Antwort fehl,
+    // bleibt der User-Turn unbeantwortet stehen und der nächste Versuch erzeugte sonst
+    // zwei „user" am Stück (Doppel-Anzeige; der Chat-Endpoint verlangt Wechsel).
+    var merged = [];
+    for (var k = 0; k < arr.length; k++){
+      var last = merged[merged.length - 1];
+      if (last && last.role === arr[k].role) last.content += "\n\n" + arr[k].content;
+      else merged.push({role: arr[k].role, content: arr[k].content});
+    }
+    merged = merged.slice(-30);
+    while (merged.length && merged[0].role !== "user") merged.shift(); // sauber mit „user" beginnen
+    return merged;
   }
 
   // Blendet den technischen Bereitschafts-Marker aus der Anzeige aus (auch als Teil-Marker
@@ -1313,6 +1345,9 @@
     if (angehaengteDatei){ await dateiSenden(text); return; } // Datei angehängt → Upload-Weg
     if (!text) return;
     beschaeftigt = true; sendBtn.disabled = true;
+    // Eine noch offene (evtl. VERALTETE) Beauftragen-Box schließen: das Gespräch geht
+    // weiter, ein neuer Marker erzeugt gleich eine frische, passende Zusammenfassung.
+    beauftragenBox.classList.remove("an");
     eingabe.value = ""; eingabe.style.height = "auto";
     messages.push({role:"user", content:text});
     bubble("user", text);
@@ -1329,11 +1364,14 @@
     if (!j.ok) throw new Error(j.meldung || "");
     return j.text;
   }
+  var aufnahmeLaeuft = false; // synchroner Guard: verhindert zwei parallele Aufnahmen bei Doppelklick, bevor getUserMedia (Berechtigungs-Dialog) auflöst
   if (lcVoiceUnterstuetzt()){
     micBtn.addEventListener("click", function(){
-      if (beschaeftigt) return;
+      if (beschaeftigt || aufnahmeLaeuft) return;
+      aufnahmeLaeuft = true;
       lcAufnahmeStarten(zeileEl, [document.getElementById("composer")],
         async function(daten){
+          aufnahmeLaeuft = false;
           beschaeftigt = true; sendBtn.disabled = true;
           var vb = lcVoiceBubble(verlauf, "du", daten);
           try {
@@ -1342,20 +1380,26 @@
             if (angehaengteDatei){
               // Bild + gesprochene Anweisung gehören zusammen → als EIN Upload mit Anweisung senden
               // (sonst ginge nur die Sprachnachricht raus und das Bild bliebe hängen).
+              // ohneCaption: das Transkript steht schon an der Voice-Bubble — nicht doppelt zeigen.
               beschaeftigt = false; sendBtn.disabled = false;
-              await dateiSenden(text);
+              await dateiSenden(text, {ohneCaption:true});
               return;
             }
+            beauftragenBox.classList.remove("an"); // evtl. veraltete Box schließen (wie im Text-Pfad)
             messages.push({role:"user", content:text});
             var raw = await streamAntwort();
+            // beschaeftigt VOR dem Marker-Check zurücksetzen — sonst kehrt zusammenfassen()
+            // sofort um (if (beschaeftigt) return) und die Beauftragen-Box erschien nie.
+            beschaeftigt = false; sendBtn.disabled = false;
             if (raw && raw.indexOf(AEND_MARKER) !== -1 && !beauftragenBox.classList.contains("an")) zusammenfassen();
+            return;
           } catch(e){
             vb.setFehler(e.message || "Konnte die Sprachnachricht nicht verstehen — magst du es tippen?");
           }
           beschaeftigt = false; sendBtn.disabled = false;
         },
-        null,
-        function(msg){ bubble("assistant", msg); });
+        function(){ aufnahmeLaeuft = false; },                       // Abbruch → Guard lösen
+        function(msg){ aufnahmeLaeuft = false; bubble("assistant", msg); }); // Fehler (z. B. Mikro-Berechtigung) → Guard lösen
     });
   } else {
     micBtn.style.display = "none";
@@ -1442,8 +1486,10 @@
       window.scrollTo({top:0, behavior:"smooth"});
     } catch(e){
       bubble("assistant", (e && e.message) ? e.message : "Das Beauftragen hat nicht geklappt — bitte noch einmal versuchen.");
-      knopf.disabled = false;
     }
+    // Immer re-enablen (auch nach Erfolg) — sonst bleibt der Knopf ausgegraut und eine
+    // ZWEITE Beauftragung in derselben Sitzung wäre unmöglich (er ist ein statisches Element).
+    knopf.disabled = false;
   });
 
   // — Datei im Chat anhängen (Klick, Drag-Drop, Paste) → beim Senden hochladen —
@@ -1469,8 +1515,10 @@
     if (f.size > 12 * 1024 * 1024){ bubble("assistant", "Die Datei ist größer als 12 MB — magst du eine kleinere Version anhängen?"); return; }
     angehaengteDatei = f;
     anhangEl.innerHTML = "";
+    if (anhangUrl){ try { URL.revokeObjectURL(anhangUrl); } catch(e){} anhangUrl = null; } // alte Vorschau-URL freigeben (Speicher-Leak)
     if (f.type && f.type.indexOf("image/") === 0){
-      var img = document.createElement("img"); img.src = URL.createObjectURL(f); img.alt = ""; anhangEl.appendChild(img);
+      anhangUrl = URL.createObjectURL(f);
+      var img = document.createElement("img"); img.src = anhangUrl; img.alt = ""; anhangEl.appendChild(img);
     } else {
       var ic = document.createElement("div"); ic.className = "ah-ic"; ic.textContent = icZuTyp(f.name); anhangEl.appendChild(ic);
     }
@@ -1485,6 +1533,7 @@
   }
   function anhangEntfernen(){
     angehaengteDatei = null; anhangEl.classList.remove("an"); anhangEl.innerHTML = ""; chatDatei.value = "";
+    if (anhangUrl){ try { URL.revokeObjectURL(anhangUrl); } catch(e){} anhangUrl = null; }
   }
   attachBtn.addEventListener("click", function(){ if (!beschaeftigt) chatDatei.click(); });
   chatDatei.addEventListener("change", function(){ anhangSetzen(this.files[0]); this.value = ""; }); // value leeren → dieselbe Datei ist gleich nochmal wählbar
@@ -1513,11 +1562,13 @@
 
   // Angehängte Datei senden: Bubble zeigen → /upload (Anweisung = Caption) → Bestätigung.
   // Das Bild wird NICHT im Verlauf-Speicher (KV) abgelegt (Bloat) — dort nur eine Text-Referenz.
-  async function dateiSenden(caption){
+  // opts.ohneCaption: Text NICHT unter dem Bild wiederholen (Sprachnachricht+Bild —
+  // das Transkript steht schon an der Voice-Bubble; doppelt sah unschön aus).
+  async function dateiSenden(caption, opts){
     var f = angehaengteDatei; if (!f) return;
     beschaeftigt = true; sendBtn.disabled = true;
     var name = f.name;
-    dateiBubble(f, caption);
+    dateiBubble(f, (opts && opts.ohneCaption) ? "" : caption);
     anhangEntfernen(); eingabe.value = ""; eingabe.style.height = "auto";
     var warte = bubble("assistant", "Lädt hoch … 🌿");
     try {
@@ -1540,6 +1591,7 @@
     } catch(e){
       warte.innerHTML = kiMd((e && e.message) ? e.message : "Der Upload hat gerade nicht geklappt — magst du es noch einmal versuchen?");
       anhangSetzen(f); // Anhang wiederherstellen — „noch einmal versuchen" geht dann ohne Neu-Anhängen
+      if (caption){ eingabe.value = caption; try { eingabe.dispatchEvent(new Event("input")); } catch(e2){} } // Anweisung nicht verlieren
     }
     verlauf.scrollTop = verlauf.scrollHeight;
     beschaeftigt = false; sendBtn.disabled = false;
