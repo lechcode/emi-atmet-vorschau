@@ -842,11 +842,11 @@
           </div>
           <div class="field">
             <label for="telefon">Telefonnummer</label>
-            <input type="tel" id="telefon" name="telefon" autocomplete="tel" placeholder="Deine Rückrufnummer" required>
+            <input type="tel" id="telefon" name="telefon" autocomplete="tel" placeholder="Damit ich mich bei dir melden kann." required>
           </div>
           <div class="field">
-            <label for="thema">Worum geht es? <span class="opt">(optional)</span></label>
-            <select id="thema" name="thema">
+            <label for="thema">Worum geht es?</label>
+            <select id="thema" name="thema" required>
               <option value="">Bitte wählen …</option>
               <option>Kostenfreies Erstgespräch</option>
               <option>Breathwork Circle</option>
@@ -967,9 +967,16 @@
       var name=document.getElementById('name').value.trim();
       var email=document.getElementById('email').value.trim();
       var telefon=document.getElementById('telefon').value.trim();
+      var thema=document.getElementById('thema').value.trim();
       if(!name||!email||!telefon){
         m.className='form-msg err';
         m.textContent='Magst du mir noch deinen Namen, deine E-Mail und deine Telefonnummer dalassen? Dann kann ich dir antworten.';
+        m.scrollIntoView({behavior:'smooth',block:'center'});
+        return;
+      }
+      if(!thema){
+        m.className='form-msg err';
+        m.textContent='Magst du mir noch verraten, worum es geht? Dann kann ich mich besser vorbereiten.';
         m.scrollIntoView({behavior:'smooth',block:'center'});
         return;
       }
