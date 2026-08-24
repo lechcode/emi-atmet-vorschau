@@ -841,6 +841,10 @@
             <input type="email" id="email" name="email" autocomplete="email" placeholder="fuer.deine@antwort.de">
           </div>
           <div class="field">
+            <label for="telefon">Telefonnummer</label>
+            <input type="tel" id="telefon" name="telefon" autocomplete="tel" placeholder="Deine Rückrufnummer" required>
+          </div>
+          <div class="field">
             <label for="thema">Worum geht es? <span class="opt">(optional)</span></label>
             <select id="thema" name="thema">
               <option value="">Bitte wählen …</option>
@@ -962,9 +966,10 @@
       var hp=f.querySelector('[name="_honey"]'); if(hp&&hp.value){return;}   /* Honeypot */
       var name=document.getElementById('name').value.trim();
       var email=document.getElementById('email').value.trim();
-      if(!name||!email){
+      var telefon=document.getElementById('telefon').value.trim();
+      if(!name||!email||!telefon){
         m.className='form-msg err';
-        m.textContent='Magst du mir noch deinen Namen und deine E-Mail dalassen? Dann kann ich dir antworten.';
+        m.textContent='Magst du mir noch deinen Namen, deine E-Mail und deine Telefonnummer dalassen? Dann kann ich dir antworten.';
         m.scrollIntoView({behavior:'smooth',block:'center'});
         return;
       }
