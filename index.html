@@ -337,6 +337,7 @@
   .field{margin-bottom:18px;}
   .field label{display:block;font-size:14px;font-weight:600;color:var(--ink);margin-bottom:7px;}
   .field label .opt{color:var(--ink-faint);font-weight:500;}
+  .field label .req{color:var(--ink);font-weight:600;margin-left:2px;}
   .field input,.field select,.field textarea{width:100%;font-family:var(--sans);font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:13px 15px;transition:border-color .2s,box-shadow .2s;}
   .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--clay);box-shadow:0 0 0 3px rgba(180,105,78,.15);}
   .field textarea{resize:vertical;min-height:120px;}
@@ -840,8 +841,8 @@
             <input type="email" id="email" name="email" autocomplete="email" placeholder="fuer.deine@antwort.de">
           </div>
           <div class="field">
-            <label for="telefon">Telefonnummer</label>
-            <input type="tel" id="telefon" name="telefon" autocomplete="tel" placeholder="Damit ich mich bei dir melden kann." required>
+            <label for="telefon">Telefonnummer <span class="req" aria-hidden="true">*</span></label>
+            <input type="tel" id="telefon" name="telefon" autocomplete="tel" placeholder="Damit ich mich bei dir melden kann." required aria-required="true">
           </div>
           <div class="field">
             <label for="thema">Worum geht es?</label>
@@ -967,9 +968,16 @@
       var email=document.getElementById('email').value.trim();
       var telefon=document.getElementById('telefon').value.trim();
       var thema=document.getElementById('thema').value.trim();
-      if(!name||!email||!telefon){
+      if(!telefon){
         m.className='form-msg err';
-        m.textContent='Magst du mir noch deinen Namen, deine E-Mail und deine Telefonnummer dalassen? Dann kann ich dir antworten.';
+        m.textContent='Bitte trag noch deine Telefonnummer ein, damit ich mich bei dir melden kann.';
+        document.getElementById('telefon').focus();
+        m.scrollIntoView({behavior:'smooth',block:'center'});
+        return;
+      }
+      if(!name||!email){
+        m.className='form-msg err';
+        m.textContent='Magst du mir noch deinen Namen und deine E-Mail dalassen? Dann kann ich dir antworten.';
         m.scrollIntoView({behavior:'smooth',block:'center'});
         return;
       }
